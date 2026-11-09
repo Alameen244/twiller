@@ -3,7 +3,22 @@ import Tweet from '../models/tweet.js';
 // Create new tweet
 export const createTweet = async (req, res) => {
   try {
-    const tweet = new Tweet(req.body);
+    const { author, content, image } = req.body;
+
+    if (!author || !content) {
+      return res.status(400).send({ error: 'Author and content are required' });
+    }
+
+    const tweetData = {
+      author,
+      content
+    };
+
+    if (image !== undefined) {
+      tweetData.image = image;
+    }
+
+    const tweet = new Tweet(tweetData);
     await tweet.save();
     await tweet.populate('author');
     return res.status(201).send(tweet);

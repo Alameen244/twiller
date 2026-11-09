@@ -65,12 +65,16 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
   };
   return (
     <Dialog
+      data-component="auth-modal"
+      data-mode={mode}
       open={open}
       onClose={isLoading ? undefined : onClose}
       fullWidth
       maxWidth="sm"
-      PaperProps={{
-        sx: { bgcolor: "#000", border: "1px solid #2f3336", color: "#fff" },
+      slotProps={{
+        paper: {
+          sx: { bgcolor: "#000", border: "1px solid #2f3336", color: "#fff" },
+        },
       }}
     >
       <DialogContent sx={{ p: 4, position: "relative" }}>

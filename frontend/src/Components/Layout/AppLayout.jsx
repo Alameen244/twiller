@@ -52,8 +52,12 @@ export default function AppLayout() {
   const [logoutOpen, setLogoutOpen] = useState(false);
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#000", display: "flex", justifyContent: "center" }}>
+    <Box
+      data-component="app-layout-container"
+      sx={{ minHeight: "100vh", bgcolor: "#000", display: "flex", justifyContent: "center" }}
+    >
       <Box
+        data-component="sidebar-left"
         component="aside"
         sx={{
           width: { xs: 72, md: 260 },
@@ -66,7 +70,7 @@ export default function AppLayout() {
           flexDirection: "column",
         }}
       >
-        <Box sx={{ p: 1, mb: 2 }}>
+        <Box sx={{ p: 1, mb: 2 }} data-component="logo-container">
           <TwitterLogo size={32} />
         </Box>
 
@@ -74,6 +78,9 @@ export default function AppLayout() {
           const isActive = location.pathname === path;
           return (
             <Button
+              data-component="nav-link"
+              data-nav-label={label}
+              data-active={isActive}
               key={label}
               onClick={() => navigate(path)}
               sx={{
@@ -108,6 +115,7 @@ export default function AppLayout() {
         })}
 
         <Button
+          data-component="logout-button"
           onClick={() => setLogoutOpen(true)}
           sx={{
             display: { xs: "none", md: "block" },
@@ -131,8 +139,9 @@ export default function AppLayout() {
           Log out
         </Button>
 
-        <Box sx={{ mt: "auto" }}>
+        <Box sx={{ mt: "auto" }} data-component="sidebar-profile-section">
           <Button
+            data-component="profile-button"
             onClick={() => navigate("/profile")}
             sx={{
               p: 1.5,
@@ -155,28 +164,45 @@ export default function AppLayout() {
               },
             }}
           >
-            <Avatar src={user?.avatar} sx={{ width: 40, height: 40 }}>
-              {user?.displayName?.[0]}
-            </Avatar>
-            <Box sx={{ display: { xs: "none", md: "block" }, textAlign: "left", ml: 1 }}>
-              <Typography fontWeight={700}>{user?.displayName}</Typography>
-              <Typography fontSize={13} color="text.secondary">@{user?.username}</Typography>
+            <Avatar
+              data-component="avatar"
+              data-location="sidebar-bottom"
+              data-avatar-url={user?.avatar}
+              key={user?.avatar}
+              src={user?.avatar}
+              sx={{ width: 40, height: 40 }}
+            />
+            <Box
+              data-component="profile-info"
+              sx={{ display: { xs: "none", md: "block" }, textAlign: "left", ml: 1 }}
+            >
+              <Typography fontWeight={700} data-component="profile-name">{user?.displayName}</Typography>
+              <Typography fontSize={13} color="text.secondary" data-component="profile-username">@{user?.username}</Typography>
             </Box>
           </Button>
         </Box>
       </Box>
 
-      <Box component="main" sx={{ width: "100%", maxWidth: 600, borderRight: "1px solid #2f3336" }}>
+      <Box
+        data-component="main-content"
+        component="main"
+        sx={{ width: "100%", maxWidth: 600, borderRight: "1px solid #2f3336" }}
+      >
         <Outlet />
       </Box>
-      <Box component="aside" sx={{ display: { xs: "none", lg: "block" }, width: 350, p: 2 }}>
+      <Box
+        data-component="sidebar-right"
+        component="aside"
+        sx={{ display: { xs: "none", lg: "block" }, width: 350, p: 2 }}
+      >
         <RightSidebar />
       </Box>
       <LogoutDialog
+        data-component="logout-dialog"
         open={logoutOpen}
         onClose={() => setLogoutOpen(false)}
         onConfirm={logout}
       />
-    </Box>
+    </Box >
   );
 }

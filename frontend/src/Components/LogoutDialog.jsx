@@ -6,25 +6,32 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function LogoutDialog({ open, onClose, onConfirm }) {
+  const navigate = useNavigate();
+
   const confirmLogout = async () => {
     await onConfirm();
+    navigate("/");
     onClose();
   };
 
   return (
     <Dialog
+      data-component="logout-dialog"
       open={open}
       onClose={onClose}
       maxWidth="xs"
       fullWidth
-      PaperProps={{
-        sx: {
-          bgcolor: "#000000",
-          color: "#f7f9f9",
-          border: "1px solid #1A8CD8",
-          borderRadius: 0.2,
+      slotProps={{
+        paper: {
+          sx: {
+            bgcolor: "#000000",
+            color: "#f7f9f9",
+            border: "1px solid #1A8CD8",
+            borderRadius: 0.2,
+          },
         },
       }}
     >

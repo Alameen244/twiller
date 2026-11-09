@@ -41,18 +41,23 @@ export default function TweetCard({ tweet }) {
   const author = item.author || {};
   return (
     <Card
+      data-component="tweet-card"
+      data-tweet-id={item._id}
       sx={{ borderWidth: "0 0 1px", p: 2, "&:hover": { bgcolor: "#080808" } }}
     >
-      <Stack direction="row" spacing={1.5}>
+      <Stack direction="row" spacing={1.5} data-component="tweet-content">
         <Avatar
+          data-component="avatar"
+          data-location="tweet-card"
+          data-author={author.username}
           src={author.avatar}
           alt={author.displayName}
           sx={{ width: 48, height: 48 }}
         >
           {author.displayName?.[0]}
         </Avatar>
-        <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Stack direction="row" spacing={0.75} alignItems="center">
+        <Box sx={{ minWidth: 0, flex: 1 }} data-component="tweet-body">
+          <Stack direction="row" spacing={0.75} alignItems="center" data-component="tweet-header">
             <Typography fontWeight={700}>{author.displayName}</Typography>
             <Typography color="text.secondary">@{author.username}</Typography>
             <Typography color="text.secondary">·</Typography>
@@ -70,8 +75,10 @@ export default function TweetCard({ tweet }) {
           <Typography sx={{ whiteSpace: "pre-wrap", my: 1 }}>
             {item.content}
           </Typography>
-          {item.image && (
+          {item.image && item.image.startsWith('http') && (
             <Box
+              data-component="tweet-image"
+              data-image-url={item.image}
               component="img"
               src={item.image}
               alt="Tweet attachment"
@@ -85,17 +92,19 @@ export default function TweetCard({ tweet }) {
             />
           )}
           <Stack
+            data-component="tweet-actions"
             direction="row"
             justifyContent="space-between"
             sx={{ maxWidth: 440, color: "#71767b" }}
           >
-            <IconButton sx={{ color: "inherit" }}>
+            <IconButton sx={{ color: "inherit" }} data-component="comment-button">
               <ChatBubbleOutline />
               <Typography variant="caption" sx={{ ml: 0.75 }}>
                 {n(item.comments)}
               </Typography>
             </IconButton>
             <IconButton
+              data-component="retweet-button"
               onClick={retweet}
               sx={{ color: reposted ? "#00ba7c" : "inherit" }}
             >
@@ -105,6 +114,7 @@ export default function TweetCard({ tweet }) {
               </Typography>
             </IconButton>
             <IconButton
+              data-component="like-button"
               onClick={like}
               sx={{ color: liked ? "#f91880" : "inherit" }}
             >
@@ -113,7 +123,7 @@ export default function TweetCard({ tweet }) {
                 {n(item.likes)}
               </Typography>
             </IconButton>
-            <IconButton sx={{ color: "inherit" }}>
+            <IconButton sx={{ color: "inherit" }} data-component="share-button">
               <Share />
             </IconButton>
           </Stack>

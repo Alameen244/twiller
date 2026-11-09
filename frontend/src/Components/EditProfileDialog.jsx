@@ -6,10 +6,13 @@ import {
   IconButton,
   Stack,
   TextField,
+  Box,
+  Avatar,
 } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { Close, PhotoCamera } from "@mui/icons-material";
 import { Button } from "./UI";
 import { useAuth } from "../Context/AuthContext";
+import { uploadSingleImage } from "../Apis/imageApi";
 export default function EditProfileDialog({ open, onClose }) {
   const { user, updateProfile, isLoading } = useAuth();
   const [data, setData] = useState({
@@ -19,9 +22,10 @@ export default function EditProfileDialog({ open, onClose }) {
     website: "",
     avatar: "",
   });
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    if (user)
+    if (user) {
       setData({
         displayName: user.displayName || "",
         bio: user.bio || "",
@@ -29,7 +33,11 @@ export default function EditProfileDialog({ open, onClose }) {
         website: user.website || "example.com",
         avatar: user.avatar || "",
       });
+    }
   }, [user, open]);
+
+  // Don't render until we have user data
+  if (!user) return null;
   const field = (name, label, max, multi = false) => (
     <TextField
       label={label}
@@ -60,8 +68,24 @@ export default function EditProfileDialog({ open, onClose }) {
     }
   };
 
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const result = await uploadSingleImage(file, "PROFILE_PICTURE");
+      setData({ ...data, avatar: result.url });
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <Dialog
+      data-component="edit-profile-dialog"
       open={open}
       onClose={onClose}
       fullWidth
@@ -72,22 +96,59 @@ export default function EditProfileDialog({ open, onClose }) {
         }
       }}
     >
-      <DialogTitle fontWeight={700}>
+      <DialogTitle fontWeight={700} data-component="dialog-title">
         Edit profile
-        <IconButton onClick={onClose} sx={{ float: "right", color: "#fff" }}>
+        <IconButton onClick={onClose} sx={{ float: "right", color: "#fff" }} data-component="close-button">
           <Close />
         </IconButton>
       </DialogTitle>
-      <DialogContent>
-        <form onSubmit={submit}>
+      <DialogContent data-component="dialog-content">
+        <form onSubmit={submit} data-component="edit-profile-form">
           <Stack spacing={2} mt={1}>
+            <Box
+              data-component="avatar-upload-section"
+              sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}
+            >
+              <Avatar
+                data-component="avatar"
+                data-location="edit-profile-dialog"
+                data-avatar-url={data.avatar}
+                key={data.avatar}
+                src={data.avatar}
+                sx={{ width: 80, height: 80 }}
+              />
+              <IconButton
+                data-component="avatar-upload-button"
+                component="label"
+                disabled={uploading}
+                sx={{
+                  bgcolor: "rgba(29, 155, 240, 0.1)",
+                  color: "#1d9bf0",
+                  "&:hover": { bgcolor: "rgba(29, 155, 240, 0.2)" },
+                }}
+              >
+                <PhotoCamera />
+                <input
+                  hidden
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                />
+              </IconButton>
+              {uploading && (
+                <Box sx={{ color: "#1d9bf0", fontSize: 14 }} data-component="upload-status">
+                  Uploading...
+                </Box>
+              )}
+            </Box>
             {field("displayName", "Name", 50)}
             {field("bio", "Bio", 160, true)}
             {field("location", "Location", 30)}
             {field("website", "Website", 100)}
             <Button
+              data-component="save-button"
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || uploading}
               sx={{
                 alignSelf: "flex-end",
                 bgcolor: "#fff",

@@ -4,5 +4,7 @@ export const endpoints = {
   loggedInUser: '/api/v1/users/loggedinuser',
   userUpdate: (email) => `/api/v1/users/userupdate/${email}`,
   like: (id) => `/api/v1/tweets/like/${id}`,
-  retweet: (id) => `/api/v1/tweets/retweet/${id}`
+  retweet: (id) => `/api/v1/tweets/retweet/${id}`,
+  uploadSingleImage: '/api/v1/image/uploadSingle',
+  uploadMultipleImages: '/api/v1/image/uploadMultiple'
 };

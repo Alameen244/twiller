@@ -34,9 +34,32 @@ export const getLoggedInUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { email } = req.params;
+    const { username, displayName, bio, location, website, avatar } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).send({ error: 'User not found' });
+    }
+
+    const updateData = {};
+
+    if (username !== undefined) updateData.username = username;
+    if (displayName !== undefined) updateData.displayName = displayName;
+    if (bio !== undefined) updateData.bio = bio;
+    if (location !== undefined) updateData.location = location;
+    if (website !== undefined) updateData.website = website;
+
+    if (avatar !== undefined) {
+      updateData.avatar = avatar;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).send({ error: 'No valid fields provided for update' });
+    }
+
     const updated = await User.findOneAndUpdate(
       { email },
-      { $set: req.body },
+      { $set: updateData },
       { new: true, upsert: false }
     );
     return res.status(200).send(updated);
