@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import {
   Bookmark,
   Home,
@@ -12,6 +12,7 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import TwitterLogo from "../TwitterLogo";
 import LogoutDialog from "../LogoutDialog";
+import { Avatar } from "../UI";
 
 const links = [
   ["Home", Home, "/"],
@@ -168,10 +169,11 @@ export default function AppLayout() {
               data-component="avatar"
               data-location="sidebar-bottom"
               data-avatar-url={user?.avatar}
-              key={user?.avatar}
               src={user?.avatar}
-              sx={{ width: 40, height: 40 }}
-            />
+              size={40}
+            >
+              {user?.displayName?.[0]}
+            </Avatar>
             <Box
               data-component="profile-info"
               sx={{ display: { xs: "none", md: "block" }, textAlign: "left", ml: 1 }}

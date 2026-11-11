@@ -7,10 +7,10 @@ import {
   Stack,
   TextField,
   Box,
-  Avatar,
 } from "@mui/material";
 import { Close, PhotoCamera } from "@mui/icons-material";
 import { Button } from "./UI";
+import { Avatar } from "./UI";
 import { useAuth } from "../Context/AuthContext";
 import { uploadSingleImage } from "../Apis/imageApi";
 export default function EditProfileDialog({ open, onClose }) {
@@ -113,10 +113,11 @@ export default function EditProfileDialog({ open, onClose }) {
                 data-component="avatar"
                 data-location="edit-profile-dialog"
                 data-avatar-url={data.avatar}
-                key={data.avatar}
                 src={data.avatar}
-                sx={{ width: 80, height: 80 }}
-              />
+                size={80}
+              >
+                {data.displayName?.[0]}
+              </Avatar>
               <IconButton
                 data-component="avatar-upload-button"
                 component="label"
