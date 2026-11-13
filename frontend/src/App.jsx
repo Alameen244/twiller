@@ -7,6 +7,8 @@ import FeedPage from "./Pages/FeedPage";
 import ProfilePage from "./Pages/ProfilePage";
 import PlaceholderPage from "./Pages/PlaceholderPage";
 import LoadingSpinner from "./Components/LoadingSpinner";
+import SettingsPage from "./Pages/SettingsPage";
+import SettingsAccountPage from "./Pages/SettingsAccountPage";
 function Shell() {
   const { user, isLoading } = useAuth();
   if (isLoading)
@@ -34,6 +36,8 @@ function Shell() {
           path="/bookmarks"
           element={<PlaceholderPage title="Bookmarks" />}
         />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/account" element={<SettingsAccountPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

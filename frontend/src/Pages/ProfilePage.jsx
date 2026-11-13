@@ -7,7 +7,7 @@ import {
   LocationOn,
   MoreHoriz,
 } from "@mui/icons-material";
-import client from "../Apis/client";
+import { axiosInstance } from "../helper/helper";
 import { endpoints } from "../Apis/EndPoints/endpoints";
 import { Avatar, Button } from "../Components/UI";
 import TweetCard from "../Components/TweetCard";
@@ -20,7 +20,7 @@ export default function ProfilePage() {
     [edit, setEdit] = useState(false);
 
   useEffect(() => {
-    client
+    axiosInstance
       .get(endpoints.posts)
       .then((r) => setTweets(r.data || []))
       .catch(console.error);

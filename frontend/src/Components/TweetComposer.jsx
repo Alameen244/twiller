@@ -6,7 +6,7 @@ import {
   LocationOnOutlined,
   Public,
 } from "@mui/icons-material";
-import client from "../Apis/client";
+import { axiosInstance } from "../helper/helper";
 import { endpoints } from "../Apis/EndPoints/endpoints";
 import { uploadSingleImage } from "../Apis/imageApi";
 import { Avatar, Button, Card } from "./UI";
@@ -33,7 +33,7 @@ export default function TweetComposer({ onTweetPosted }) {
     if (!content.trim()) return;
     setBusy(true);
     try {
-      const res = await client.post(endpoints.posts, {
+      const res = await axiosInstance.post(endpoints.posts, {
         author: user._id,
         content,
         image,

@@ -1,25 +1,41 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
-  signInWithRedirect,
   signOut,
 } from "firebase/auth";
+import {
+  getLoggedInUser,
+  registerUser,
+  updateUser,
+  confirmPhoneOtpApi,
+  sendPhoneOtpApi,
+} from "../Apis/authApi";
 import { auth } from "./firebase";
-import { getLoggedInUser, registerUser, updateUser } from "../Apis/authApi";
+
 const AuthContext = createContext(null);
 const fallbackAvatar =
   "https://images.pexels.com/photos/1139743/pexels-photo-1139743.jpeg?auto=compress&cs=tinysrgb&w=400";
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null),
     [isLoading, setIsLoading] = useState(true);
+
   const save = (data) => {
     setUser(data);
     localStorage.setItem("twitter-user", JSON.stringify(data));
   };
+
   useEffect(() => {
     if (!auth) {
       try {
@@ -32,9 +48,9 @@ export function AuthProvider({ children }) {
     }
     return onAuthStateChanged(auth, async (firebaseUser) => {
       try {
-        if (firebaseUser?.email)
+            if (firebaseUser?.email) {
           save(await getLoggedInUser(firebaseUser.email));
-        else {
+        } else {
           setUser(null);
           localStorage.removeItem("twitter-user");
         }
@@ -45,12 +61,32 @@ export function AuthProvider({ children }) {
       }
     });
   }, []);
+
   const requireAuth = () => {
     if (!auth)
       throw new Error(
         "Firebase is not configured. Add VITE_FIREBASE_* values to .env.",
       );
   };
+  const phoneRef = useRef(null);
+
+  const sendPhoneOtp = async (phoneNumber) => {
+    requireAuth();
+    if (!auth.currentUser) throw new Error("Please log in first.");
+    await sendPhoneOtpApi(phoneNumber);
+    phoneRef.current = phoneNumber;
+  };
+
+  const verifyPhoneOtp = async (code) => {
+    if (!phoneRef.current) throw new Error("Request an OTP first.");
+    save(await confirmPhoneOtpApi(phoneRef.current, code));
+    phoneRef.current = null;
+  };
+
+  const cancelPhoneFlow = () => {
+    phoneRef.current = null;
+  };
+
   const login = async (email, password) => {
     requireAuth();
     setIsLoading(true);
@@ -61,6 +97,7 @@ export function AuthProvider({ children }) {
       setIsLoading(false);
     }
   };
+
   const signup = async (email, password, username, displayName) => {
     requireAuth();
     setIsLoading(true);
@@ -78,11 +115,12 @@ export function AuthProvider({ children }) {
       setIsLoading(false);
     }
   };
+
   const googlesignin = async () => {
     requireAuth();
     setIsLoading(true);
     try {
-     const c = await signInWithPopup(auth, new GoogleAuthProvider());
+      const c = await signInWithPopup(auth, new GoogleAuthProvider());
       let profile;
       try {
         profile = await getLoggedInUser(c.user.email);
@@ -99,6 +137,7 @@ export function AuthProvider({ children }) {
       setIsLoading(false);
     }
   };
+
   const updateProfile = async (profile) => {
     if (!user) return;
     setIsLoading(true);
@@ -109,11 +148,13 @@ export function AuthProvider({ children }) {
       setIsLoading(false);
     }
   };
+
   const logout = async () => {
     setUser(null);
     localStorage.removeItem("twitter-user");
     if (auth) await signOut(auth);
   };
+
   const value = useMemo(
     () => ({
       user,
@@ -123,11 +164,16 @@ export function AuthProvider({ children }) {
       googlesignin,
       updateProfile,
       logout,
+      sendPhoneOtp,
+      verifyPhoneOtp,
+      cancelPhoneFlow,
     }),
     [user, isLoading],
   );
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+
 export const useAuth = () => {
   const value = useContext(AuthContext);
   if (!value) throw new Error("useAuth must be used within AuthProvider");

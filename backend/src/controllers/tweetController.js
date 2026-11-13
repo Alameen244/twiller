@@ -1,5 +1,7 @@
 import Tweet from '../models/tweet.js';
 
+const AUTHOR_FIELDS = '-firebaseUid -phoneNumber -isPhoneVerified';
+
 // Create new tweet
 export const createTweet = async (req, res) => {
   try {
@@ -20,7 +22,7 @@ export const createTweet = async (req, res) => {
 
     const tweet = new Tweet(tweetData);
     await tweet.save();
-    await tweet.populate('author');
+    await tweet.populate('author', AUTHOR_FIELDS);
     return res.status(201).send(tweet);
   } catch (error) {
     return res.status(400).send({ error: error.message });
@@ -30,7 +32,7 @@ export const createTweet = async (req, res) => {
 // Get all tweets
 export const getAllTweets = async (req, res) => {
   try {
-    const tweet = await Tweet.find().sort({ timestamp: -1 }).populate('author');
+    const tweet = await Tweet.find().sort({ timestamp: -1 }).populate('author', AUTHOR_FIELDS);
     return res.status(200).send(tweet);
   } catch (error) {
     return res.status(400).send({ error: error.message });
@@ -54,7 +56,7 @@ export const likeTweet = async (req, res) => {
     }
 
     await tweet.save();
-    await tweet.populate('author');
+    await tweet.populate('author', AUTHOR_FIELDS);
     return res.send(tweet);
   } catch (error) {
     return res.status(400).send({ error: error.message });
@@ -82,7 +84,7 @@ export const retweetTweet = async (req, res) => {
     }
 
     await tweet.save();
-    await tweet.populate('author');
+    await tweet.populate('author', AUTHOR_FIELDS);
     return res.send(tweet);
   } catch (error) {
     return res.status(400).send({ error: error.message });

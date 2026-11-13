@@ -8,7 +8,7 @@ import {
   ChatBubbleOutline,
   Share,
 } from "@mui/icons-material";
-import client from "../Apis/client";
+import { axiosInstance } from "../helper/helper";
 import { endpoints } from "../Apis/EndPoints/endpoints";
 import { Avatar, Card } from "./UI";
 import { useAuth } from "../Context/AuthContext";
@@ -19,7 +19,7 @@ export default function TweetCard({ tweet }) {
   const like = async () => {
     try {
       setItem(
-        (await client.post(endpoints.like(item._id), { userId: user?._id }))
+        (await axiosInstance.post(endpoints.like(item._id), { userId: user?._id }))
           .data,
       );
     } catch (e) {
@@ -29,7 +29,7 @@ export default function TweetCard({ tweet }) {
   const retweet = async () => {
     try {
       setItem(
-        (await client.post(endpoints.retweet(item._id), { userId: user?._id }))
+        (await axiosInstance.post(endpoints.retweet(item._id), { userId: user?._id }))
           .data,
       );
     } catch (e) {

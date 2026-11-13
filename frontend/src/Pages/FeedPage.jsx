@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
-import client from "../Apis/client";
+import { axiosInstance } from "../helper/helper";
 import { endpoints } from "../Apis/EndPoints/endpoints";
 import TweetComposer from "../Components/TweetComposer";
 import TweetCard from "../Components/TweetCard";
@@ -13,7 +13,7 @@ export default function FeedPage() {
     [loading, setLoading] = useState(true),
     [tab, setTab] = useState(0);
   useEffect(() => {
-    client
+    axiosInstance
       .get(endpoints.posts)
       .then((r) => setTweets(r.data || []))
       .catch(console.error)

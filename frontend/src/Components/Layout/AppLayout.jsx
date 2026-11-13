@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import { Box, Button, Stack, Typography } from "@mui/material";
 import {
   Bookmark,
@@ -7,11 +7,11 @@ import {
   Notifications,
   Person,
   Search,
+  Settings
 } from "@mui/icons-material";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import TwitterLogo from "../TwitterLogo";
-import LogoutDialog from "../LogoutDialog";
 import { Avatar } from "../UI";
 
 const links = [
@@ -21,6 +21,7 @@ const links = [
   ["Messages", Mail, "/messages"],
   ["Bookmarks", Bookmark, "/bookmarks"],
   ["Profile", Person, "/profile"],
+  ["Settings", Settings, "/settings"],
 ];
 
 function RightSidebar() {
@@ -47,10 +48,10 @@ function RightSidebar() {
 }
 
 export default function AppLayout() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [logoutOpen, setLogoutOpen] = useState(false);
+
 
   return (
     <Box
@@ -76,7 +77,7 @@ export default function AppLayout() {
         </Box>
 
         {links.map(([label, Icon, path]) => {
-          const isActive = location.pathname === path;
+             const isActive = path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
           return (
             <Button
               data-component="nav-link"
@@ -115,30 +116,7 @@ export default function AppLayout() {
           );
         })}
 
-        <Button
-          data-component="logout-button"
-          onClick={() => setLogoutOpen(true)}
-          sx={{
-            display: { xs: "none", md: "block" },
-            mt: 2,
-            bgcolor: "#1d9bf0",
-            color: "#fff",
-            fontWeight: 700,
-            py: 1.5,
-            borderRadius: 99,
-            textTransform: "none",
-            fontSize: 16,
-            transition: "all 0.2s ease-in-out",
-            transform: "scale(1)",
-            "&:hover": {
-              bgcolor: "#1a8cd8",
-              transform: "scale(1.05)",
-              boxShadow: "0 4px 12px rgba(29, 155, 240, 0.4)",
-            },
-          }}
-        >
-          Log out
-        </Button>
+
 
         <Box sx={{ mt: "auto" }} data-component="sidebar-profile-section">
           <Button
@@ -199,12 +177,6 @@ export default function AppLayout() {
       >
         <RightSidebar />
       </Box>
-      <LogoutDialog
-        data-component="logout-dialog"
-        open={logoutOpen}
-        onClose={() => setLogoutOpen(false)}
-        onConfirm={logout}
-      />
     </Box >
   );
 }
