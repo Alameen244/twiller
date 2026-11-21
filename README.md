@@ -4,7 +4,7 @@ twitter clone
 
 
 
-##^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Account Recovery (Forgot Password)
+##Account Recovery (Forgot Password)
 
 ### What it does
 - **Dedicated route and page:** Dedicated `/forgot-password` route and UI (`ForgotPasswordPage`) accessible to logged-out users from the sign-in screen.
@@ -70,7 +70,7 @@ Implemented in `frontend/src/helper/passwordGenerator.js` (`generateLettersPassw
 
 ---
 
-##^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Login Security and Login History
+##Login Security and Login History
 
 ### What it does
 - Every login records the **browser, operating system, device category (desktop / laptop / mobile) and IP address**, stored in the `loginhistories` collection.
@@ -115,7 +115,7 @@ Implemented in `frontend/src/helper/passwordGenerator.js` (`generateLettersPassw
 | `BYPASS_TIME_WINDOWS` | backend `.env` (local only) | Do not set on Render |
 | `NODE_ENV=production` | Render | Disables the bypass |
 
-##^^^^^^^^^^^^^^^^^^^^^^^^^ Subscription Plans (Razorpay)
+## Subscription Plans (Razorpay)
 
 Users get a tweet-posting limit based on their subscription plan. Plans are bought through **Razorpay (test mode)**, and a successful payment sends an invoice email with the plan details.
 
