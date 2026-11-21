@@ -14,7 +14,7 @@ export const endpoints = {
   loginSessionVerify: '/api/v1/users/login-session/verify',
   loginSessionResend: '/api/v1/users/login-session/resend-otp',
   loginHistory: '/api/v1/users/login-history',
-  
+
   //post
   like: (id) => `/api/v1/tweets/like/${id}`,
   retweet: (id) => `/api/v1/tweets/retweet/${id}`,
@@ -24,5 +24,10 @@ export const endpoints = {
   uploadSingleImage: '/api/v1/image/uploadSingle',
   uploadMultipleImages: '/api/v1/image/uploadMultiple',
 
+  //subscription
+  subscriptionPlans: '/api/v1/subscriptions/plans',
+  subscriptionMe: '/api/v1/subscriptions/me',
+  subscriptionOrder: '/api/v1/subscriptions/order',
+  subscriptionVerify: '/api/v1/subscriptions/verify',
 
 };

@@ -4,11 +4,12 @@ import {
   Dialog,
   DialogContent,
   IconButton,
+  InputAdornment,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { Close, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Button } from "./UI";
 import TwitterLogo from "./TwitterLogo";
 import { useNavigate } from "react-router-dom";
@@ -19,27 +20,54 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
   const navigate = useNavigate();
   const { login, signup, isLoading } = useAuth(),
     [mode, setMode] = useState(initialMode),
+    [showPassword, setShowPassword] = useState(false),
     [form, setForm] = useState({
       email: "",
       password: "",
       username: "",
       displayName: "",
     });
-  useEffect(() => setMode(initialMode), [initialMode, open]);
-  const f = (name, label, type = "text") => (
-    <TextField
-      label={label}
-      type={type}
-      value={form[name]}
-      onChange={(e) => setForm({ ...form, [name]: e.target.value })}
-      fullWidth
-      sx={{
-        "& label": { color: "#71767b" },
-        "& input": { color: "#fff" },
-        "& fieldset": { borderColor: "#536471" },
-      }}
-    />
-  );
+  useEffect(() => {
+    setMode(initialMode);
+    setShowPassword(false);
+  }, [initialMode, open]);
+
+  const f = (name, label, type = "text") => {
+    const isPassword = name === "password";
+    return (
+      <TextField
+        label={label}
+        type={isPassword ? (showPassword ? "text" : "password") : type}
+        value={form[name]}
+        onChange={(e) => setForm({ ...form, [name]: e.target.value })}
+        fullWidth
+        InputProps={
+          isPassword
+            ? {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword((s) => !s)}
+                      edge="end"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      sx={{ color: "#71767b" }}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }
+            : undefined
+        }
+        sx={{
+          "& label": { color: "#71767b" },
+          "& input": { color: "#fff" },
+          "& fieldset": { borderColor: "#536471" },
+          "& .MuiInputAdornment-root": { color: "#71767b" },
+        }}
+      />
+    );
+  };
   const submit = async (e) => {
     e.preventDefault();
     if (

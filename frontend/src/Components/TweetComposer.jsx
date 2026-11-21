@@ -10,9 +10,15 @@ import { axiosInstance } from "../helper/helper";
 import { endpoints } from "../Apis/EndPoints/endpoints";
 import { uploadSingleImage } from "../Apis/imageApi";
 import { Avatar, Button, Card } from "./UI";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useAuth } from "../Context/AuthContext";
+import UsageIndicator from "./UsageIndicator";
+
 export default function TweetComposer({ onTweetPosted }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const [usageRefresh, setUsageRefresh] = useState(0);
   const [content, setContent] = useState(""),
     [image, setImage] = useState(""),
     [imagePreview, setImagePreview] = useState(""),
@@ -22,7 +28,7 @@ export default function TweetComposer({ onTweetPosted }) {
   // Cleanup blob URLs on unmount
   useEffect(() => {
     return () => {
-      if (imagePreview && imagePreview.startsWith('blob:')) {
+      if (imagePreview && imagePreview.startsWith("blob:")) {
         URL.revokeObjectURL(imagePreview);
       }
     };
@@ -39,9 +45,10 @@ export default function TweetComposer({ onTweetPosted }) {
         image,
       });
       onTweetPosted(res.data);
+      setUsageRefresh((n) => n + 1); // update the usage ring
 
       // Cleanup blob URL after successful post
-      if (imagePreview && imagePreview.startsWith('blob:')) {
+      if (imagePreview && imagePreview.startsWith("blob:")) {
         URL.revokeObjectURL(imagePreview);
       }
 
@@ -50,6 +57,20 @@ export default function TweetComposer({ onTweetPosted }) {
       setImagePreview("");
     } catch (err) {
       console.error(err);
+      const data = err.response?.data;
+      if (data?.code === "TWEET_LIMIT_REACHED") {
+        // Clicking the toast opens the Premium modal.
+        toast.error(`${data.error} Click here to see plans.`, {
+          onClick: () => navigate("/plans"),
+          autoClose: 8000,
+        });
+      } else {
+        toast.error(
+          data?.error ||
+            data?.message ||
+            "Could not post your tweet. Please try again.",
+        );
+      }
     } finally {
       setBusy(false);
     }
@@ -121,7 +142,10 @@ export default function TweetComposer({ onTweetPosted }) {
             />
           )}
           {uploading && (
-            <Box sx={{ color: "#1d9bf0", fontSize: 14, my: 1 }} data-component="upload-status">
+            <Box
+              sx={{ color: "#1d9bf0", fontSize: 14, my: 1 }}
+              data-component="upload-status"
+            >
               Uploading image...
             </Box>
           )}
@@ -133,18 +157,29 @@ export default function TweetComposer({ onTweetPosted }) {
             sx={{ mt: 1 }}
           >
             <Stack direction="row">
-              <IconButton component="label" sx={{ color: "#1d9bf0" }} data-component="image-upload-button">
+              <IconButton
+                component="label"
+                sx={{ color: "#1d9bf0" }}
+                data-component="image-upload-button"
+              >
                 <ImageOutlined />
                 <input hidden type="file" accept="image/*" onChange={upload} />
               </IconButton>
-              <IconButton sx={{ color: "#1d9bf0" }} data-component="emoji-button">
+              <IconButton
+                sx={{ color: "#1d9bf0" }}
+                data-component="emoji-button"
+              >
                 <InsertEmoticonOutlined />
               </IconButton>
-              <IconButton sx={{ color: "#1d9bf0" }} data-component="location-button">
+              <IconButton
+                sx={{ color: "#1d9bf0" }}
+                data-component="location-button"
+              >
                 <LocationOnOutlined />
               </IconButton>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={2}>
+              <UsageIndicator refreshKey={usageRefresh} />
               <Stack
                 data-component="reply-settings"
                 direction="row"

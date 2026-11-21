@@ -4,7 +4,7 @@ import { verifyFirebaseToken } from '../middlewares/firebaseAuth.middleware.js';
 
 const router = express.Router();
 
-router.post('/post', createTweet);
+router.post('/post', verifyFirebaseToken, createTweet);
 router.get('/post', getAllTweets);
 router.post('/like/:tweetid', likeTweet);
 router.post('/retweet/:tweetid', retweetTweet);

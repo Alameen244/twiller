@@ -4,7 +4,7 @@ twitter clone
 
 
 
-## Account Recovery (Forgot Password)
+##^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Account Recovery (Forgot Password)
 
 ### What it does
 - **Dedicated route and page:** Dedicated `/forgot-password` route and UI (`ForgotPasswordPage`) accessible to logged-out users from the sign-in screen.
@@ -21,12 +21,12 @@ twitter clone
 
 ### How it works
 1. **Initiation:** The user navigates to `/forgot-password` and selects either **Email** or **Phone**.
-2. **Account resolution:** 
+2. **Account resolution:**
    - Backend validates input format (RFC email format or E.164 phone format).
    - Case-insensitive email lookup (`en` locale collation) or verified phone lookup (`isPhoneVerified: true`).
    - Verifies whether the account has a password provider in Firebase; Google-only OAuth accounts are gracefully rejected with a message to sign in using Google.
 3. **Daily limit check:** Checks MongoDB `passwordresets` collection for an existing record with `{ user, dayKey }` where `dayKey` is today's date in IST (`YYYY-MM-DD`). If found, returns HTTP 429 with code `DAILY_LIMIT`.
-4. **OTP dispatch:** 
+4. **OTP dispatch:**
    - Email: Creates a salted/HMAC-hashed OTP entry in `EmailOtp` and sends the email via Brevo.
    - Phone: Calls Twilio Verify API to dispatch SMS.
 5. **Reset & atomic slot claim:**
@@ -70,7 +70,7 @@ Implemented in `frontend/src/helper/passwordGenerator.js` (`generateLettersPassw
 
 ---
 
-## Login Security and Login History
+##^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Login Security and Login History
 
 ### What it does
 - Every login records the **browser, operating system, device category (desktop / laptop / mobile) and IP address**, stored in the `loginhistories` collection.
@@ -114,3 +114,74 @@ Implemented in `frontend/src/helper/passwordGenerator.js` (`generateLettersPassw
 | `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME` | backend | Email OTP |
 | `BYPASS_TIME_WINDOWS` | backend `.env` (local only) | Do not set on Render |
 | `NODE_ENV=production` | Render | Disables the bypass |
+
+##^^^^^^^^^^^^^^^^^^^^^^^^^ Subscription Plans (Razorpay)
+
+Users get a tweet-posting limit based on their subscription plan. Plans are bought through **Razorpay (test mode)**, and a successful payment sends an invoice email with the plan details.
+
+### Plans
+
+| Plan | Price | Tweet limit |
+|------|-------|-------------|
+| Free | ₹0 | 1 tweet (in total) |
+| Bronze | ₹100 / month | 3 tweets |
+| Silver | ₹300 / month | 5 tweets |
+| Gold | ₹1000 / month | Unlimited |
+
+Paid plans last 30 days. After that the account falls back to the Free plan.
+
+### Payment time restriction
+Payments are only allowed between **10:00 AM and 11:00 AM IST**. Any attempt outside this window is blocked by the backend (`PAYMENT_WINDOW_CLOSED`, HTTP 403) when the order is created, and the Premium page shows the payments as closed. The time is always calculated in IST, whatever the server's time zone.
+
+The verification step is deliberately not blocked by the window, so a user who paid at 10:59 still gets the plan they paid for.
+
+> **To test on the deployed site, make the payment between 10:00 AM and 11:00 AM IST.**
+> Razorpay is in test mode, so no real money moves. In the payment popup, choose UPI and enter `success@razorpay` to simulate a successful payment (or `failure@razorpay` for a failed one). Razorpay's documented test cards also work, but real cards do not.
+
+### How it works
+1. The user opens **Premium** (Settings, or the "Subscribe" button) and picks a plan.
+2. The frontend asks the backend to create an order (`POST /api/v1/subscriptions/order`). The backend checks the time window, reads the price from its own plan list (the frontend never sends a price) and creates a Razorpay order.
+3. The Razorpay Checkout popup opens. The user pays.
+4. The frontend sends the three values Razorpay returns to `POST /api/v1/subscriptions/verify`.
+5. The backend recomputes the signature (HMAC-SHA256 of `order_id|payment_id` with the key secret) and compares it with the one received. Only a matching signature activates the plan.
+6. The plan is activated for 30 days with a fresh tweet counter, and an invoice email is sent.
+
+### Tweet limit
+- The limit is enforced in the backend when a tweet is created, for the logged-in user taken from the Firebase token. The `author` sent by the client is ignored.
+- A per-user **counter** is increased atomically (only if it is below the limit), so deleting tweets cannot give quota back and two quick requests cannot both pass.
+- If saving the tweet fails, the reserved slot is given back.
+- Users who already had more tweets than the Free limit keep their tweets but cannot post more until they upgrade.
+- When the limit is reached the API returns `TWEET_LIMIT_REACHED` (HTTP 403) and the composer shows a toast that links to the plans.
+- The composer has a usage ring that opens a small popup with the plan, tweets used and tweets left.
+
+### Reliability and security
+- The payment is verified with a signature check on the server (constant-time comparison).
+- Verification is idempotent: a double click or retry never activates the plan twice (one atomic `created` to `paid` update per order).
+- The order must belong to the logged-in user.
+- If the invoice email fails, the payment and plan are kept (`invoiceEmailSent` stays `false` in the payment record).
+- The frontend retries verification a few times on network errors, in case the free-tier server is waking up.
+
+### Invoice email
+Sent through the Brevo API after a verified payment. It contains the invoice number, date (IST), payment ID, order ID, plan, tweet limit, validity date and the total paid.
+
+### API
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/v1/subscriptions/plans` | No | Plans and whether payments are open now |
+| GET | `/api/v1/subscriptions/me` | Yes | Current plan and tweet usage |
+| POST | `/api/v1/subscriptions/order` | Yes | Create a Razorpay order (time window enforced) |
+| POST | `/api/v1/subscriptions/verify` | Yes | Verify the payment and activate the plan |
+
+### Environment variables
+Backend (`backend/.env`, and on Render):
+```
+RAZORPAY_KEY_ID=rzp_test_xxxxxxxx
+RAZORPAY_KEY_SECRET=xxxxxxxx
+```
+The frontend needs no new variable: the backend sends the public key ID with each order.
+
+For local testing only, `BYPASS_TIME_WINDOWS=true` skips the time windows. It is ignored when `NODE_ENV=production`.
+
+### Main files
+- Backend: `constants/plans.js`, `models/subscriptionModel.js`, `models/paymentModel.js`, `services/subscriptionService.js`, `controllers/subscriptionController.js`, `routes/subscriptionRoutes.js`, `config/razorpay.js`, `templates/invoiceEmailTemplate.js`, `services/emailService.js`
+- Frontend: `Pages/PlansPage.jsx` and its `Plans/` components, `helper/razorpayCheckout.js`, `Apis/subscriptionApi.js`, `Components/UsageIndicator.jsx`, `Components/TweetComposer.jsx`

@@ -12,6 +12,7 @@ import SettingsAccountPage from "./Pages/SettingsAccountPage";
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import LoginOtpVerify from "./Components/LoginOtp/LoginOtpVerify";
 import SettingsLoginHistoryPage from "./Pages/SettingsLoginHistoryPage";
+import PlansPage from "./Pages/PlansPage";
 
 function Shell() {
   const { user, isAuthReady, pendingLogin } = useAuth();
@@ -47,6 +48,7 @@ function Shell() {
           path="/bookmarks"
           element={<PlaceholderPage title="Bookmarks" />}
         />
+          <Route path="/plans" element={<PlansPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/login-history" element={<SettingsLoginHistoryPage />} />
         <Route path="/settings/account" element={<SettingsAccountPage />} />

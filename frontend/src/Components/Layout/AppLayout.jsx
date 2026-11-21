@@ -1,4 +1,3 @@
-
 import { Box, Button, Stack, Typography } from "@mui/material";
 import {
   Bookmark,
@@ -7,7 +6,7 @@ import {
   Notifications,
   Person,
   Search,
-  Settings
+  Settings,
 } from "@mui/icons-material";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
@@ -26,6 +25,7 @@ const links = [
 ];
 
 function RightSidebar() {
+  const navigate = useNavigate();
   return (
     <Stack spacing={2}>
       <Box
@@ -40,7 +40,11 @@ function RightSidebar() {
         <Typography variant="body2" sx={{ my: 1 }}>
           Subscribe to unlock new features and earn a share of revenue.
         </Typography>
-        <Button variant="contained" sx={{ borderRadius: 99, textTransform: "none", fontWeight: 700 }}>
+        <Button
+          variant="contained"
+          onClick={() => navigate("/plans")}
+          sx={{ borderRadius: 99, textTransform: "none", fontWeight: 700 }}
+        >
           Subscribe
         </Button>
       </Box>

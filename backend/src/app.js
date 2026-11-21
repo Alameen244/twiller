@@ -3,6 +3,7 @@ import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 import tweetRoutes from './routes/tweetRoutes.js';
 import imageRoutes from './routes/imageRoutes.js';
+import subscriptionRoutes from './routes/subscriptionRoutes.js';
 
 const app = express();
 
@@ -34,5 +35,6 @@ app.get('/', (req, res) => {
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/tweets', tweetRoutes);
 app.use('/api/v1/image', imageRoutes);
+app.use('/api/v1/subscriptions', subscriptionRoutes);
 
 export default app;

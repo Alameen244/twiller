@@ -1,5 +1,6 @@
 import 'dotenv/config';
-import { OTP_PURPOSES } from '../constants/otpPurposes.js';
+import { renderOtpEmail, renderPasswordResetOtpEmail } from '../templates/otpEmailTemplate.js';
+import { renderInvoiceEmail } from '../templates/invoiceEmailTemplate.js';
 
 const { BREVO_API_KEY, BREVO_SENDER_EMAIL, BREVO_SENDER_NAME } = process.env;
 if (!BREVO_API_KEY || !BREVO_SENDER_EMAIL) {
@@ -34,40 +35,48 @@ const sendEmail = async ({ to, subject, html, text }) => {
   }
 };
 
-export const sendPasswordResetOtpEmail = ({ to, otp, validMinutes }) =>
-  sendEmail({
-    to,
-    subject: 'Your Twiller password reset code',
-    text: `Your Twiller password reset code is ${otp}. It is valid for ${validMinutes} minutes. If you did not request this, you can ignore this email.`,
-    html: `<p>Your Twiller password reset code is:</p>
-<p style="font-size:28px;font-weight:bold;letter-spacing:4px">${otp}</p>
-<p>It is valid for ${validMinutes} minutes. If you did not request this, you can ignore this email.</p>`,
-  });
-// Subject and wording for every OTP purpose except password reset (it keeps its own function above).
-const OTP_EMAIL_CONTENT = {
-  [OTP_PURPOSES.LOGIN]: {
-    subject: 'Your Twiller login verification code',
-    reason: 'login verification',
-  },
-  [OTP_PURPOSES.AUDIO_UPLOAD]: {
-    subject: 'Your Twiller audio upload verification code',
-    reason: 'audio upload verification',
-  },
-  [OTP_PURPOSES.LANGUAGE_CHANGE]: {
-    subject: 'Your Twiller language change verification code',
-    reason: 'language change verification',
-  },
+/**
+ * Sends a password reset OTP email using the Twitter-styled template.
+ */
+export const sendPasswordResetOtpEmail = ({ to, otp, validMinutes }) => {
+  const { subject, html, text } = renderPasswordResetOtpEmail({ otp, validMinutes });
+  return sendEmail({ to, subject, html, text });
 };
 
+/**
+ * Sends an OTP verification email for login, audio upload, or language change.
+ */
 export const sendOtpEmail = ({ to, otp, validMinutes, purpose }) => {
-  const content = OTP_EMAIL_CONTENT[purpose];
-  if (!content) throw new Error('UNKNOWN_OTP_PURPOSE');
-  return sendEmail({
-    to,
-    subject: content.subject,
-    text: `Your Twiller ${content.reason} code is ${otp}. It is valid for ${validMinutes} minutes. If you did not request this, you can ignore this email.`,
-    html: `<p>Your Twiller ${content.reason} code is:</p>
-<p style="font-size:28px;font-weight:bold;letter-spacing:4px">${otp}</p>
-<p>It is valid for ${validMinutes} minutes. If you did not request this, you can ignore this email.</p>`,
+  const { subject, html, text } = renderOtpEmail({ otp, validMinutes, purpose });
+  return sendEmail({ to, subject, html, text });
+};
+
+/**
+ * Sends a subscription invoice email after successful payment verification.
+ */
+export const sendInvoiceEmail = ({
+  to,
+  name,
+  invoiceNumber,
+  planName,
+  amountInr,
+  tweetLimit, // null = unlimited
+  paymentId,
+  orderId,
+  paidAt,
+  expiresAt,
+}) => {
+  const { subject, html, text } = renderInvoiceEmail({
+    name,
+    invoiceNumber,
+    planName,
+    amountInr,
+    tweetLimit,
+    paymentId,
+    orderId,
+    paidAt,
+    expiresAt,
   });
+
+  return sendEmail({ to, subject, html, text });
 };

@@ -1,20 +1,45 @@
 import Tweet from '../models/tweetModel.js';
 import User from '../models/userModel.js';
+import { reserveTweetSlot, releaseTweetSlot } from '../services/subscriptionService.js';
 
 const AUTHOR_FIELDS = '-firebaseUid -phoneNumber -isPhoneVerified';
 
 // Create new tweet
+// Create new tweet (limited by the user's subscription plan)
 export const createTweet = async (req, res) => {
   try {
-    const { author, content, image } = req.body;
+    const { content, image } = req.body;
 
-    if (!author || !content) {
-      return res.status(400).send({ error: 'Author and content are required' });
+    if (!content) {
+      return res.status(400).send({ error: 'Content is required' });
+    }
+
+    // The author is the logged-in user (from the Firebase token), never a value
+    // from the request body, so nobody can post as, or use up the quota of,
+    // another user.
+    const requestingUser = await User.findOne({ email: req.firebaseUser.email });
+    if (!requestingUser) {
+      return res.status(401).send({ error: 'User not found' });
+    }
+
+    // Reserve one slot of the plan limit BEFORE saving (atomic counter).
+    // For a user's first visit the counter starts from their existing tweets.
+    const slot = await reserveTweetSlot(requestingUser._id, () =>
+      Tweet.countDocuments({ author: requestingUser._id })
+    );
+
+    if (!slot.allowed) {
+      return res.status(403).send({
+        error: `You have reached the ${slot.plan.name} plan limit of ${slot.plan.tweetLimit} tweet(s). Upgrade your plan to post more.`,
+        code: 'TWEET_LIMIT_REACHED',
+        plan: slot.plan.id,
+        limit: slot.plan.tweetLimit,
+      });
     }
 
     const tweetData = {
-      author,
-      content
+      author: requestingUser._id,
+      content,
     };
 
     if (image !== undefined) {
@@ -22,7 +47,14 @@ export const createTweet = async (req, res) => {
     }
 
     const tweet = new Tweet(tweetData);
-    await tweet.save();
+    try {
+      await tweet.save();
+    } catch (saveError) {
+      // The tweet was not saved, so give the reserved slot back.
+      await releaseTweetSlot(requestingUser._id);
+      throw saveError;
+    }
+
     await tweet.populate('author', AUTHOR_FIELDS);
     return res.status(201).send(tweet);
   } catch (error) {
