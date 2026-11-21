@@ -4,7 +4,7 @@ twitter clone
 
 
 
-##Account Recovery (Forgot Password)
+## Account Recovery (Forgot Password)
 
 ### What it does
 - **Dedicated route and page:** Dedicated `/forgot-password` route and UI (`ForgotPasswordPage`) accessible to logged-out users from the sign-in screen.
@@ -70,7 +70,7 @@ Implemented in `frontend/src/helper/passwordGenerator.js` (`generateLettersPassw
 
 ---
 
-##Login Security and Login History
+## Login Security and Login History
 
 ### What it does
 - Every login records the **browser, operating system, device category (desktop / laptop / mobile) and IP address**, stored in the `loginhistories` collection.
