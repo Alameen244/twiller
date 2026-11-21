@@ -6,6 +6,7 @@ import imageRoutes from './routes/imageRoutes.js';
 
 const app = express();
 
+app.set('trust proxy', 1); // Render sits behind a proxy; needed so the rate limiter sees real client IPs
 // Middlewares
 
 app.use(cors({

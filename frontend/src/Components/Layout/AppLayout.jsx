@@ -13,6 +13,7 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import TwitterLogo from "../TwitterLogo";
 import { Avatar } from "../UI";
+import WhoToFollow from "../WhoToFollow";
 
 const links = [
   ["Home", Home, "/"],
@@ -43,6 +44,7 @@ function RightSidebar() {
           Subscribe
         </Button>
       </Box>
+      <WhoToFollow />
     </Stack>
   );
 }

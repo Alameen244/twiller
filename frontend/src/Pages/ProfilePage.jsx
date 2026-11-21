@@ -143,7 +143,13 @@ export default function ProfilePage() {
         ))}
       </Tabs>
       {tab === 0 ? (
-        mine.map((t) => <TweetCard key={t._id} tweet={t} />)
+        mine.map((t) => (
+          <TweetCard
+            key={t._id}
+            tweet={t}
+            onDelete={(id) => setTweets((prev) => prev.filter((tw) => tw._id !== id))}
+          />
+        ))
       ) : (
         <Box textAlign="center" py={8} color="text.secondary">
           <Typography variant="h6" fontWeight={700}>

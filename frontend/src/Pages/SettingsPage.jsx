@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, List } from "@mui/material";
-import { Logout, PersonOutline } from "@mui/icons-material";
+import { History, Logout, PersonOutline } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import LogoutDialog from "../Components/LogoutDialog";
@@ -21,6 +21,12 @@ export default function SettingsPage() {
           label="Your account"
           description="See information about your account."
           onClick={() => navigate("/settings/account")}
+        />
+        <SettingsMenuItem
+          icon={History}
+          label="Login history"
+          description="See where and when your account was accessed."
+          onClick={() => navigate("/settings/login-history")}
         />
         <SettingsMenuItem
           icon={Logout}

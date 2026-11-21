@@ -6,10 +6,19 @@ export const endpoints = {
   phoneSendOtp: '/api/v1/users/phone/send-otp',
   phoneVerifyOtp: '/api/v1/users/phone/verify-otp',
   userUpdate: (email) => `/api/v1/users/userupdate/${email}`,
+  forgotPasswordRequest: '/api/v1/users/forgot-password/request',
+  forgotPasswordReset: '/api/v1/users/forgot-password/reset',
 
+    //login session
+  loginSession: '/api/v1/users/login-session',
+  loginSessionVerify: '/api/v1/users/login-session/verify',
+  loginSessionResend: '/api/v1/users/login-session/resend-otp',
+  loginHistory: '/api/v1/users/login-history',
+  
   //post
   like: (id) => `/api/v1/tweets/like/${id}`,
   retweet: (id) => `/api/v1/tweets/retweet/${id}`,
+  deletePost: (id) => `/api/v1/tweets/${id}`,
 
   //image
   uploadSingleImage: '/api/v1/image/uploadSingle',

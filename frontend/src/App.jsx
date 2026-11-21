@@ -9,15 +9,26 @@ import PlaceholderPage from "./Pages/PlaceholderPage";
 import LoadingSpinner from "./Components/LoadingSpinner";
 import SettingsPage from "./Pages/SettingsPage";
 import SettingsAccountPage from "./Pages/SettingsAccountPage";
+import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
+import LoginOtpVerify from "./Components/LoginOtp/LoginOtpVerify";
+import SettingsLoginHistoryPage from "./Pages/SettingsLoginHistoryPage";
+
 function Shell() {
-  const { user, isLoading } = useAuth();
-  if (isLoading)
+  const { user, isAuthReady, pendingLogin } = useAuth();
+  if (!isAuthReady)
     return (
       <Box minHeight="100vh" display="grid" sx={{ placeItems: "center" }}>
         <LoadingSpinner size={42} />
       </Box>
     );
-  if (!user) return <LandingPage />;
+    if (pendingLogin) return <LoginOtpVerify />;
+    if (!user)
+    return (
+      <Routes>
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="*" element={<LandingPage />} />
+      </Routes>
+    );
   return (
     <Routes>
       <Route element={<AppLayout />}>
@@ -37,6 +48,7 @@ function Shell() {
           element={<PlaceholderPage title="Bookmarks" />}
         />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/login-history" element={<SettingsLoginHistoryPage />} />
         <Route path="/settings/account" element={<SettingsAccountPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -69,7 +69,13 @@ export default function FeedPage() {
           </Typography>
         </Box>
       ) : (
-        displayedTweets.map((tweet) => <TweetCard key={tweet._id} tweet={tweet} />)
+        displayedTweets.map((tweet) => (
+          <TweetCard
+            key={tweet._id}
+            tweet={tweet}
+            onDelete={(id) => setTweets((prev) => prev.filter((t) => t._id !== id))}
+          />
+        ))
       )}
     </>
   );

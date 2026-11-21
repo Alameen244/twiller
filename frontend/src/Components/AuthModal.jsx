@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-  Alert,
+  CircularProgress,
   Dialog,
   DialogContent,
   IconButton,
@@ -11,12 +11,14 @@ import {
 import { Close } from "@mui/icons-material";
 import { Button } from "./UI";
 import TwitterLogo from "./TwitterLogo";
-import LoadingSpinner from "./LoadingSpinner";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
+import { toast } from 'react-toastify';
+
 export default function AuthModal({ open, onClose, initialMode = "login" }) {
+  const navigate = useNavigate();
   const { login, signup, isLoading } = useAuth(),
     [mode, setMode] = useState(initialMode),
-    [error, setError] = useState(""),
     [form, setForm] = useState({
       email: "",
       password: "",
@@ -44,12 +46,15 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
       !form.email ||
       !form.password ||
       (mode === "signup" && (!form.username || !form.displayName))
-    )
-      return setError("Please complete all required fields.");
-    if (form.password.length < 6)
-      return setError("Password must be at least 6 characters.");
+    ) {
+      toast.warn("Please complete all required fields.");
+      return;
+    }
+    if (form.password.length < 6) {
+      toast.warn("Password must be at least 6 characters.");
+      return;
+    }
     try {
-      setError("");
       mode === "login"
         ? await login(form.email, form.password)
         : await signup(
@@ -59,8 +64,8 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
             form.displayName,
           );
       onClose();
-    } catch (err) {
-      setError(err.message || "Authentication failed. Please try again.");
+    } catch {
+      // Toast is already shown by AuthContext — nothing else needed here.
     }
   };
   return (
@@ -90,7 +95,6 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
             {mode === "login" ? "Sign in to X" : "Create your account"}
           </Typography>
           <Stack component="form" onSubmit={submit} spacing={2} width="100%">
-            {error && <Alert severity="error">{error}</Alert>}
             {mode === "signup" && (
               <>
                 {f("displayName", "Display name")}
@@ -99,6 +103,18 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
             )}
             {f("email", "Email", "email")}
             {f("password", "Password", "password")}
+             {mode === "login" && (
+              <Button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  navigate("/forgot-password");
+                }}
+                sx={{ color: "#1d9bf0", alignSelf: "flex-end", fontWeight: 700 }}
+              >
+                Forgot password?
+              </Button>
+            )}
             <Button
               type="submit"
               disabled={isLoading}
@@ -107,10 +123,18 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
                 color: "#fff",
                 fontWeight: 700,
                 py: 1.25,
+                "&:disabled": {
+                  bgcolor: "rgba(29, 155, 240, 0.5)",
+                  color: "#fff",
+                  cursor: "not-allowed",
+                },
               }}
             >
               {isLoading ? (
-                <LoadingSpinner size={20} />
+                <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
+                  <CircularProgress size={18} sx={{ color: "#fff" }} />
+                  <span>{mode === "login" ? "Signing in..." : "Creating account..."}</span>
+                </Stack>
               ) : mode === "login" ? (
                 "Sign in"
               ) : (
@@ -125,7 +149,6 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
             <Button
               onClick={() => {
                 setMode(mode === "login" ? "signup" : "login");
-                setError("");
               }}
               sx={{ color: "#1d9bf0", fontWeight: 700 }}
             >
