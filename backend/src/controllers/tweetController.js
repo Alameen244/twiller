@@ -1,6 +1,7 @@
 import Tweet from '../models/tweetModel.js';
 import User from '../models/userModel.js';
 import { reserveTweetSlot, releaseTweetSlot } from '../services/subscriptionService.js';
+import { deleteAudioFromCloudinary } from '../services/audioStorageService.js';
 
 const AUTHOR_FIELDS = '-firebaseUid -phoneNumber -isPhoneVerified';
 
@@ -142,6 +143,9 @@ export const deleteTweet = async (req, res) => {
     }
 
     await Tweet.findByIdAndDelete(req.params.tweetid);
+    if (tweet.audio?.publicId) {
+      await deleteAudioFromCloudinary(tweet.audio.publicId);
+    }
     return res.status(200).json({ message: 'Post deleted successfully' });
   } catch (error) {
     return res.status(400).json({ error: error.message });

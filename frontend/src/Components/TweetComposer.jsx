@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
-import { Box, IconButton, Stack, TextField } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import {
   ImageOutlined,
   InsertEmoticonOutlined,
   LocationOnOutlined,
+  MicNone,
   Public,
 } from "@mui/icons-material";
 import { axiosInstance } from "../helper/helper";
@@ -14,11 +23,15 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../Context/AuthContext";
 import UsageIndicator from "./UsageIndicator";
+import AudioTweetDialog from "./Audio/AudioTweetDialog";
+
+const MAX_TWEET_LENGTH = 300;
 
 export default function TweetComposer({ onTweetPosted }) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [usageRefresh, setUsageRefresh] = useState(0);
+  const [audioOpen, setAudioOpen] = useState(false);
   const [content, setContent] = useState(""),
     [image, setImage] = useState(""),
     [imagePreview, setImagePreview] = useState(""),
@@ -34,9 +47,21 @@ export default function TweetComposer({ onTweetPosted }) {
     };
   }, [imagePreview]);
   if (!user) return null;
+
+  const length = content.length;
+  const isOverLimit = length > MAX_TWEET_LENGTH;
+  const isNearLimit = length >= 280;
+
+  let charColor = "#1d9bf0";
+  if (isOverLimit) {
+    charColor = "#f4212e";
+  } else if (isNearLimit) {
+    charColor = "#ffd400";
+  }
+
   const post = async (e) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!content.trim() || isOverLimit) return;
     setBusy(true);
     try {
       const res = await axiosInstance.post(endpoints.posts, {
@@ -94,6 +119,13 @@ export default function TweetComposer({ onTweetPosted }) {
       setUploading(false);
     }
   };
+
+  // An audio tweet was posted from the dialog: show it in the feed and refresh the usage ring.
+  const handleAudioPosted = (tweet) => {
+    onTweetPosted(tweet);
+    setUsageRefresh((n) => n + 1);
+  };
+
   return (
     <Card
       data-component="tweet-composer"
@@ -130,7 +162,6 @@ export default function TweetComposer({ onTweetPosted }) {
                 },
               },
             }}
-            inputProps={{ maxLength: 200 }}
           />
           {imagePreview && (
             <Box
@@ -149,6 +180,7 @@ export default function TweetComposer({ onTweetPosted }) {
               Uploading image...
             </Box>
           )}
+
           <Stack
             data-component="composer-actions"
             direction="row"
@@ -177,28 +209,129 @@ export default function TweetComposer({ onTweetPosted }) {
               >
                 <LocationOnOutlined />
               </IconButton>
-            </Stack>
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <UsageIndicator refreshKey={usageRefresh} />
-              <Stack
-                data-component="reply-settings"
-                direction="row"
-                sx={{ color: "#1d9bf0", display: { xs: "none", sm: "flex" } }}
+              <IconButton
+                sx={{ color: "#1d9bf0" }}
+                onClick={() => setAudioOpen(true)}
+                aria-label="Audio tweet"
+                data-component="audio-tweet-button"
               >
-                <Public fontSize="small" />
-                <Box sx={{ fontSize: 13, fontWeight: 700, ml: 0.5 }}>
-                  Everyone can reply
-                </Box>
-              </Stack>
+                <MicNone />
+              </IconButton>
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={1.25}>
+              <Tooltip title="Everyone can reply">
+                <Stack
+                  data-component="reply-settings"
+                  direction="row"
+                  sx={{
+                    color: "#1d9bf0",
+                    display: { xs: "none", sm: "flex" },
+                    alignItems: "center",
+                    cursor: "pointer",
+                    py: 0.5,
+                    px: length > 0 ? 0.5 : 1,
+                    borderRadius: 99,
+                    transition: "all 0.2s ease",
+                    whiteSpace: "nowrap",
+                    "&:hover": { bgcolor: "rgba(29, 155, 240, 0.1)" },
+                  }}
+                >
+                  <Public fontSize="small" />
+                  {length === 0 && (
+                    <Box sx={{ fontSize: 13, fontWeight: 700, ml: 0.5 }}>
+                      Everyone can reply
+                    </Box>
+                  )}
+                </Stack>
+              </Tooltip>
+
+              {length > 0 && (
+                <>
+                  <Box
+                    sx={{
+                      position: "relative",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: 28,
+                      height: 28,
+                    }}
+                  >
+                    <CircularProgress
+                      variant="determinate"
+                      value={100}
+                      size={28}
+                      thickness={3}
+                      sx={{ color: "#333639" }}
+                    />
+                    <CircularProgress
+                      variant="determinate"
+                      value={Math.min(length / MAX_TWEET_LENGTH, 1) * 100}
+                      size={28}
+                      thickness={3}
+                      sx={{
+                        color: charColor,
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                        "& .MuiCircularProgress-circle": {
+                          strokeLinecap: "round",
+                        },
+                      }}
+                    />
+                    {isNearLimit && (
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          inset: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: 10.5,
+                            fontWeight: 700,
+                            color: charColor,
+                            lineHeight: 1,
+                            letterSpacing: "-0.5px",
+                          }}
+                        >
+                          {MAX_TWEET_LENGTH - length}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+
+                  <Box
+                    sx={{
+                      width: "1px",
+                      height: 20,
+                      bgcolor: "#2f3336",
+                    }}
+                  />
+                </>
+              )}
+
+              <UsageIndicator refreshKey={usageRefresh} />
+
               <Button
                 data-component="post-button"
                 type="submit"
-                disabled={busy || uploading || !content.trim()}
+                disabled={
+                  busy || uploading || !content.trim() || isOverLimit
+                }
                 sx={{
                   bgcolor: "#1d9bf0",
                   color: "#fff",
                   fontWeight: 700,
                   px: 2.5,
+                  borderRadius: 99,
+                  "&.Mui-disabled": {
+                    bgcolor: "rgba(29, 155, 240, 0.5)",
+                    color: "rgba(255, 255, 255, 0.5)",
+                  },
                 }}
               >
                 {uploading ? "Uploading..." : "Post"}
@@ -207,6 +340,12 @@ export default function TweetComposer({ onTweetPosted }) {
           </Stack>
         </Box>
       </Stack>
+
+      <AudioTweetDialog
+        open={audioOpen}
+        onClose={() => setAudioOpen(false)}
+        onPosted={handleAudioPosted}
+      />
     </Card>
   );
 }

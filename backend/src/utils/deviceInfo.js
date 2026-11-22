@@ -17,10 +17,19 @@ const getBrowserFamily = (name = '', isBrave = false, ua = '') => {
 };
 
 // Tablets count as mobile, so they get the same login time window.
-const getDeviceType = (uaDeviceType, screenWidth) => {
-  if (uaDeviceType === 'mobile' || uaDeviceType === 'tablet') return 'mobile';
+const getDeviceType = (uaDeviceType, screenWidth, clientDeviceType, ua = '') => {
+  if (uaDeviceType === 'mobile' || uaDeviceType === 'tablet' || /mobile|android|iphone|ipad|ipod/i.test(ua)) {
+    return 'mobile';
+  }
+
+  // If the client provided a valid non-mobile device hint ('desktop' or 'laptop'), use it
+  if (clientDeviceType === 'desktop' || clientDeviceType === 'laptop') {
+    return clientDeviceType;
+  }
+
   const width = Number(screenWidth);
-  return Number.isFinite(width) && width > 0 && width <= LAPTOP_MAX_SCREEN_WIDTH
+  // Default non-mobile devices with width > 1440 (e.g. 1080p scaled to 1536 CSS px or 1920 physical) to desktop
+  return Number.isFinite(width) && width > 0 && width <= 1440
     ? 'laptop'
     : 'desktop';
 };
@@ -30,7 +39,7 @@ export const getClientIp = (req) => {
   return ip.startsWith('::ffff:') ? ip.slice(7) : ip; // IPv4 written in IPv6 form
 };
 
-export const getDeviceInfo = (req, screenWidth, isBrave = false) => {
+export const getDeviceInfo = (req, screenWidth, isBrave = false, clientDeviceType = null) => {
   const ua = req.headers['user-agent'] || '';
   const { browser, os, device } = new UAParser(ua).getResult();
   return {
@@ -41,7 +50,7 @@ export const getDeviceInfo = (req, screenWidth, isBrave = false) => {
     ),
     browserFamily: getBrowserFamily(browser.name, isBrave, ua),
     os: clean([os.name, os.version].filter(Boolean).join(' ')),
-    deviceType: getDeviceType(device.type, screenWidth),
+    deviceType: getDeviceType(device.type, screenWidth, clientDeviceType, ua),
     ip: clean(getClientIp(req)),
   };
 };

@@ -9,7 +9,7 @@ export const endpoints = {
   forgotPasswordRequest: '/api/v1/users/forgot-password/request',
   forgotPasswordReset: '/api/v1/users/forgot-password/reset',
 
-    //login session
+  //login session
   loginSession: '/api/v1/users/login-session',
   loginSessionVerify: '/api/v1/users/login-session/verify',
   loginSessionResend: '/api/v1/users/login-session/resend-otp',
@@ -30,4 +30,8 @@ export const endpoints = {
   subscriptionOrder: '/api/v1/subscriptions/order',
   subscriptionVerify: '/api/v1/subscriptions/verify',
 
+  //audio tweet
+  audioOtpRequest: '/api/v1/tweets/audio/otp/request',
+  audioOtpVerify: '/api/v1/tweets/audio/otp/verify',
+  audioTweet: '/api/v1/tweets/audio',
 };

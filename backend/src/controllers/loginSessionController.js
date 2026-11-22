@@ -47,10 +47,11 @@ export const startLoginSession = async (req, res) => {
     const user = await findUserFromToken(req);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-       const { browserFamily, ...info } = getDeviceInfo(
+    const { browserFamily, ...info } = getDeviceInfo(
       req,
       req.body?.screenWidth,
       req.body?.isBrave === true,
+      req.body?.deviceType,
     );
 
     // Rule: mobile logins are allowed only between 10:00 AM and 1:00 PM IST.

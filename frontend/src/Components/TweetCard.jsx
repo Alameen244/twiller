@@ -17,11 +17,13 @@ import {
   ChatBubbleOutline,
   Share,
   DeleteOutline,
+  GraphicEq,
 } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import { axiosInstance } from "../helper/helper";
 import { endpoints } from "../Apis/EndPoints/endpoints";
 import { deletePostApi } from "../Apis/tweetApi";
+import { formatDuration } from "../helper/audioConstants";
 import { Avatar, Card } from "./UI";
 import { useAuth } from "../Context/AuthContext";
 import DeletePostDialog from "./DeletePostDialog";
@@ -82,6 +84,7 @@ export default function TweetCard({ tweet, onDelete }) {
   const liked = item.likedBy?.includes(user?._id);
   const reposted = item.retweetedBy?.includes(user?._id);
   const author = item.author || {};
+  const hasAudio = Boolean(item.audio?.url);
 
   return (
     <>
@@ -131,9 +134,12 @@ export default function TweetCard({ tweet, onDelete }) {
               )}
             </Stack>
 
-            <Typography sx={{ whiteSpace: "pre-wrap", my: 1 }}>
-              {item.content}
-            </Typography>
+            {/* Caption (optional on audio tweets) */}
+            {item.content && (
+              <Typography sx={{ whiteSpace: "pre-wrap", my: 1 }}>
+                {item.content}
+              </Typography>
+            )}
 
             {item.image && item.image.startsWith("http") && (
               <Box
@@ -150,6 +156,35 @@ export default function TweetCard({ tweet, onDelete }) {
                   mb: 1.5,
                 }}
               />
+            )}
+
+            {/* Audio player (audio tweets only) */}
+            {hasAudio && (
+              <Box
+                data-component="tweet-audio"
+                sx={{
+                  bgcolor: "#16181c",
+                  border: "1px solid #2f3336",
+                  borderRadius: 2,
+                  p: 1.5,
+                  my: 1,
+                  mb: 1.5,
+                }}
+              >
+                <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mb: 1, color: "#1d9bf0" }}>
+                  <GraphicEq fontSize="small" />
+                  <Typography sx={{ fontSize: 13, fontWeight: 700 }}>
+                    Audio tweet
+                    {item.audio.duration ? ` · ${formatDuration(item.audio.duration)}` : ""}
+                  </Typography>
+                </Stack>
+                <audio
+                  controls
+                  preload="metadata"
+                  src={item.audio.url}
+                  style={{ width: "100%" }}
+                />
+              </Box>
             )}
 
             <Stack

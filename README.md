@@ -70,6 +70,7 @@ Implemented in `frontend/src/helper/passwordGenerator.js` (`generateLettersPassw
 
 ---
 
+
 ## Login Security and Login History
 
 ### What it does
@@ -185,3 +186,71 @@ For local testing only, `BYPASS_TIME_WINDOWS=true` skips the time windows. It is
 ### Main files
 - Backend: `constants/plans.js`, `models/subscriptionModel.js`, `models/paymentModel.js`, `services/subscriptionService.js`, `controllers/subscriptionController.js`, `routes/subscriptionRoutes.js`, `config/razorpay.js`, `templates/invoiceEmailTemplate.js`, `services/emailService.js`
 - Frontend: `Pages/PlansPage.jsx` and its `Plans/` components, `helper/razorpayCheckout.js`, `Apis/subscriptionApi.js`, `Components/UsageIndicator.jsx`, `Components/TweetComposer.jsx`
+
+## Audio Tweets
+
+Users can record their voice in the browser, or upload an audio file, and post it as a tweet. Every upload is protected by an email OTP and by strict size, duration and time limits.
+
+### Rules
+
+| Rule | How it is enforced |
+|---|---|
+| OTP to the registered email before any upload | A 6-digit code is emailed (Brevo). A correct code gives a single-use upload grant that is valid for 15 minutes. |
+| Maximum 5 minutes | The recorder stops at 4:59, the browser checks uploaded files, and the backend trusts the duration measured by Cloudinary. Anything over 300 s is deleted from Cloudinary and rejected. |
+| Maximum 100 MB | multer `limits.fileSize` on the server (and a browser check). Larger files are rejected with HTTP 413 while receiving, never fully stored. |
+| Only 2:00 PM to 7:00 PM IST | Checked on the backend when the OTP is requested, when it is verified, before the file is received and again before saving. Always calculated in IST, never in server time. |
+| Plan limit | An audio tweet counts as one tweet in the user's subscription plan (same atomic slot as text tweets). |
+
+### How it works
+1. The user opens the audio dialog (mic button in the composer) and records with the browser `MediaRecorder` API, or chooses an audio file. A preview player and an optional caption (max 300 characters) are shown.
+2. On **Post audio tweet**, the backend checks the time window and emails an OTP.
+3. After the correct code is entered, the grant is created and the upload starts automatically with a progress bar.
+4. Before the file is received, the backend re-checks the time window and the grant. The grant is used up when the upload is accepted, so one OTP allows one upload.
+5. The file is stored on Cloudinary (`resource_type: video`, folder `twiller/audio`). The returned duration is checked, then the tweet is saved with `audio: { url, publicId, duration, bytes }`.
+6. If anything fails after this point, the temporary file, the Cloudinary asset and the reserved plan slot are all cleaned up.
+7. Deleting an audio tweet also deletes its file from Cloudinary.
+
+If a user cancels an upload before it finishes, the verification is still valid and posting again does not need a new code. Cancel is not available once the upload reaches 100%, because the server is already processing the file.
+
+### API
+
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/api/v1/tweets/audio/otp/request` | `POST` | Checks the time window and emails the OTP (rate limited: 5 requests per 15 minutes per IP) |
+| `/api/v1/tweets/audio/otp/verify` | `POST` | Verifies the OTP (max 5 attempts) and creates the upload grant |
+| `/api/v1/tweets/audio` | `POST` | Multipart upload (field `audio`, optional `content`). Creates the audio tweet |
+
+All three need the Firebase token.
+
+| Error code | HTTP | Meaning |
+|---|---|---|
+| `AUDIO_WINDOW_CLOSED` | 403 | Outside 2:00 PM to 7:00 PM IST |
+| `AUDIO_OTP_REQUIRED` | 403 | No valid grant (OTP not verified, expired or already used) |
+| `AUDIO_TOO_LARGE` | 413 | File over 100 MB |
+| `INVALID_AUDIO_TYPE` | 415 | Not an accepted audio type |
+| `AUDIO_TOO_LONG` | 422 | Longer than 5 minutes |
+| `AUDIO_DURATION_UNKNOWN` | 422 | Duration could not be read |
+| `TWEET_LIMIT_REACHED` | 403 | Subscription plan limit reached |
+| `AUDIO_UPLOAD_FAILED` | 502 | Cloudinary upload failed |
+
+### Design decisions
+- **Disk storage for uploads:** the file never sits in memory, which matters on Render's free 512 MB instance.
+- **Checks before the file is received:** the time window and the grant are checked before multer, so a blocked request never uploads up to 100 MB.
+- **Duration from Cloudinary:** browser metadata can be faked, and recorded WebM files often report no duration.
+- **Grant stored per user on the server:** the browser never handles a secret that could be forged or replayed. It is single use and expires automatically (MongoDB TTL index).
+- **Browser formats:** Chrome and Firefox record WebM or Ogg, Safari records MP4. The recorder picks the first supported format and Cloudinary accepts all of them.
+- **Text tweets** are now limited to 300 characters on the backend as well, with a character counter in the composer.
+
+### Environment variables
+No new variables. It uses the existing `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `BREVO_*` and `OTP_HMAC_SECRET`. For local testing only, `BYPASS_TIME_WINDOWS=true` skips the time window. It is ignored when `NODE_ENV=production`, so do not set it on Render.
+
+> **To test on the deployed site, post the audio tweet between 2:00 PM and 7:00 PM IST.** Outside this time the feature is blocked on purpose and shows a notice. The microphone works on the deployed site because Vercel serves HTTPS.
+
+### Known limitations
+- Cloudinary's free plan has a monthly credit quota. Storage and bandwidth for audio count against it.
+- Upload progress shows the browser-to-server part. The server then sends the file to Cloudinary, so the bar can show "Processing" for a few seconds.
+- The recorder's format depends on the browser. Very old browsers without `MediaRecorder` can still upload a file.
+
+### Main files
+- Backend: `constants/audioLimits.js`, `models/audioUploadGrantModel.js`, `services/audioGrantService.js`, `services/audioStorageService.js`, `controllers/audioOtpController.js`, `controllers/audioTweetController.js`, `middlewares/audioUpload.middleware.js`, `routes/tweetRoutes.js`
+- Frontend: `Apis/audioApi.js`, `helper/useAudioRecorder.js`, `helper/audioConstants.js`, `Components/Audio/AudioTweetDialog.jsx`, `AudioOtpStep.jsx`, `AudioUploadStep.jsx`, `Components/TweetCard.jsx`, `Components/TweetComposer.jsx`
