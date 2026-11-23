@@ -1,11 +1,16 @@
-export const tweetLimitText = (limit) => {
+export const tweetLimitText = (limit, t) => {
+  if (t) {
+    if (limit === null) return t("plans.limits.unlimited");
+    if (limit === 1) return t("plans.limits.one");
+    return t("plans.limits.upTo", { limit });
+  }
   if (limit === null) return "Unlimited tweets";
   if (limit === 1) return "Post 1 tweet";
   return `Post up to ${limit} tweets`;
 };
 
-export const formatDate = (iso) =>
-  new Date(iso).toLocaleDateString("en-IN", {
+export const formatDate = (iso, lang = "en-IN") =>
+  new Date(iso).toLocaleDateString(lang || "en-IN", {
     timeZone: "Asia/Kolkata",
     day: "numeric",
     month: "short",
@@ -38,6 +43,14 @@ export const PLAN_BENEFITS = {
     "Highest priority ranking",
     "30-day active validity",
   ],
+};
+
+export const getPlanBenefits = (planId, t) => {
+  if (t) {
+    const list = t(`plans.benefitsList.${planId}`, { returnObjects: true });
+    if (Array.isArray(list)) return list;
+  }
+  return PLAN_BENEFITS[planId] || [];
 };
 
 export const modalDialogStyles = {

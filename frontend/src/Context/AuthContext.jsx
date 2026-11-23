@@ -27,6 +27,7 @@ import {
 import { auth } from "./firebase";
 import { toast } from "react-toastify";
 import { getAuthErrorMessage } from "./authErrors";
+import i18n from "../i18n";
 
 const AuthContext = createContext(null);
 const fallbackAvatar =
@@ -57,6 +58,10 @@ export function AuthProvider({ children }) {
   const save = (data) => {
     setUser(data);
     localStorage.setItem("twitter-user", JSON.stringify(data));
+    // The language saved on the backend wins after login.
+    if (data?.language && data.language !== i18n.language) {
+      i18n.changeLanguage(data.language);
+    }
   };
 
   useEffect(() => {

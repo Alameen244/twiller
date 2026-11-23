@@ -7,8 +7,11 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 export default function DeletePostDialog({ open, onClose, onConfirm, loading }) {
+  const { t } = useTranslation();
+
   return (
     <Dialog
       data-component="delete-post-dialog"
@@ -28,12 +31,11 @@ export default function DeletePostDialog({ open, onClose, onConfirm, loading }) 
       }}
     >
       <DialogTitle sx={{ pb: 0, fontSize: 20, fontWeight: 700 }}>
-        Delete post?
+        {t("delete.title")}
       </DialogTitle>
       <DialogContent sx={{ pt: "12px !important" }}>
         <Typography color="text.secondary">
-          This can't be undone and it will be removed from your profile and the
-          timeline of anyone who follows you.
+          {t("delete.description")}
         </Typography>
       </DialogContent>
       <DialogActions sx={{ p: 2, pt: 1, gap: 1, flexDirection: "column" }}>
@@ -44,7 +46,7 @@ export default function DeletePostDialog({ open, onClose, onConfirm, loading }) 
           disabled={loading}
           sx={{ bgcolor: "#f4212e", color: "#fff", borderRadius: 99, fontWeight: 700 }}
         >
-          {loading ? <CircularProgress size={20} sx={{ color: "#fff" }} /> : "Delete"}
+          {loading ? <CircularProgress size={20} sx={{ color: "#fff" }} /> : t("delete.confirm")}
         </Button>
         <Button
           fullWidth
@@ -53,7 +55,7 @@ export default function DeletePostDialog({ open, onClose, onConfirm, loading }) 
           disabled={loading}
           sx={{ borderColor: "#536471", color: "#f7f9f9", borderRadius: 99, fontWeight: 700 }}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
       </DialogActions>
     </Dialog>

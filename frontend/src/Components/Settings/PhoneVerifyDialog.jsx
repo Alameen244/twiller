@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Box, Dialog, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../Context/AuthContext";
 import PhoneNumberStep from "./PhoneNumberStep";
 import PhoneOtpStep from "./PhoneOtpStep";
@@ -10,6 +11,7 @@ import { getPhoneErrorMessage } from "./phoneErrors";
 const COUNTRY_CODE = "+91";
 
 export default function PhoneVerifyDialog({ open, onClose }) {
+  const { t } = useTranslation();
   const { sendPhoneOtp, verifyPhoneOtp, cancelPhoneFlow } = useAuth();
   const [step, setStep] = useState("phone");
   const [digits, setDigits] = useState("");
@@ -34,10 +36,10 @@ export default function PhoneVerifyDialog({ open, onClose }) {
     try {
       await sendPhoneOtp(`${COUNTRY_CODE}${digits}`);
       setStep("otp");
-      toast.success("Verification code sent.");
+      toast.success(t("account.codeSent"));
       return true;
     } catch (e) {
-      toast.error(getPhoneErrorMessage(e), { toastId: "phone-error" });
+      toast.error(getPhoneErrorMessage(e, t), { toastId: "phone-error" });
       return false;
     } finally {
       setBusy(false);
@@ -54,16 +56,17 @@ export default function PhoneVerifyDialog({ open, onClose }) {
     setBusy(true);
     try {
       await verifyPhoneOtp(code);
-      toast.success("Mobile number verified.");
+      toast.success(t("account.verified"));
       reset();
       onClose();
     } catch (e) {
-      toast.error(getPhoneErrorMessage(e), { toastId: "phone-error" });
+      toast.error(getPhoneErrorMessage(e, t), { toastId: "phone-error" });
       setOtpKey((k) => k + 1); // clear and refocus the boxes
     } finally {
       setBusy(false);
     }
   };
+
   return (
     <Dialog
       open={open}

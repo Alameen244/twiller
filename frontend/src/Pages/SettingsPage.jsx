@@ -1,27 +1,40 @@
 import { useEffect, useState } from "react";
 import { Box, List } from "@mui/material";
-import { History, Logout, PersonOutline, WorkspacePremium } from "@mui/icons-material";
+import { History, Logout, PersonOutline, Translate, WorkspacePremium } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../Context/AuthContext";
 import { getMySubscriptionApi } from "../Apis/subscriptionApi";
+import { SUPPORTED_LANGUAGES } from "../i18n";
 import LogoutDialog from "../Components/LogoutDialog";
 import SettingsHeader from "../Components/Settings/SettingsHeader";
 import SettingsMenuItem from "../Components/Settings/SettingsMenuItem";
+import LanguageDialog from "../Components/Settings/LanguageDialog";
 
-const premiumDescription = (sub) => {
-  if (!sub) return "Manage your subscription and upgrade your account.";
-  const usage =
-    sub.tweetLimit === null
-      ? `${sub.tweetsUsed} tweets posted (unlimited)`
-      : `${Math.min(sub.tweetsUsed, sub.tweetLimit)} of ${sub.tweetLimit} tweets used`;
-  return `${sub.planName} plan · ${usage}`;
+const premiumDescription = (sub, t) => {
+  if (!sub) return t("settings.premiumDescDefault");
+  if (sub.tweetLimit === null) {
+    return t("settings.premiumDescUnlimited", {
+      plan: sub.planName,
+      used: sub.tweetsUsed,
+    });
+  }
+  return t("settings.premiumDescLimited", {
+    plan: sub.planName,
+    used: Math.min(sub.tweetsUsed, sub.tweetLimit),
+    limit: sub.tweetLimit,
+  });
 };
 
 export default function SettingsPage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { logout } = useAuth();
   const [logoutOpen, setLogoutOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
   const [subscription, setSubscription] = useState(null);
+
+  const currentLanguage = SUPPORTED_LANGUAGES.find((l) => l.code === i18n.language);
 
   useEffect(() => {
     getMySubscriptionApi()
@@ -31,33 +44,40 @@ export default function SettingsPage() {
 
   return (
     <Box>
-      <SettingsHeader title="Settings" />
+      <SettingsHeader title={t("settings.title")} />
       <List disablePadding>
         <SettingsMenuItem
           icon={PersonOutline}
-          label="Your account"
-          description="See information about your account."
+          label={t("settings.yourAccount")}
+          description={t("settings.yourAccountDesc")}
           onClick={() => navigate("/settings/account")}
         />
         <SettingsMenuItem
           icon={History}
-          label="Login history"
-          description="See where and when your account was accessed."
+          label={t("settings.loginHistory")}
+          description={t("settings.loginHistoryDesc")}
           onClick={() => navigate("/settings/login-history")}
         />
         <SettingsMenuItem
+          icon={Translate}
+          label={t("language.title")}
+          description={currentLanguage?.nativeName}
+          onClick={() => setLanguageOpen(true)}
+        />
+        <SettingsMenuItem
           icon={WorkspacePremium}
-          label="Premium"
-          description={premiumDescription(subscription)}
+          label={t("settings.premium")}
+          description={premiumDescription(subscription, t)}
           onClick={() => navigate("/plans")}
         />
         <SettingsMenuItem
           icon={Logout}
-          label="Logout"
-          description="Sign out of your account."
+          label={t("settings.logout")}
+          description={t("settings.logoutDesc")}
           onClick={() => setLogoutOpen(true)}
         />
       </List>
+      <LanguageDialog open={languageOpen} onClose={() => setLanguageOpen(false)} />
       <LogoutDialog
         open={logoutOpen}
         onClose={() => setLogoutOpen(false)}

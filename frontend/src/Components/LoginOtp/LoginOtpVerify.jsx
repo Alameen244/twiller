@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { toast } from "react-toastify";
+import { useTranslation, Trans } from "react-i18next";
 import OtpInput from "../UI/OtpInput";
 import { Button } from "../UI";
 import TwitterLogo from "../TwitterLogo";
@@ -10,6 +11,7 @@ const RESEND_COOLDOWN_SECONDS = 30;
 const getMessage = (err, fallback) => err?.response?.data?.message || fallback;
 
 export default function LoginOtpVerify() {
+  const { t } = useTranslation();
   const {
     pendingLogin,
     verifyLoginOtp,
@@ -31,9 +33,9 @@ export default function LoginOtpVerify() {
     setBusy(true);
     try {
       await verifyLoginOtp(code); // on success this screen unmounts
-      toast.success("Login verified");
+      toast.success(t("loginOtp.verified"));
     } catch (err) {
-      toast.error(getMessage(err, "Could not verify the code."));
+      toast.error(getMessage(err, t("loginOtp.verifyFailed")));
       setResetKey((k) => k + 1);
       setBusy(false);
     }
@@ -53,11 +55,11 @@ export default function LoginOtpVerify() {
   const resend = async () => {
     try {
       await resendLoginOtp();
-      toast.success("A new code was sent to your email.");
+      toast.success(t("loginOtp.resent"));
       setCooldown(RESEND_COOLDOWN_SECONDS);
       setResetKey((k) => k + 1);
     } catch (err) {
-      toast.error(getMessage(err, "Could not resend the code."));
+      toast.error(getMessage(err, t("loginOtp.resendFailed")));
     }
   };
 
@@ -74,12 +76,18 @@ export default function LoginOtpVerify() {
       >
         <TwitterLogo size={50} />
         <Typography variant="h5" fontWeight={700}>
-          Verify it&apos;s you
+          {t("loginOtp.title")}
         </Typography>
         <Typography color="text.secondary">
-          Because you signed in from Google Chrome, we sent a 6-digit code to{" "}
-          <strong>{pendingLogin?.maskedEmail}</strong>. It is valid for 10
-          minutes.
+          <Trans
+            i18nKey="loginOtp.description"
+            values={{ email: pendingLogin?.maskedEmail }}
+            components={{ strong: <strong /> }}
+          >
+            Because you signed in from Google Chrome, we sent a 6-digit code to{" "}
+            <strong>{pendingLogin?.maskedEmail}</strong>. It is valid for 10
+            minutes.
+          </Trans>
         </Typography>
         <OtpInput
           key={resetKey}
@@ -93,14 +101,16 @@ export default function LoginOtpVerify() {
           disabled={busy || cooldown > 0}
           sx={{ color: "#1d9bf0", fontWeight: 700 }}
         >
-          {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
+          {cooldown > 0
+            ? t("loginOtp.resendIn", { secs: cooldown })
+            : t("loginOtp.resend")}
         </Button>
         <Button
           type="button"
           onClick={switchAccount}
           sx={{ color: "#1d9bf0", fontWeight: 700 }}
         >
-          Use a different Google account
+          {t("loginOtp.switchAccount")}
         </Button>
         <Button
           type="button"
@@ -108,7 +118,7 @@ export default function LoginOtpVerify() {
           disabled={busy}
           sx={{ color: "#71767b", fontWeight: 700 }}
         >
-          Back to sign in
+          {t("loginOtp.backToSignIn")}
         </Button>
       </Stack>
     </Box>

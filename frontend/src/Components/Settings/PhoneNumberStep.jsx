@@ -1,7 +1,9 @@
 import { Box, Button, InputAdornment, TextField, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { pillButtonSx } from "./settingsStyles";
 
 export default function PhoneNumberStep({ countryCode, digits, onChange, onSubmit, busy }) {
+  const { t } = useTranslation();
   const valid = digits.length === 10;
 
   return (
@@ -12,14 +14,16 @@ export default function PhoneNumberStep({ countryCode, digits, onChange, onSubmi
         if (valid && !busy) onSubmit();
       }}
     >
-      <Typography variant="h5" fontWeight={800} mb={1}>Add your mobile number</Typography>
+      <Typography variant="h5" fontWeight={800} mb={1}>
+        {t("account.addMobileTitle")}
+      </Typography>
       <Typography color="#71767b" mb={3}>
-        We'll send a 6-digit code to verify it.
+        {t("account.addMobileDesc")}
       </Typography>
       <TextField
         fullWidth
         autoFocus
-        placeholder="Mobile number"
+        placeholder={t("account.mobilePlaceholder")}
         value={digits}
         onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, 10))}
         inputProps={{ inputMode: "numeric" }}
@@ -38,7 +42,7 @@ export default function PhoneNumberStep({ countryCode, digits, onChange, onSubmi
         }}
       />
       <Button type="submit" fullWidth disabled={!valid || busy} sx={{ ...pillButtonSx, py: 1.5 }}>
-        {busy ? "Sending..." : "Send code"}
+        {busy ? t("account.sending") : t("account.sendCode")}
       </Button>
     </Box>
   );

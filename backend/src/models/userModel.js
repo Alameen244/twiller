@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { SUPPORTED_LANGUAGE_CODES, DEFAULT_LANGUAGE } from "../constants/languages.js";
+
 const UserSchema = mongoose.Schema({
   username: { type: String, required: true },
   displayName: { type: String, required: true },
@@ -10,6 +12,7 @@ const UserSchema = mongoose.Schema({
   firebaseUid: { type: String, unique: true, sparse: true },
   phoneNumber: { type: String, unique: true, sparse: true, match: /^\+[1-9]\d{7,14}$/ },
   isPhoneVerified: { type: Boolean, default: false },
+  language: { type: String, enum: SUPPORTED_LANGUAGE_CODES, default: DEFAULT_LANGUAGE },
   joinedDate: { type: Date, default: Date.now },
 });
 

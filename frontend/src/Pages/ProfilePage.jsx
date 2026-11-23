@@ -7,17 +7,24 @@ import {
   LocationOn,
   MoreHoriz,
 } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { axiosInstance } from "../helper/helper";
 import { endpoints } from "../Apis/EndPoints/endpoints";
 import { Avatar, Button } from "../Components/UI";
 import TweetCard from "../Components/TweetCard";
 import EditProfileDialog from "../Components/EditProfileDialog";
 import { useAuth } from "../Context/AuthContext";
+import useTweetTranslations from "../helper/useTweetTranslations";
+
 export default function ProfilePage() {
-  const { user } = useAuth(),
-    [tweets, setTweets] = useState([]),
-    [tab, setTab] = useState(0),
-    [edit, setEdit] = useState(false);
+  const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const { user } = useAuth();
+  const { translations, markVisible } = useTweetTranslations();
+  const [tweets, setTweets] = useState([]);
+  const [tab, setTab] = useState(0);
+  const [edit, setEdit] = useState(false);
 
   useEffect(() => {
     axiosInstance
@@ -25,8 +32,25 @@ export default function ProfilePage() {
       .then((r) => setTweets(r.data || []))
       .catch(console.error);
   }, []);
+
   const mine = tweets.filter((t) => t.author?._id === user?._id);
   if (!user) return null;
+
+  const tabs = [
+    { key: "posts", label: t("profile.tabs.posts") },
+    { key: "replies", label: t("profile.tabs.replies") },
+    { key: "highlights", label: t("profile.tabs.highlights") },
+    { key: "articles", label: t("profile.tabs.articles") },
+    { key: "media", label: t("profile.tabs.media") },
+  ];
+
+  const joinedFormatted = user.joinedDate
+    ? new Date(user.joinedDate).toLocaleDateString(i18n.language || "en", {
+        month: "long",
+        year: "numeric",
+      })
+    : "";
+
   return (
     <>
       <Box
@@ -40,13 +64,13 @@ export default function ProfilePage() {
         }}
       >
         <Stack direction="row" spacing={2} alignItems="center">
-          <IconButton sx={{ color: "#fff" }}>
+          <IconButton onClick={() => navigate(-1)} sx={{ color: "#fff" }}>
             <ArrowBack />
           </IconButton>
           <Box>
             <Typography fontWeight={700}>{user.displayName}</Typography>
             <Typography fontSize={13} color="text.secondary">
-              {mine.length} posts
+              {t("profile.postsCount", { count: mine.length })}
             </Typography>
           </Box>
         </Stack>
@@ -77,7 +101,7 @@ export default function ProfilePage() {
             onClick={() => setEdit(true)}
             sx={{ borderColor: "#536471", color: "#fff", fontWeight: 700 }}
           >
-            Edit profile
+            {t("profile.editProfile")}
           </Button>
         </Box>
         <Box mt={5}>
@@ -100,7 +124,7 @@ export default function ProfilePage() {
           >
             <Stack direction="row">
               <LocationOn fontSize="small" />
-              <Typography fontSize={14}>{user.location || "Earth"}</Typography>
+              <Typography fontSize={14}>{user.location || t("account.notSet")}</Typography>
             </Stack>
             <Stack direction="row">
               <Link fontSize="small" />
@@ -111,13 +135,7 @@ export default function ProfilePage() {
             <Stack direction="row">
               <CalendarMonth fontSize="small" />
               <Typography fontSize={14}>
-                Joined{" "}
-                {user.joinedDate
-                  ? new Date(user.joinedDate).toLocaleDateString("en-US", {
-                      month: "long",
-                      year: "numeric",
-                    })
-                  : ""}
+                {t("profile.joined", { date: joinedFormatted })}
               </Typography>
             </Stack>
           </Stack>
@@ -138,8 +156,8 @@ export default function ProfilePage() {
           "& .Mui-selected": { color: "#fff" },
         }}
       >
-        {["Posts", "Replies", "Highlights", "Articles", "Media"].map((x) => (
-          <Tab key={x} label={x} />
+        {tabs.map((x) => (
+          <Tab key={x.key} label={x.label} />
         ))}
       </Tabs>
       {tab === 0 ? (
@@ -147,13 +165,15 @@ export default function ProfilePage() {
           <TweetCard
             key={t._id}
             tweet={t}
+            translation={translations[t._id]}
+            onVisible={markVisible}
             onDelete={(id) => setTweets((prev) => prev.filter((tw) => tw._id !== id))}
           />
         ))
       ) : (
         <Box textAlign="center" py={8} color="text.secondary">
           <Typography variant="h6" fontWeight={700}>
-            Nothing to see here yet
+            {t("profile.nothingHere")}
           </Typography>
         </Box>
       )}

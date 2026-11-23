@@ -9,8 +9,17 @@ const MESSAGES = {
   "auth/captcha-check-failed": "Captcha check failed. Please try again.",
 };
 
-export const getPhoneErrorMessage = (e) =>
-  MESSAGES[e?.code] ||
-  e?.response?.data?.message ||
-  e?.message ||
-  "Something went wrong.";
+export const getPhoneErrorMessage = (e, t) => {
+  const code = e?.code;
+  if (t && code) {
+    const key = `phoneErrors.${code}`;
+    const translated = t(key);
+    if (translated !== key) return translated;
+  }
+  return (
+    MESSAGES[code] ||
+    e?.response?.data?.message ||
+    e?.message ||
+    (t ? t("phoneErrors.default") : "Something went wrong.")
+  );
+};

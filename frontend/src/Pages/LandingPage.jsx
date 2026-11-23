@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { Button } from "../Components/UI";
 import TwitterLogo from "../Components/TwitterLogo";
 import AuthModal from "../Components/AuthModal";
 import { useAuth } from "../Context/AuthContext";
+
 export default function LandingPage() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false),
     [mode, setMode] = useState("signup");
   const { googlesignin } = useAuth();
@@ -111,7 +114,7 @@ export default function LandingPage() {
             },
           }}
         >
-          Happening now
+          {t("landing.happeningNow")}
         </Typography>
         <Typography
           data-component="sub-heading"
@@ -126,7 +129,7 @@ export default function LandingPage() {
             },
           }}
         >
-          Join today.
+          {t("landing.joinToday")}
         </Typography>
         <Stack spacing={1.5} sx={{ maxWidth: 300 }} data-component="action-buttons">
           <Button
@@ -165,7 +168,7 @@ export default function LandingPage() {
               },
             }}
           >
-           Continue with Google
+            {t("landing.continueWithGoogle")}
           </Button>
           <Button
             data-component="apple-signup-button"
@@ -203,7 +206,7 @@ export default function LandingPage() {
               },
             }}
           >
-            Continue with Apple
+            {t("landing.continueWithApple")}
           </Button>
           <Typography
             textAlign="center"
@@ -227,7 +230,7 @@ export default function LandingPage() {
               },
             }}
           >
-            or
+            {t("landing.or")}
           </Typography>
           <Button
             data-component="create-account-button"
@@ -250,7 +253,7 @@ export default function LandingPage() {
               },
             }}
           >
-            Create account
+            {t("landing.createAccount")}
           </Button>
           <Typography
             fontSize={11}
@@ -263,8 +266,7 @@ export default function LandingPage() {
               },
             }}
           >
-            By signing up, you agree to the Terms of Service and Privacy Policy,
-            including Cookie Use.
+            {t("landing.terms")}
           </Typography>
           <Typography
             sx={{
@@ -278,7 +280,7 @@ export default function LandingPage() {
             }}
             data-component="login-heading"
           >
-            Already have an account?
+            {t("landing.alreadyHaveAccount")}
           </Typography>
           <Button
             data-component="login-button"
@@ -303,7 +305,7 @@ export default function LandingPage() {
               },
             }}
           >
-            Log in
+            {t("landing.login")}
           </Button>
         </Stack>
       </Box>

@@ -15,9 +15,9 @@ import {
   MicNone,
   Public,
 } from "@mui/icons-material";
-import { axiosInstance } from "../helper/helper";
-import { endpoints } from "../Apis/EndPoints/endpoints";
+import { useTranslation } from "react-i18next";
 import { uploadSingleImage } from "../Apis/imageApi";
+import { createPostApi } from "../Apis/tweetApi";
 import { Avatar, Button, Card } from "./UI";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -28,6 +28,7 @@ import AudioTweetDialog from "./Audio/AudioTweetDialog";
 const MAX_TWEET_LENGTH = 300;
 
 export default function TweetComposer({ onTweetPosted }) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [usageRefresh, setUsageRefresh] = useState(0);
@@ -64,12 +65,12 @@ export default function TweetComposer({ onTweetPosted }) {
     if (!content.trim() || isOverLimit) return;
     setBusy(true);
     try {
-      const res = await axiosInstance.post(endpoints.posts, {
+      const tweetData = await createPostApi({
         author: user._id,
         content,
         image,
       });
-      onTweetPosted(res.data);
+      onTweetPosted(tweetData);
       setUsageRefresh((n) => n + 1); // update the usage ring
 
       // Cleanup blob URL after successful post
@@ -85,7 +86,7 @@ export default function TweetComposer({ onTweetPosted }) {
       const data = err.response?.data;
       if (data?.code === "TWEET_LIMIT_REACHED") {
         // Clicking the toast opens the Premium modal.
-        toast.error(`${data.error} Click here to see plans.`, {
+        toast.error(t("composer.limitReached"), {
           onClick: () => navigate("/plans"),
           autoClose: 8000,
         });
@@ -93,7 +94,7 @@ export default function TweetComposer({ onTweetPosted }) {
         toast.error(
           data?.error ||
             data?.message ||
-            "Could not post your tweet. Please try again.",
+            t("composer.postFailed"),
         );
       }
     } finally {
@@ -147,7 +148,7 @@ export default function TweetComposer({ onTweetPosted }) {
             data-component="tweet-input"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="What's happening?"
+            placeholder={t("composer.placeholder")}
             multiline
             minRows={4}
             fullWidth
@@ -177,7 +178,7 @@ export default function TweetComposer({ onTweetPosted }) {
               sx={{ color: "#1d9bf0", fontSize: 14, my: 1 }}
               data-component="upload-status"
             >
-              Uploading image...
+              {t("composer.uploadingImage")}
             </Box>
           )}
 
@@ -212,14 +213,14 @@ export default function TweetComposer({ onTweetPosted }) {
               <IconButton
                 sx={{ color: "#1d9bf0" }}
                 onClick={() => setAudioOpen(true)}
-                aria-label="Audio tweet"
+                aria-label={t("composer.audioTweet")}
                 data-component="audio-tweet-button"
               >
                 <MicNone />
               </IconButton>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={1.25}>
-              <Tooltip title="Everyone can reply">
+              <Tooltip title={t("composer.everyoneCanReply")}>
                 <Stack
                   data-component="reply-settings"
                   direction="row"
@@ -239,7 +240,7 @@ export default function TweetComposer({ onTweetPosted }) {
                   <Public fontSize="small" />
                   {length === 0 && (
                     <Box sx={{ fontSize: 13, fontWeight: 700, ml: 0.5 }}>
-                      Everyone can reply
+                      {t("composer.everyoneCanReply")}
                     </Box>
                   )}
                 </Stack>
@@ -334,7 +335,7 @@ export default function TweetComposer({ onTweetPosted }) {
                   },
                 }}
               >
-                {uploading ? "Uploading..." : "Post"}
+                {uploading ? t("composer.uploading") : t("composer.post")}
               </Button>
             </Stack>
           </Stack>

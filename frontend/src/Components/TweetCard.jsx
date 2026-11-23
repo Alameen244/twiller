@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   IconButton,
@@ -20,9 +20,8 @@ import {
   GraphicEq,
 } from "@mui/icons-material";
 import { toast } from "react-toastify";
-import { axiosInstance } from "../helper/helper";
-import { endpoints } from "../Apis/EndPoints/endpoints";
-import { deletePostApi } from "../Apis/tweetApi";
+import { useTranslation } from "react-i18next";
+import { deletePostApi, likePostApi, retweetPostApi } from "../Apis/tweetApi";
 import { formatDuration } from "../helper/audioConstants";
 import { Avatar, Card } from "./UI";
 import { useAuth } from "../Context/AuthContext";
@@ -30,9 +29,13 @@ import DeletePostDialog from "./DeletePostDialog";
 
 const n = (x = 0) => (x >= 1000 ? `${(x / 1000).toFixed(1)}K` : x);
 
-export default function TweetCard({ tweet, onDelete }) {
+// translation: { text, translated } from useTweetTranslations. onVisible(id): tells the page this tweet is on screen.
+export default function TweetCard({ tweet, onDelete, translation, onVisible }) {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
   const [item, setItem] = useState(tweet);
+  const [showOriginal, setShowOriginal] = useState(false);
+  const bodyRef = useRef(null);
 
   // ── More menu ──
   const [menuAnchor, setMenuAnchor] = useState(null);
@@ -43,13 +46,32 @@ export default function TweetCard({ tweet, onDelete }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Report once when the tweet (with text) comes near the screen, so the page can translate it in a batch.
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (!el || !onVisible || !item.content?.trim()) return undefined;
+    if (typeof IntersectionObserver === "undefined") {
+      onVisible(item._id);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          onVisible(item._id);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "300px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [item._id, item.content, onVisible]);
+
   const isOwn = user?._id && item.author?._id === user._id;
 
   const like = async () => {
     try {
-      setItem(
-        (await axiosInstance.post(endpoints.like(item._id), { userId: user?._id })).data,
-      );
+      setItem(await likePostApi(item._id, user?._id));
     } catch (e) {
       console.error(e);
     }
@@ -57,9 +79,7 @@ export default function TweetCard({ tweet, onDelete }) {
 
   const retweet = async () => {
     try {
-      setItem(
-        (await axiosInstance.post(endpoints.retweet(item._id), { userId: user?._id })).data,
-      );
+      setItem(await retweetPostApi(item._id, user?._id));
     } catch (e) {
       console.error(e);
     }
@@ -69,12 +89,12 @@ export default function TweetCard({ tweet, onDelete }) {
     setDeleting(true);
     try {
       await deletePostApi(item._id);
-      toast.success("Post deleted.");
+      toast.success(t("tweet.deleted"));
       setConfirmOpen(false);
       onDelete?.(item._id);       // tell parent to remove from list
     } catch (err) {
       toast.error(
-        err?.response?.data?.error || "Failed to delete post. Please try again.",
+        err?.response?.data?.error || t("tweet.deleteFailed"),
       );
     } finally {
       setDeleting(false);
@@ -85,6 +105,10 @@ export default function TweetCard({ tweet, onDelete }) {
   const reposted = item.retweetedBy?.includes(user?._id);
   const author = item.author || {};
   const hasAudio = Boolean(item.audio?.url);
+
+  // Show the translation unless the user asked for the original (or the tweet was already in this language).
+  const isTranslated = Boolean(translation?.translated);
+  const shownText = isTranslated && !showOriginal ? translation.text : item.content;
 
   return (
     <>
@@ -104,14 +128,14 @@ export default function TweetCard({ tweet, onDelete }) {
           >
             {author.displayName?.[0]}
           </Avatar>
-          <Box sx={{ minWidth: 0, flex: 1 }} data-component="tweet-body">
+          <Box ref={bodyRef} sx={{ minWidth: 0, flex: 1 }} data-component="tweet-body">
             <Stack direction="row" spacing={0.75} alignItems="center" data-component="tweet-header">
               <Typography fontWeight={700}>{author.displayName}</Typography>
               <Typography color="text.secondary">@{author.username}</Typography>
               <Typography color="text.secondary">·</Typography>
               <Typography color="text.secondary">
                 {item.timestamp &&
-                  new Date(item.timestamp).toLocaleDateString("en-US", {
+                  new Date(item.timestamp).toLocaleDateString(i18n.language || "en", {
                     month: "short",
                     day: "numeric",
                   })}
@@ -136,9 +160,31 @@ export default function TweetCard({ tweet, onDelete }) {
 
             {/* Caption (optional on audio tweets) */}
             {item.content && (
-              <Typography sx={{ whiteSpace: "pre-wrap", my: 1 }}>
-                {item.content}
-              </Typography>
+              <>
+                <Typography sx={{ whiteSpace: "pre-wrap", my: 1 }}>
+                  {shownText}
+                </Typography>
+                {isTranslated && (
+                  <Typography
+                    component="button"
+                    type="button"
+                    data-component="translation-toggle"
+                    onClick={() => setShowOriginal((v) => !v)}
+                    sx={{
+                      background: "none",
+                      border: 0,
+                      p: 0,
+                      mb: 1,
+                      cursor: "pointer",
+                      fontSize: 13,
+                      color: "#1d9bf0",
+                      "&:hover": { textDecoration: "underline" },
+                    }}
+                  >
+                    {showOriginal ? t("tweet.showTranslated") : t("tweet.showOriginal")}
+                  </Typography>
+                )}
+              </>
             )}
 
             {item.image && item.image.startsWith("http") && (
@@ -174,7 +220,7 @@ export default function TweetCard({ tweet, onDelete }) {
                 <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mb: 1, color: "#1d9bf0" }}>
                   <GraphicEq fontSize="small" />
                   <Typography sx={{ fontSize: 13, fontWeight: 700 }}>
-                    Audio tweet
+                    {t("tweet.audioTweet")}
                     {item.audio.duration ? ` · ${formatDuration(item.audio.duration)}` : ""}
                   </Typography>
                 </Stack>
@@ -251,7 +297,7 @@ export default function TweetCard({ tweet, onDelete }) {
           <ListItemIcon sx={{ color: "#f4212e" }}>
             <DeleteOutline fontSize="small" />
           </ListItemIcon>
-          <ListItemText primary="Delete" />
+          <ListItemText primary={t("tweet.delete")} />
         </MenuItem>
       </Menu>
 

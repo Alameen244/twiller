@@ -3,6 +3,7 @@ import { Box, Dialog, IconButton, Stack, TextField, Typography } from "@mui/mate
 import { Close, DeleteOutline, FiberManualRecord, MicNone, Stop, UploadFileOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import { Button } from "../UI";
 import AudioOtpStep from "./AudioOtpStep";
 import AudioUploadStep from "./AudioUploadStep";
@@ -23,6 +24,7 @@ import {
 const MAX_TWEET_LENGTH = 300;
 
 export default function AudioTweetDialog({ open, onClose, onPosted }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { status, seconds, audio, error, start, stop, reset, loadFile, clearError } =
     useAudioRecorder();
@@ -79,7 +81,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
       setMaskedEmail(data.maskedEmail || "your email");
       setOtpKey((k) => k + 1); // clear the boxes
       setStep("otp");
-      toast.success("Verification code sent to your email.");
+      toast.success(t("audio.otpSent"));
       return true;
     } catch (err) {
       toast.error(getAudioApiError(err).message, { toastId: "audio-otp-error" });
@@ -104,7 +106,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
         signal: controller.signal,
       });
       setGrantReady(false);
-      toast.success("Audio tweet posted.");
+      toast.success(t("audio.posted"));
       onPosted?.(tweet);
       finish();
     } catch (err) {
@@ -113,7 +115,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
       if (code === "CANCELLED") {
         toast.info(message);
       } else if (code === "TWEET_LIMIT_REACHED") {
-        toast.error(`${message} Click here to see plans.`, {
+        toast.error(`${message} ${t("audio.seePlans")}`, {
           onClick: () => navigate("/plans"),
           autoClose: 8000,
         });
@@ -187,12 +189,11 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
 
         {step === "compose" && (
           <>
-            <Typography sx={{ fontSize: 24, fontWeight: 800, mb: 1 }}>Audio tweet</Typography>
+            <Typography sx={{ fontSize: 24, fontWeight: 800, mb: 1 }}>{t("audio.title")}</Typography>
 
             <Box sx={{ bgcolor: "#16181c", border: "1px solid #2f3336", borderRadius: 2, p: 1.5, mb: 2.5 }}>
               <Typography sx={{ fontSize: 13, color: "#71767b", lineHeight: 1.5 }}>
-                Audio tweets can be posted only between {AUDIO_WINDOW_LABEL}. Maximum 5 minutes and
-                100 MB. We will email you a verification code before the upload.
+                {t("audio.notice", { window: AUDIO_WINDOW_LABEL })}
               </Typography>
             </Box>
 
@@ -214,7 +215,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
                       startIcon={<Stop />}
                       sx={{ bgcolor: "#f4212e", color: "#fff", fontWeight: 700, borderRadius: 99, px: 3 }}
                     >
-                      Stop recording
+                      {t("audio.stopRecording")}
                     </Button>
                   </Stack>
                 ) : (
@@ -224,7 +225,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
                     startIcon={<MicNone />}
                     sx={{ bgcolor: "#1d9bf0", color: "#fff", fontWeight: 700, borderRadius: 99, py: 1.2 }}
                   >
-                    {isStarting ? "Starting..." : "Record audio"}
+                    {isStarting ? t("audio.starting") : t("audio.recordAudio")}
                   </Button>
                 )}
 
@@ -242,7 +243,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
                         bgcolor: "transparent",
                       }}
                     >
-                      Choose an audio file
+                      {t("audio.chooseFile")}
                     </Button>
                     <input ref={fileInputRef} hidden type="file" accept="audio/*" onChange={handleFile} />
                   </>
@@ -253,7 +254,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
                 <Box sx={{ bgcolor: "#16181c", border: "1px solid #2f3336", borderRadius: 2, p: 1.5 }}>
                   <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
                     <Typography sx={{ fontSize: 13, color: "#71767b" }}>
-                      {audio.source === "recorded" ? "Recording" : audio.file.name}
+                      {audio.source === "recorded" ? t("audio.recordingSource") : audio.file.name}
                       {" · "}
                       {audio.durationSeconds ? formatDuration(audio.durationSeconds) : "--:--"}
                       {" · "}
@@ -264,7 +265,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
                       disabled={busy}
                       size="small"
                       sx={{ color: "#f4212e" }}
-                      aria-label="Discard audio"
+                      aria-label={t("audio.discardAudio")}
                     >
                       <DeleteOutline fontSize="small" />
                     </IconButton>
@@ -275,7 +276,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
                 <TextField
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
-                  placeholder="Add a caption (optional)"
+                  placeholder={t("audio.captionPlaceholder")}
                   multiline
                   minRows={2}
                   fullWidth
@@ -283,7 +284,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
                   error={captionTooLong}
                   helperText={
                     captionTooLong
-                      ? `Maximum ${MAX_TWEET_LENGTH} characters`
+                      ? t("audio.maxChars", { max: MAX_TWEET_LENGTH })
                       : `${caption.length}/${MAX_TWEET_LENGTH}`
                   }
                   slotProps={{
@@ -304,7 +305,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
                     "&.Mui-disabled": { bgcolor: "rgba(29, 155, 240, 0.5)", color: "rgba(255,255,255,0.5)" },
                   }}
                 >
-                  {busy ? "Sending code..." : "Post audio tweet"}
+                  {busy ? t("audio.sendingCode") : t("audio.postAudio")}
                 </Button>
               </Stack>
             )}

@@ -9,43 +9,45 @@ import {
   Settings,
 } from "@mui/icons-material";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../Context/AuthContext";
 import TwitterLogo from "../TwitterLogo";
 import { Avatar } from "../UI";
 import WhoToFollow from "../WhoToFollow";
 
 const links = [
-  ["Home", Home, "/"],
-  ["Explore", Search, "/explore"],
-  ["Notifications", Notifications, "/notifications"],
-  ["Messages", Mail, "/messages"],
-  ["Bookmarks", Bookmark, "/bookmarks"],
-  ["Profile", Person, "/profile"],
-  ["Settings", Settings, "/settings"],
+  ["Home", "home", Home, "/"],
+  ["Explore", "explore", Search, "/explore"],
+  ["Notifications", "notifications", Notifications, "/notifications"],
+  ["Messages", "messages", Mail, "/messages"],
+  ["Bookmarks", "bookmarks", Bookmark, "/bookmarks"],
+  ["Profile", "profile", Person, "/profile"],
+  ["Settings", "settings", Settings, "/settings"],
 ];
 
 function RightSidebar() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   return (
     <Stack spacing={2}>
       <Box
         sx={{ bgcolor: "#202327", borderRadius: 99, p: 1.25, px: 2, color: "#71767b" }}
       >
-        Search
+        {t("nav.search")}
       </Box>
       <Box sx={{ bgcolor: "#16181c", borderRadius: 2, p: 2 }}>
         <Typography variant="h6" fontWeight={800}>
-          Subscribe to Premium
+          {t("nav.subscribePremium")}
         </Typography>
         <Typography variant="body2" sx={{ my: 1 }}>
-          Subscribe to unlock new features and earn a share of revenue.
+          {t("nav.subscribeDescription")}
         </Typography>
         <Button
           variant="contained"
           onClick={() => navigate("/plans")}
           sx={{ borderRadius: 99, textTransform: "none", fontWeight: 700 }}
         >
-          Subscribe
+          {t("nav.subscribe")}
         </Button>
       </Box>
       <WhoToFollow />
@@ -54,10 +56,10 @@ function RightSidebar() {
 }
 
 export default function AppLayout() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
 
   return (
     <Box
@@ -82,8 +84,8 @@ export default function AppLayout() {
           <TwitterLogo size={32} />
         </Box>
 
-        {links.map(([label, Icon, path]) => {
-             const isActive = path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
+        {links.map(([label, key, Icon, path]) => {
+          const isActive = path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
           return (
             <Button
               data-component="nav-link"
@@ -116,13 +118,11 @@ export default function AppLayout() {
             >
               <Icon />
               <Typography sx={{ ml: 2, fontSize: 20, display: { xs: "none", md: "block" } }}>
-                {label}
+                {t(`nav.${key}`)}
               </Typography>
             </Button>
           );
         })}
-
-
 
         <Box sx={{ mt: "auto" }} data-component="sidebar-profile-section">
           <Button
@@ -183,6 +183,6 @@ export default function AppLayout() {
       >
         <RightSidebar />
       </Box>
-    </Box >
+    </Box>
   );
 }

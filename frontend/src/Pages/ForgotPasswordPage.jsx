@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Box, Stack, Typography } from "@mui/material";
 import { CheckCircleOutline } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import TwitterLogo from "../Components/TwitterLogo";
 import { Button } from "../Components/UI";
 import ForgotPasswordRequestStep from "../Components/ForgotPassword/ForgotPasswordRequestStep";
@@ -14,6 +15,7 @@ const COUNTRY_CODE = "+91";
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [step, setStep] = useState("request"); // request -> reset -> done
   const [method, setMethod] = useState("email");
   const [email, setEmail] = useState("");
@@ -28,7 +30,7 @@ export default function ForgotPasswordPage() {
   const target = method === "email" ? email.trim() : `${COUNTRY_CODE} ${digits}`;
 
   const showError = (e) => {
-    const message = getPhoneErrorMessage(e);
+    const message = getPhoneErrorMessage(e, t);
     // 429 covers both the "one time per day" rule and the rate limit
     if (e?.response?.status === 429) toast.warning(message, { toastId: "forgot-error" });
     else toast.error(message, { toastId: "forgot-error" });
@@ -38,7 +40,7 @@ export default function ForgotPasswordPage() {
     setBusy(true);
     try {
       await forgotPasswordRequestApi(buildPayload());
-      toast.success(method === "email" ? "OTP sent to your email." : "OTP sent to your phone.");
+      toast.success(method === "email" ? t("forgot.otpSentEmail") : t("forgot.otpSentPhone"));
       setStep("reset");
     } catch (e) {
       showError(e);
@@ -51,7 +53,7 @@ export default function ForgotPasswordPage() {
     setBusy(true);
     try {
       await forgotPasswordRequestApi(buildPayload());
-      toast.success("A new OTP was sent.");
+      toast.success(t("forgot.newOtpSent"));
       return true;
     } catch (e) {
       showError(e);
@@ -117,10 +119,10 @@ export default function ForgotPasswordPage() {
               <Stack spacing={2} alignItems="center" textAlign="center">
                 <CheckCircleOutline sx={{ fontSize: 56, color: "#00ba7c" }} />
                 <Typography variant="h5" fontWeight={800}>
-                  Password reset
+                  {t("forgot.resetSuccessTitle")}
                 </Typography>
                 <Typography color="#71767b">
-                  Your password was changed. Sign in with your new password.
+                  {t("forgot.resetSuccessDesc")}
                 </Typography>
                 <Button
                   fullWidth
@@ -133,7 +135,7 @@ export default function ForgotPasswordPage() {
                     "&:hover": { bgcolor: "#1a8cd8" },
                   }}
                 >
-                  Go to sign in
+                  {t("forgot.goToSignIn")}
                 </Button>
               </Stack>
             )}
@@ -141,7 +143,7 @@ export default function ForgotPasswordPage() {
 
           {step !== "done" && (
             <Button onClick={() => navigate("/")} sx={{ color: "#1d9bf0", fontWeight: 700 }}>
-              Back to sign in
+              {t("forgot.backToSignIn")}
             </Button>
           )}
         </Stack>

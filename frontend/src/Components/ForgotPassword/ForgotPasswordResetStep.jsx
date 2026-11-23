@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Box, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import { ContentCopy, Visibility, VisibilityOff } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import { Button } from "../UI";
 import { generateLettersPassword } from "../../helper/passwordGenerator";
 
@@ -19,6 +20,7 @@ const fieldSx = {
 };
 
 export default function ForgotPasswordResetStep({ target, onReset, onResend, onBack, busy }) {
+  const { t } = useTranslation();
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -46,9 +48,9 @@ export default function ForgotPasswordResetStep({ target, onReset, onResend, onB
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(password);
-      toast.success("Password copied.", { toastId: "password-copied" });
+      toast.success(t("forgot.passwordCopied"), { toastId: "password-copied" });
     } catch {
-      toast.error("Could not copy. Select the password and copy it manually.");
+      toast.error(t("forgot.couldNotCopy"));
     }
   };
 
@@ -67,17 +69,17 @@ export default function ForgotPasswordResetStep({ target, onReset, onResend, onB
   return (
     <Box component="form" onSubmit={handleSubmit}>
       <Typography variant="h5" fontWeight={800} mb={1}>
-        Reset your password
+        {t("forgot.resetTitle")}
       </Typography>
       <Typography color="#71767b" mb={3}>
-        Enter the 6-digit code sent to {target}, then choose a new password.
+        {t("forgot.resetDesc", { target })}
       </Typography>
 
       <Stack spacing={2}>
         <TextField
           fullWidth
           autoFocus
-          placeholder="6-digit code"
+          placeholder={t("forgot.codePlaceholder")}
           value={code}
           onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
           inputProps={{ inputMode: "numeric", autoComplete: "one-time-code" }}
@@ -86,12 +88,12 @@ export default function ForgotPasswordResetStep({ target, onReset, onResend, onB
 
         <TextField
           fullWidth
-          placeholder="New password"
+          placeholder={t("forgot.newPasswordPlaceholder")}
           type={show ? "text" : "password"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           error={tooShort}
-          helperText={tooShort ? `At least ${MIN_PASSWORD_LENGTH} characters` : " "}
+          helperText={tooShort ? t("forgot.atLeastChars") : " "}
           inputProps={{ autoComplete: "new-password" }}
           InputProps={{
             endAdornment: (
@@ -99,7 +101,7 @@ export default function ForgotPasswordResetStep({ target, onReset, onResend, onB
                 <IconButton
                   onClick={() => setShow((s) => !s)}
                   edge="end"
-                  aria-label={show ? "Hide password" : "Show password"}
+                  aria-label={show ? t("auth.hidePassword") : t("auth.showPassword")}
                   sx={{ color: "#71767b" }}
                 >
                   {show ? <VisibilityOff /> : <Visibility />}
@@ -112,12 +114,12 @@ export default function ForgotPasswordResetStep({ target, onReset, onResend, onB
 
         <TextField
           fullWidth
-          placeholder="Confirm new password"
+          placeholder={t("forgot.confirmPasswordPlaceholder")}
           type={show ? "text" : "password"}
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           error={mismatch}
-          helperText={mismatch ? "Passwords do not match" : " "}
+          helperText={mismatch ? t("forgot.passwordsDontMatch") : " "}
           inputProps={{ autoComplete: "new-password" }}
           sx={fieldSx}
         />
@@ -130,7 +132,7 @@ export default function ForgotPasswordResetStep({ target, onReset, onResend, onB
           variant="outlined"
           sx={{ color: "#1d9bf0", borderColor: "#1d9bf0", fontWeight: 700, px: 2 }}
         >
-          Generate password
+          {t("forgot.generatePassword")}
         </Button>
         <Button
           onClick={handleCopy}
@@ -144,7 +146,7 @@ export default function ForgotPasswordResetStep({ target, onReset, onResend, onB
             "&.Mui-disabled": { color: "#71767b", borderColor: "#333639" },
           }}
         >
-          Copy
+          {t("forgot.copy")}
         </Button>
       </Stack>
 
@@ -161,19 +163,19 @@ export default function ForgotPasswordResetStep({ target, onReset, onResend, onB
           "&.Mui-disabled": { bgcolor: "#1d9bf0", color: "#fff", opacity: 0.5 },
         }}
       >
-        {busy ? "Resetting..." : "Reset password"}
+        {busy ? t("forgot.resetting") : t("forgot.resetPassword")}
       </Button>
 
       <Stack direction="row" justifyContent="space-between" mt={2}>
         <Button onClick={onBack} disabled={busy} sx={{ color: "#1d9bf0" }}>
-          Change details
+          {t("forgot.changeDetails")}
         </Button>
         <Button
           onClick={handleResend}
           disabled={secs > 0 || busy}
           sx={{ color: "#1d9bf0", "&.Mui-disabled": { color: "#71767b" } }}
         >
-          {secs > 0 ? `Resend code in ${secs}s` : "Resend code"}
+          {secs > 0 ? t("forgot.resendIn", { secs }) : t("forgot.resend")}
         </Button>
       </Stack>
     </Box>

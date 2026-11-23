@@ -1,6 +1,7 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { Check, RadioButtonChecked } from "@mui/icons-material";
-import { PLAN_BENEFITS, tweetLimitText } from "./plansConstants";
+import { useTranslation } from "react-i18next";
+import { getPlanBenefits, tweetLimitText } from "./plansConstants";
 
 export default function PlanCard({
   plan,
@@ -9,13 +10,16 @@ export default function PlanCard({
   payingPlan,
   onChoose,
 }) {
+  const { t } = useTranslation();
   const isFree = plan.id === "free";
   const isPopular = plan.id === "silver";
 
-  let buttonLabel = `Subscribe to ${plan.name}`;
-  if (payingPlan === plan.id) buttonLabel = "Processing...";
-  else if (isCurrent) buttonLabel = "Current plan";
-  else if (!isOpenNow) buttonLabel = "Payments closed";
+  let buttonLabel = t("plans.subscribeTo", { name: plan.name });
+  if (payingPlan === plan.id) buttonLabel = t("plans.processing");
+  else if (isCurrent) buttonLabel = t("plans.currentPlan");
+  else if (!isOpenNow) buttonLabel = t("plans.paymentsClosedBtn");
+
+  const benefits = getPlanBenefits(plan.id, t);
 
   return (
     <Box
@@ -74,7 +78,7 @@ export default function PlanCard({
                 fontWeight: 700,
               }}
             >
-              Most popular
+              {t("plans.mostPopular")}
             </Box>
           )}
 
@@ -90,7 +94,7 @@ export default function PlanCard({
                 fontWeight: 700,
               }}
             >
-              Active
+              {t("plans.active")}
             </Box>
           )}
         </Stack>
@@ -101,7 +105,7 @@ export default function PlanCard({
             {isFree ? "₹0" : `₹${plan.priceInr}`}
           </Typography>
           <Typography component="span" fontSize={13} sx={{ color: "#71767b", ml: 0.75 }}>
-            {isFree ? "" : "/ month"}
+            {isFree ? "" : t("plans.perMonth")}
           </Typography>
         </Stack>
 
@@ -167,7 +171,7 @@ export default function PlanCard({
               },
             }}
           >
-            Your current plan
+            {t("plans.yourCurrentPlan")}
           </Button>
         )}
 
@@ -191,13 +195,13 @@ export default function PlanCard({
               },
             }}
           >
-            Free Tier
+            {t("plans.freeTier")}
           </Button>
         )}
 
         {/* Tweet limit */}
         <Typography fontSize={13} sx={{ color: "#e7e9ea", mb: 2, fontWeight: 500 }}>
-          {tweetLimitText(plan.tweetLimit)}
+          {tweetLimitText(plan.tweetLimit, t)}
         </Typography>
 
         {/* Divider */}
@@ -214,9 +218,9 @@ export default function PlanCard({
               letterSpacing: "0.5px",
             }}
           >
-            Benefits
+            {t("plans.benefits")}
           </Typography>
-          {PLAN_BENEFITS[plan.id]?.map((feature) => (
+          {benefits.map((feature) => (
             <Stack key={feature} direction="row" alignItems="flex-start" spacing={1}>
               <Check
                 sx={{

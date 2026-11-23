@@ -1,8 +1,10 @@
 import { IconButton, Stack, Typography } from "@mui/material";
 import { Close } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import TwitterLogo from "../TwitterLogo";
 
 export default function PlansHeader({ onClose }) {
+  const { t } = useTranslation();
   return (
     <>
       <IconButton
@@ -40,11 +42,10 @@ export default function PlansHeader({ onClose }) {
             mt: 1,
           }}
         >
-          One subscription. Access to everything.
+          {t("plans.headerTitle")}
         </Typography>
         <Typography fontSize={15} sx={{ color: "#71767b", maxWidth: 540 }}>
-          Choose the tier that matches your creative voice. Unlock higher tweet
-          limits, audio features, and premium benefits.
+          {t("plans.headerDesc")}
         </Typography>
       </Stack>
     </>

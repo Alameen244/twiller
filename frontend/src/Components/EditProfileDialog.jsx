@@ -9,11 +9,14 @@ import {
   Box,
 } from "@mui/material";
 import { Close, PhotoCamera } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import { Button } from "./UI";
 import { Avatar } from "./UI";
 import { useAuth } from "../Context/AuthContext";
 import { uploadSingleImage } from "../Apis/imageApi";
+
 export default function EditProfileDialog({ open, onClose }) {
+  const { t } = useTranslation();
   const { user, updateProfile, isLoading } = useAuth();
   const [data, setData] = useState({
     displayName: "",
@@ -38,13 +41,14 @@ export default function EditProfileDialog({ open, onClose }) {
 
   // Don't render until we have user data
   if (!user) return null;
+
   const field = (name, label, max, multi = false) => (
     <TextField
       label={label}
       value={data[name]}
       onChange={(e) => setData({ ...data, [name]: e.target.value })}
       slotProps={{
-        htmlInput: { maxLength: max }
+        htmlInput: { maxLength: max },
       }}
       multiline={multi}
       minRows={multi ? 3 : 1}
@@ -58,6 +62,7 @@ export default function EditProfileDialog({ open, onClose }) {
       }}
     />
   );
+
   const submit = async (e) => {
     e.preventDefault();
     try {
@@ -92,12 +97,12 @@ export default function EditProfileDialog({ open, onClose }) {
       maxWidth="sm"
       slotProps={{
         paper: {
-          sx: { bgcolor: "#000", color: "#fff", border: "1px solid #2f3336" }
-        }
+          sx: { bgcolor: "#000", color: "#fff", border: "1px solid #2f3336" },
+        },
       }}
     >
       <DialogTitle fontWeight={700} data-component="dialog-title">
-        Edit profile
+        {t("profile.editProfileTitle")}
         <IconButton onClick={onClose} sx={{ float: "right", color: "#fff" }} data-component="close-button">
           <Close />
         </IconButton>
@@ -138,14 +143,14 @@ export default function EditProfileDialog({ open, onClose }) {
               </IconButton>
               {uploading && (
                 <Box sx={{ color: "#1d9bf0", fontSize: 14 }} data-component="upload-status">
-                  Uploading...
+                  {t("profile.uploading")}
                 </Box>
               )}
             </Box>
-            {field("displayName", "Name", 50)}
-            {field("bio", "Bio", 160, true)}
-            {field("location", "Location", 30)}
-            {field("website", "Website", 100)}
+            {field("displayName", t("profile.name"), 50)}
+            {field("bio", t("profile.bio"), 160, true)}
+            {field("location", t("profile.location"), 30)}
+            {field("website", t("profile.website"), 100)}
             <Button
               data-component="save-button"
               type="submit"
@@ -160,7 +165,7 @@ export default function EditProfileDialog({ open, onClose }) {
                 },
               }}
             >
-              {isLoading ? "Saving..." : "Save"}
+              {isLoading ? t("profile.saving") : t("profile.save")}
             </Button>
           </Stack>
         </form>

@@ -1,43 +1,44 @@
 import { useState } from "react";
-import { Box, Button  } from "@mui/material";
+import { Box, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import AccountInfoRow from "./AccountInfoRow";
 import PhoneVerifyDialog from "./PhoneVerifyDialog";
 import { pillButtonSx } from "./settingsStyles";
 
-const formatDate = (d) =>
+const formatDate = (d, lang = "en") =>
   d
-    ? new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+    ? new Date(d).toLocaleDateString(lang, { month: "long", day: "numeric", year: "numeric" })
     : "—";
 
 export default function AccountInfo({ user }) {
+  const { t, i18n } = useTranslation();
   const [phoneOpen, setPhoneOpen] = useState(false);
   if (!user) return null;
 
   return (
     <Box>
-      <AccountInfoRow label="Name" value={user.displayName} />
-      <AccountInfoRow label="Username" value={`@${user.username}`} />
-      <AccountInfoRow label="Email" value={user.email} />
-      <AccountInfoRow label="Joined" value={formatDate(user.joinedDate)} />
-      <AccountInfoRow label="Location" value={user.location || "Not set"} />
+      <AccountInfoRow label={t("account.name")} value={user.displayName} />
+      <AccountInfoRow label={t("account.username")} value={`@${user.username}`} />
+      <AccountInfoRow label={t("account.email")} value={user.email} />
+      <AccountInfoRow label={t("account.joined")} value={formatDate(user.joinedDate, i18n.language)} />
+      <AccountInfoRow label={t("account.location")} value={user.location || t("account.notSet")} />
 
       {user.phoneNumber ? (
         <AccountInfoRow
-          label="Phone number"
+          label={t("account.phoneNumber")}
           value={user.phoneNumber}
           verified={user.isPhoneVerified}
         />
       ) : (
         <AccountInfoRow
           warning
-          label="Phone number"
-          value="No mobile number registered"
-          hint="Add a mobile number to secure your account and recover your password."
-            action={
+          label={t("account.phoneNumber")}
+          value={t("account.noPhone")}
+          hint={t("account.phoneHint")}
+          action={
             <Button onClick={() => setPhoneOpen(true)} sx={pillButtonSx}>
-              Register mobile number
+              {t("account.registerPhone")}
             </Button>
-
           }
         />
       )}

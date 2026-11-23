@@ -1,6 +1,5 @@
 export const endpoints = {
   //auth
-  posts: '/api/v1/tweets/post',
   register: '/api/v1/users/register',
   loggedInUser: '/api/v1/users/loggedinuser',
   phoneSendOtp: '/api/v1/users/phone/send-otp',
@@ -9,6 +8,10 @@ export const endpoints = {
   forgotPasswordRequest: '/api/v1/users/forgot-password/request',
   forgotPasswordReset: '/api/v1/users/forgot-password/reset',
 
+  //language
+  languageRequestOtp: '/api/v1/users/language/request-otp',
+  languageVerifyOtp: '/api/v1/users/language/verify-otp',
+
   //login session
   loginSession: '/api/v1/users/login-session',
   loginSessionVerify: '/api/v1/users/login-session/verify',
@@ -16,9 +19,11 @@ export const endpoints = {
   loginHistory: '/api/v1/users/login-history',
 
   //post
+  posts: '/api/v1/tweets/post',
   like: (id) => `/api/v1/tweets/like/${id}`,
   retweet: (id) => `/api/v1/tweets/retweet/${id}`,
   deletePost: (id) => `/api/v1/tweets/${id}`,
+  translateTweets: '/api/v1/tweets/translate',
 
   //image
   uploadSingleImage: '/api/v1/image/uploadSingle',

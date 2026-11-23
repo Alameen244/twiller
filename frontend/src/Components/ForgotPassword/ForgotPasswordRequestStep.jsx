@@ -1,4 +1,5 @@
 import { Box, InputAdornment, Tab, Tabs, TextField, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { Button, Input } from "../UI";
 
 const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21,6 +22,7 @@ export default function ForgotPasswordRequestStep({
   onSubmit,
   busy,
 }) {
+  const { t } = useTranslation();
   const valid = method === "email" ? EMAIL_FORMAT.test(email.trim()) : digits.length === 10;
 
   return (
@@ -32,10 +34,10 @@ export default function ForgotPasswordRequestStep({
       }}
     >
       <Typography variant="h5" fontWeight={800} mb={1}>
-        Find your Twiller account
+        {t("forgot.title")}
       </Typography>
       <Typography color="#71767b" mb={3}>
-        Choose where we should send your 6-digit verification code.
+        {t("forgot.chooseWhere")}
       </Typography>
 
       <Tabs
@@ -49,15 +51,15 @@ export default function ForgotPasswordRequestStep({
           "& .MuiTabs-indicator": { bgcolor: "#1d9bf0" },
         }}
       >
-        <Tab value="email" label="Email" sx={tabSx} />
-        <Tab value="phone" label="Phone" sx={tabSx} />
+        <Tab value="email" label={t("forgot.emailTab")} sx={tabSx} />
+        <Tab value="phone" label={t("forgot.phoneTab")} sx={tabSx} />
       </Tabs>
 
       {method === "email" ? (
         <Input
           autoFocus
           type="email"
-          placeholder="Email address"
+          placeholder={t("forgot.emailPlaceholder")}
           value={email}
           onChange={(e) => onEmailChange(e.target.value)}
         />
@@ -65,7 +67,7 @@ export default function ForgotPasswordRequestStep({
         <TextField
           fullWidth
           autoFocus
-          placeholder="Mobile number"
+          placeholder={t("forgot.phonePlaceholder")}
           value={digits}
           onChange={(e) => onDigitsChange(e.target.value.replace(/\D/g, "").slice(0, 10))}
           inputProps={{ inputMode: "numeric" }}
@@ -85,9 +87,7 @@ export default function ForgotPasswordRequestStep({
       )}
 
       <Typography fontSize={13} color="#71767b" mt={1} mb={3}>
-        {method === "email"
-          ? "We'll email you a code."
-          : "We'll text a code to your verified mobile number."}
+        {method === "email" ? t("forgot.emailHint") : t("forgot.phoneHint")}
       </Typography>
 
       <Button
@@ -103,7 +103,7 @@ export default function ForgotPasswordRequestStep({
           "&.Mui-disabled": { bgcolor: "#1d9bf0", color: "#fff", opacity: 0.5 },
         }}
       >
-        {busy ? "Sending..." : "Send OTP"}
+        {busy ? t("forgot.sending") : t("forgot.sendOtp")}
       </Button>
     </Box>
   );

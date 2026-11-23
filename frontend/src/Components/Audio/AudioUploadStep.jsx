@@ -1,18 +1,20 @@
 import { Box, LinearProgress, Stack, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { Button } from "../UI";
 
 export default function AudioUploadStep({ progress, onCancel }) {
+  const { t } = useTranslation();
   const processing = progress >= 100;
 
   return (
     <Box>
       <Typography sx={{ fontSize: 24, fontWeight: 800, mb: 1 }}>
-        {processing ? "Processing audio..." : "Uploading audio..."}
+        {processing ? t("audio.processingTitle") : t("audio.uploadingTitle")}
       </Typography>
       <Typography sx={{ fontSize: 14, color: "#71767b", mb: 3, lineHeight: 1.5 }}>
         {processing
-          ? "Almost done. We are checking and saving your audio. This can take a few seconds."
-          : "Please keep this window open until the upload finishes."}
+          ? t("audio.processingDesc")
+          : t("audio.uploadingDesc")}
       </Typography>
 
       <LinearProgress
@@ -28,7 +30,7 @@ export default function AudioUploadStep({ progress, onCancel }) {
 
       <Stack direction="row" justifyContent="space-between" sx={{ mt: 1 }}>
         <Typography sx={{ fontSize: 13, color: "#71767b" }}>
-          {processing ? "Processing" : "Uploading"}
+          {processing ? t("audio.processing") : t("audio.uploading")}
         </Typography>
         <Typography sx={{ fontSize: 13, color: "#71767b", fontVariantNumeric: "tabular-nums" }}>
           {progress}%
@@ -38,7 +40,7 @@ export default function AudioUploadStep({ progress, onCancel }) {
       {!processing && (
         <Stack alignItems="center" sx={{ mt: 3 }}>
           <Button onClick={onCancel} sx={{ color: "#f4212e", fontWeight: 700, bgcolor: "transparent" }}>
-            Cancel upload
+            {t("audio.cancelUpload")}
           </Button>
         </Stack>
       )}

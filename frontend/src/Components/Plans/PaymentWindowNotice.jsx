@@ -1,6 +1,8 @@
 import { Box, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 export default function PaymentWindowNotice({ isOpenNow, label }) {
+  const { t } = useTranslation();
   return (
     <Box
       data-component="payment-window-notice"
@@ -23,15 +25,14 @@ export default function PaymentWindowNotice({ isOpenNow, label }) {
         sx={{ color: isOpenNow ? "#00ba7c" : "#f4212e" }}
       >
         {isOpenNow
-          ? "● Payments are open right now"
-          : "● Payments are closed right now"}
+          ? t("plans.paymentsOpen")
+          : t("plans.paymentsClosed")}
       </Typography>
       <Typography
         fontSize={13}
         sx={{ color: "#71767b", mt: 0.5, lineHeight: 1.5 }}
       >
-        Payments are accepted only between {label}. Any payment attempt outside
-        this time is blocked.
+        {t("plans.windowNotice", { label })}
       </Typography>
     </Box>
   );

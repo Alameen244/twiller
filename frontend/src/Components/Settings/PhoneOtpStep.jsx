@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import OtpInput from "../UI/OtpInput";
 
 const RESEND_SECONDS = 30;
 
 export default function PhoneOtpStep({ phone, onVerify, onResend, busy, otpKey }) {
+  const { t } = useTranslation();
   const [secs, setSecs] = useState(RESEND_SECONDS);
 
   useEffect(() => {
@@ -19,14 +21,20 @@ export default function PhoneOtpStep({ phone, onVerify, onResend, busy, otpKey }
 
   return (
     <Box>
-      <Typography variant="h5" fontWeight={800} mb={1}>We sent you a code</Typography>
-      <Typography color="#71767b" mb={3}>Enter it below to verify {phone}.</Typography>
+      <Typography variant="h5" fontWeight={800} mb={1}>
+        {t("account.weSentCode")}
+      </Typography>
+      <Typography color="#71767b" mb={3}>
+        {t("account.enterCodeToVerify", { phone })}
+      </Typography>
 
       <OtpInput key={otpKey} length={6} onOtpSubmit={onVerify} disabled={busy} />
 
       <Box sx={{ minHeight: 24, mt: 2, textAlign: "center" }}>
         {busy && (
-          <Typography fontSize={14} color="#71767b">Verifying...</Typography>
+          <Typography fontSize={14} color="#71767b">
+            {t("account.verifying")}
+          </Typography>
         )}
       </Box>
 
@@ -36,7 +44,7 @@ export default function PhoneOtpStep({ phone, onVerify, onResend, busy, otpKey }
           disabled={secs > 0 || busy}
           sx={{ textTransform: "none", color: "#1d9bf0", "&.Mui-disabled": { color: "#71767b" } }}
         >
-          {secs > 0 ? `Resend code in ${secs}s` : "Resend code"}
+          {secs > 0 ? t("account.resendIn", { secs }) : t("account.resend")}
         </Button>
       </Box>
     </Box>

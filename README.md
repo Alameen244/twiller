@@ -1,5 +1,5 @@
 # twiller
-twitter clone
+social media platform
 
 
 
@@ -254,3 +254,104 @@ No new variables. It uses the existing `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_
 ### Main files
 - Backend: `constants/audioLimits.js`, `models/audioUploadGrantModel.js`, `services/audioGrantService.js`, `services/audioStorageService.js`, `controllers/audioOtpController.js`, `controllers/audioTweetController.js`, `middlewares/audioUpload.middleware.js`, `routes/tweetRoutes.js`
 - Frontend: `Apis/audioApi.js`, `helper/useAudioRecorder.js`, `helper/audioConstants.js`, `Components/Audio/AudioTweetDialog.jsx`, `AudioOtpStep.jsx`, `AudioUploadStep.jsx`, `Components/TweetCard.jsx`, `Components/TweetComposer.jsx`
+
+## Multi-Language Support & Post Translation
+
+Twiller features comprehensive multi-language support across all pages and post content in six languages, backed by an OTP-authenticated language switching protocol and AI-powered post translations with MongoDB caching.
+
+### Supported Languages
+
+| Code | Language | Native Name | Authentication Channel |
+|---|---|---|---|
+| `en` | English | English | SMS OTP (to registered mobile number) |
+| `es` | Spanish | Español | SMS OTP (to registered mobile number) |
+| `hi` | Hindi | हिन्दी | SMS OTP (to registered mobile number) |
+| `pt` | Portuguese | Português | SMS OTP (to registered mobile number) |
+| `zh` | Chinese | 中文 | SMS OTP (to registered mobile number) |
+| `fr` | French | Français | **Email OTP** (to registered email address) |
+
+---
+
+### The OTP Authentication Rule
+Per requirements:
+1. **French (`fr`):** Requires 6-digit OTP verification delivered to the user's **registered email address** via Brevo.
+2. **All Other Languages (`en`, `es`, `hi`, `pt`, `zh`):** Requires 6-digit OTP verification delivered via **SMS** to the user's **registered mobile number** via Twilio Verify.
+3. **Switching Logic:**
+   - If the user selects the language that is already active on their account, no OTP is sent and no verification is requested.
+   - The user's preferred language is persisted in MongoDB (`User.language`) **only after successful OTP verification**, ensuring unverified requests cannot alter user state.
+   - On the frontend, `AuthContext` syncs `i18next` with `user.language` upon login, and language selections persist locally in `localStorage` under `twitter-language`.
+
+---
+
+### UI Translation (i18n Architecture)
+- **Framework:** Configured with `i18next` and `react-i18next` (`twiller/frontend/src/i18n.js`).
+- **Comprehensive coverage:** Every public and authenticated page is translated with complete locale catalogs (`src/locales/{en, es, hi, pt, zh, fr}.json`):
+  - **Landing & Auth:** Hero headings, terms notice, Google/Apple auth buttons, login & signup modal forms, Chrome login OTP gate dialog, Firebase auth error mappings.
+  - **Navigation & Layout:** Sidebar navigation items, mobile bottom bar, search bars, user avatar menu, logout confirmation dialog.
+  - **Feed & Tweet Composer:** Tabs ("For you" / "Following"), empty states, tweet character limit alerts, audio tweet controls, tweet action menus, delete confirmations.
+  - **Audio Tweets:** Record & file upload modals, time window notice, duration warnings, audio OTP steps, upload progress bars.
+  - **Settings & Account:** Settings menu list, account detail rows, mobile number registration dialog, phone OTP verification.
+  - **Login History:** Security overview, localized IST timestamps, browser/OS/device category badges, verification status chips.
+  - **Subscription Plans:** Pricing header, active payment window banners, current plan usage summaries, tier benefit lists, Razorpay checkout status toasts.
+  - **Forgot Password:** Dual-channel request step (Email / Phone tabs), reset password form, letters-only password generator, success screen.
+  - **Profile:** Post counter (`post` vs `posts` plurals), localized joined date, profile tabs (Posts, Replies, Highlights, Articles, Media), edit profile dialog and image upload status.
+- **Font Rendering & CJK/Devanagari Support:** Cross-platform typography fallback stack in `index.css` (`"Noto Sans Devanagari"`, `"Nirmala UI"`, `"PingFang SC"`, `"Microsoft YaHei"`) ensures crisp, ligature-accurate rendering for Hindi and Chinese without layout shifts or missing glyphs.
+- **Locale-Aware Formatting:**
+  - Dates and timestamps dynamically format via `toLocaleDateString(i18n.language)` and `toLocaleString(i18n.language)`.
+  - Subscription prices and tweet counters adapt cleanly according to user locale.
+
+---
+
+### Post / Tweet Translation via Gemini API
+Tweets written in other languages are translated so users can read all posts in their preferred language.
+
+1. **Model:** Google Gemini (`gemini-2.5-flash-lite`, or configured via `GEMINI_MODEL`) using Google's Generative Language REST API (`/v1beta/models/{model}:generateContent`).
+2. **Persistent MongoDB Cache:**
+   - Model: `TweetTranslation` (`twiller/backend/src/models/tweetTranslationModel.js`).
+   - Compound unique index: `{ tweet: 1, language: 1 }`.
+   - Because tweets cannot be edited, cached translations never go stale. Once a tweet is translated into a given language, subsequent reads never query the Gemini API.
+   - Includes a 30-day MongoDB TTL index for automatic cache cleanup of deleted posts.
+3. **Batched Processing:**
+   - The frontend (`useTweetTranslations.js`) uses an `IntersectionObserver` to collect visible tweet IDs in batches of up to 25 (`POST /api/v1/tweets/translate`).
+   - The backend checks MongoDB cache first and makes at most **one single batched Gemini call** with a structured JSON array schema for any uncached tweets.
+4. **Free-Tier Limits & Memory Quota Guard:**
+   - Gemini free tier limits: **15 requests per minute (RPM)** and **500 requests per day (RPD)**.
+   - In-memory quota guard in `translationService.js`:
+     - Hard limit of **10 calls/minute** (recent sliding window).
+     - Hard limit of **400 calls/day** (resets at midnight US Pacific Time, aligned with Google's quota reset).
+   - Express route rate limiter: 30 requests/minute per IP (`translationRateLimiter`).
+5. **Fail-Safe Fallback:**
+   - If Gemini is rate-limited, times out (20s timeout), or returns 503, the service catches the error, sets `partial: true`, and returns the original tweet text. The page never crashes or hangs.
+6. **Interactive Toggle:**
+   - When a post's translated text differs from its original text, `TweetCard.jsx` displays the translated content along with a one-click toggle to switch between **Show original** and **Show translation**.
+
+---
+
+### API Reference
+
+| Endpoint | Method | Auth | Description |
+|---|---|---|---|
+| `/api/v1/users/language/request-otp` | `POST` | Yes | Dispatches verification OTP (Email for French, SMS for others). Rate limited. |
+| `/api/v1/users/language/verify-otp` | `POST` | Yes | Validates 6-digit OTP and updates user's preferred language in MongoDB. |
+| `/api/v1/tweets/translate` | `POST` | Yes | Translates a batch of up to 25 tweet IDs into the authenticated user's language using cache + Gemini. |
+
+---
+
+### Environment Variables
+Add the following to `twiller/backend/.env` (and your cloud hosting provider, e.g., Render):
+
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `GEMINI_API_KEY` | Yes | — | Google AI Studio Gemini API key (free tier) |
+| `GEMINI_MODEL` | No | `gemini-2.5-flash-lite` | Gemini model name for translations |
+| `BREVO_API_KEY` | Yes | — | Used to send email OTP for French language selection |
+| `TWILIO_ACCOUNT_SID` | Yes | — | Used to send SMS OTP for other language selections |
+| `TWILIO_AUTH_TOKEN` | Yes | — | Twilio authentication token |
+| `TWILIO_VERIFY_SERVICE_SID` | Yes | — | Twilio Verify Service SID |
+| `OTP_HMAC_SECRET` | Yes | — | Secret used for hashing email verification OTPs |
+
+---
+
+### Main Files
+- **Backend:** `constants/languages.js`, `models/tweetTranslationModel.js`, `services/translationService.js`, `controllers/languageController.js`, `controllers/translationController.js`, `middlewares/translationRateLimiter.js`, `routes/userRoutes.js`, `routes/tweetRoutes.js`
+- **Frontend:** `src/i18n.js`, `src/locales/{en, es, hi, pt, zh, fr}.json`, `helper/useTweetTranslations.js`, `Components/Settings/LanguageDialog.jsx`, `Components/Settings/LanguageOtpStep.jsx`, `Components/TweetCard.jsx`, `Components/Settings/AccountInfo.jsx`, `Pages/SettingsPage.jsx`, `Pages/PlansPage.jsx`, `Pages/ForgotPasswordPage.jsx`, `Pages/ProfilePage.jsx`

@@ -5,12 +5,14 @@ import {
   CircularProgress,
   IconButton,
   Popover,
+  Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
 import AutoAwesome from "@mui/icons-material/AutoAwesome";
 import AllInclusive from "@mui/icons-material/AllInclusive";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getMySubscriptionApi } from "../Apis/subscriptionApi";
 
 const TRACK = "#2f3336";
@@ -22,8 +24,8 @@ const colorFor = (percent) => {
   return "#1d9bf0";
 };
 
-const formatDate = (iso) =>
-  new Date(iso).toLocaleDateString("en-IN", {
+const formatDate = (iso, lang = "en") =>
+  new Date(iso).toLocaleDateString(lang, {
     timeZone: "Asia/Kolkata",
     day: "numeric",
     month: "short",
@@ -33,7 +35,15 @@ const formatDate = (iso) =>
 // A grey track with a coloured arc on top, optional content in the middle.
 function Ring({ size, thickness, percent, color, children }) {
   return (
-    <Box sx={{ position: "relative", display: "inline-flex", width: size, height: size }}>
+    <Box
+      sx={{
+        position: "relative",
+        display: "inline-flex",
+        width: size,
+        height: size,
+        verticalAlign: "middle",
+      }}
+    >
       <CircularProgress
         variant="determinate"
         value={100}
@@ -55,18 +65,21 @@ function Ring({ size, thickness, percent, color, children }) {
         }}
       />
       {children && (
-        <Box
+        <Stack
+          direction="column"
+          alignItems="center"
+          justifyContent="center"
           sx={{
             position: "absolute",
-            inset: 0,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none",
           }}
         >
           {children}
-        </Box>
+        </Stack>
       )}
     </Box>
   );
@@ -75,6 +88,7 @@ function Ring({ size, thickness, percent, color, children }) {
 // Small ring or badge button for the tweet composer. Click it to see tweet usage.
 // refreshKey: change it (e.g. after posting a tweet) to reload the numbers.
 export default function UsageIndicator({ refreshKey = 0 }) {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [sub, setSub] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -102,15 +116,15 @@ export default function UsageIndicator({ refreshKey = 0 }) {
 
   let statusText = "";
   if (sub) {
-    if (unlimited) statusText = "Unlimited tweets on your plan";
-    else if (remaining === 0) statusText = "You have reached your limit";
-    else statusText = `${remaining} tweet${remaining === 1 ? "" : "s"} left`;
+    if (unlimited) statusText = t("usage.unlimitedOnPlan");
+    else if (remaining === 0) statusText = t("usage.limitReached");
+    else statusText = t("usage.tweetsLeft", { count: remaining });
   }
 
   return (
     <>
       {isGold ? (
-        <Tooltip title={`Gold Member · Unlimited tweets (${used} posted)`}>
+        <Tooltip title={t("usage.goldMemberTooltip", { used })}>
           <IconButton
             data-component="usage-button"
             onClick={(e) => {
@@ -141,7 +155,7 @@ export default function UsageIndicator({ refreshKey = 0 }) {
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="View usage">
+        <Tooltip title={t("usage.viewUsage")}>
           <IconButton
             data-component="usage-button"
             onClick={(e) => {
@@ -230,7 +244,7 @@ export default function UsageIndicator({ refreshKey = 0 }) {
                 fontWeight={800}
                 sx={{ letterSpacing: "1px", textTransform: "uppercase" }}
               >
-                Gold Membership
+                {t("usage.goldMembership")}
               </Typography>
             </Box>
 
@@ -268,20 +282,20 @@ export default function UsageIndicator({ refreshKey = 0 }) {
                     mt: 0.5,
                   }}
                 >
-                  Unlimited
+                  {t("usage.unlimited")}
                 </Typography>
               </Box>
             </Box>
 
             <Typography fontWeight={800} fontSize={16} sx={{ color: "#ffffff" }}>
-              Unlimited Tweets Active
+              {t("usage.unlimitedTweetsActive")}
             </Typography>
             <Typography fontSize={13} sx={{ color: "#8b98a5", mt: 0.5 }}>
-              {used} tweet{used === 1 ? "" : "s"} posted this period
+              {t("usage.tweetsPostedPeriod", { count: used })}
             </Typography>
             {sub?.expiresAt && (
               <Typography fontSize={12} sx={{ color: "#71767b", mt: 0.5 }}>
-                Valid until {formatDate(sub.expiresAt)}
+                {t("usage.validUntil", { date: formatDate(sub.expiresAt, i18n.language) })}
               </Typography>
             )}
 
@@ -305,7 +319,7 @@ export default function UsageIndicator({ refreshKey = 0 }) {
                 },
               }}
             >
-              Manage subscription
+              {t("usage.manageSubscription")}
             </Button>
           </>
         ) : (
@@ -315,22 +329,29 @@ export default function UsageIndicator({ refreshKey = 0 }) {
               fontWeight={700}
               sx={{ color: "#71767b", textTransform: "uppercase" }}
             >
-              Tweet usage
+              {t("usage.tweetUsage")}
             </Typography>
 
-            <Box sx={{ my: 2 }}>
+            <Box sx={{ my: 2, display: "flex", justifyContent: "center" }}>
               <Ring size={110} thickness={4} percent={percent} color={color}>
-                <Typography fontSize={26} fontWeight={800} lineHeight={1}>
-                  {`${used}/${sub?.tweetLimit ?? "-"}`}
-                </Typography>
-                <Typography fontSize={11} sx={{ color: "#71767b", mt: 0.5 }}>
-                  tweets used
-                </Typography>
+                <Stack
+                  direction="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  spacing={0.5}
+                >
+                  <Typography fontSize={26} fontWeight={800} lineHeight={1}>
+                    {`${used}/${sub?.tweetLimit ?? "-"}`}
+                  </Typography>
+                  <Typography fontSize={11} sx={{ color: "#71767b", lineHeight: 1 }}>
+                    {t("usage.tweetsUsed")}
+                  </Typography>
+                </Stack>
               </Ring>
             </Box>
 
             <Typography fontWeight={800} fontSize={16}>
-              {sub?.planName ? `${sub.planName} plan` : "Loading..."}
+              {sub?.planName ? t("usage.planTitle", { plan: sub.planName }) : t("common.loading")}
             </Typography>
             <Typography
               fontSize={13}
@@ -340,7 +361,7 @@ export default function UsageIndicator({ refreshKey = 0 }) {
             </Typography>
             {sub?.expiresAt && (
               <Typography fontSize={12} sx={{ color: "#71767b", mt: 0.5 }}>
-                Valid until {formatDate(sub.expiresAt)}
+                {t("usage.validUntil", { date: formatDate(sub.expiresAt, i18n.language) })}
               </Typography>
             )}
 
@@ -364,7 +385,7 @@ export default function UsageIndicator({ refreshKey = 0 }) {
                 },
               }}
             >
-              View plans
+              {t("usage.viewPlans")}
             </Button>
           </>
         )}

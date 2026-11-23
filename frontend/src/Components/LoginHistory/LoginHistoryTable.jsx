@@ -11,19 +11,12 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { getLoginHistoryApi } from "../../Apis/authApi";
 
-const STATUS_STYLES = {
-  success: { label: "Success", color: "#00ba7c" },
-  pending: { label: "Not verified", color: "#ffd400" },
-  blocked: { label: "Blocked", color: "#f4212e" },
-};
-
-const DEVICE_LABELS = { desktop: "Desktop", laptop: "Laptop", mobile: "Mobile" };
-
 // Shown in IST, the same timezone the mobile login window uses.
-const formatTime = (value) =>
-  new Date(value).toLocaleString("en-IN", {
+const formatTime = (value, lang = "en-IN") =>
+  new Date(value).toLocaleString(lang || "en-IN", {
     timeZone: "Asia/Kolkata",
     dateStyle: "medium",
     timeStyle: "short",
@@ -33,32 +26,46 @@ const cellSx = { color: "#e7e9ea", borderColor: "#2f3336", whiteSpace: "nowrap" 
 const headSx = { ...cellSx, color: "#71767b", fontWeight: 700 };
 
 export default function LoginHistoryTable() {
+  const { t, i18n } = useTranslation();
   const [rows, setRows] = useState(null);
   const [error, setError] = useState("");
+
+  const STATUS_STYLES = {
+    success: { label: t("loginHistory.statusSuccess"), color: "#00ba7c" },
+    pending: { label: t("loginHistory.statusPending"), color: "#ffd400" },
+    blocked: { label: t("loginHistory.statusBlocked"), color: "#f4212e" },
+  };
+
+  const getDeviceLabel = (type) => {
+    if (type === "desktop") return t("loginHistory.deviceDesktop");
+    if (type === "laptop") return t("loginHistory.deviceLaptop");
+    if (type === "mobile") return t("loginHistory.deviceMobile");
+    return type;
+  };
 
   useEffect(() => {
     let cancelled = false;
     getLoginHistoryApi()
       .then((data) => !cancelled && setRows(data))
-      .catch(() => !cancelled && setError("Could not load your login history."));
+      .catch(() => !cancelled && setError(t("loginHistory.couldNotLoad")));
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   return (
     <Box sx={{ p: 2, borderTop: "1px solid #2f3336" }}>
       <Typography variant="h6" fontWeight={700} sx={{ color: "#e7e9ea" }}>
-        Login history
+        {t("loginHistory.title")}
       </Typography>
       <Typography variant="body2" sx={{ color: "#71767b", mb: 2 }}>
-        Recent sign-ins to your account. Only you can see this.
+        {t("loginHistory.description")}
       </Typography>
 
       {error && <Typography color="error">{error}</Typography>}
       {!rows && !error && <CircularProgress size={24} />}
       {rows?.length === 0 && (
-        <Typography sx={{ color: "#71767b" }}>No logins recorded yet.</Typography>
+        <Typography sx={{ color: "#71767b" }}>{t("loginHistory.noLogins")}</Typography>
       )}
 
       {rows?.length > 0 && (
@@ -66,12 +73,12 @@ export default function LoginHistoryTable() {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell sx={headSx}>Date &amp; time (IST)</TableCell>
-                <TableCell sx={headSx}>Browser</TableCell>
-                <TableCell sx={headSx}>OS</TableCell>
-                <TableCell sx={headSx}>Device</TableCell>
-                <TableCell sx={headSx}>IP address</TableCell>
-                <TableCell sx={headSx}>Status</TableCell>
+                <TableCell sx={headSx}>{t("loginHistory.dateTimeIst")}</TableCell>
+                <TableCell sx={headSx}>{t("loginHistory.browser")}</TableCell>
+                <TableCell sx={headSx}>{t("loginHistory.os")}</TableCell>
+                <TableCell sx={headSx}>{t("loginHistory.device")}</TableCell>
+                <TableCell sx={headSx}>{t("loginHistory.ip")}</TableCell>
+                <TableCell sx={headSx}>{t("loginHistory.status")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -79,10 +86,10 @@ export default function LoginHistoryTable() {
                 const status = STATUS_STYLES[row.status] || STATUS_STYLES.success;
                 return (
                   <TableRow key={row._id}>
-                    <TableCell sx={cellSx}>{formatTime(row.createdAt)}</TableCell>
+                    <TableCell sx={cellSx}>{formatTime(row.createdAt, i18n.language)}</TableCell>
                     <TableCell sx={cellSx}>{row.browser}</TableCell>
                     <TableCell sx={cellSx}>{row.os}</TableCell>
-                    <TableCell sx={cellSx}>{DEVICE_LABELS[row.deviceType] || row.deviceType}</TableCell>
+                    <TableCell sx={cellSx}>{getDeviceLabel(row.deviceType)}</TableCell>
                     <TableCell sx={cellSx}>{row.ip}</TableCell>
                     <TableCell sx={cellSx}>
                       <Chip

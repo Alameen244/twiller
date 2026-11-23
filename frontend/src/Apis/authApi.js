@@ -96,3 +96,11 @@ export const resendLoginOtpApi = (sessionId) =>
     axiosInstance.post(endpoints.loginSessionResend, { sessionId }).then((r) => r.data);
 export const getLoginHistoryApi = () =>
     axiosInstance.get(endpoints.loginHistory).then((r) => r.data);
+
+
+
+// Language change (email OTP for French, SMS OTP for the rest)
+export const requestLanguageOtpApi = (language) =>
+    axiosInstance.post(endpoints.languageRequestOtp, { language }).then((r) => r.data);
+export const verifyLanguageOtpApi = (language, code) =>
+    axiosInstance.post(endpoints.languageVerifyOtp, { language, code }).then((r) => r.data);

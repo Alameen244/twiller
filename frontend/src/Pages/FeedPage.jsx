@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
-import { axiosInstance } from "../helper/helper";
-import { endpoints } from "../Apis/EndPoints/endpoints";
+import { useTranslation } from "react-i18next";
+import { getPostsApi } from "../Apis/tweetApi";
 import TweetComposer from "../Components/TweetComposer";
 import TweetCard from "../Components/TweetCard";
 import LoadingSpinner from "../Components/LoadingSpinner";
 import { useAuth } from "../Context/AuthContext";
+import useTweetTranslations from "../helper/useTweetTranslations";
 
 export default function FeedPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
+  const { translations, markVisible } = useTweetTranslations();
   const [tweets, setTweets] = useState([]),
     [loading, setLoading] = useState(true),
     [tab, setTab] = useState(0);
   useEffect(() => {
-    axiosInstance
-      .get(endpoints.posts)
-      .then((r) => setTweets(r.data || []))
+    getPostsApi()
+      .then((data) => setTweets(data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -34,7 +36,7 @@ export default function FeedPage() {
         }}
       >
         <Typography fontSize={20} fontWeight={700} sx={{ p: 2 }}>
-          Home
+          {t("feed.home")}
         </Typography>
         <Tabs
           value={tab}
@@ -50,8 +52,8 @@ export default function FeedPage() {
             "& .Mui-selected": { color: "#fff" },
           }}
         >
-          <Tab label="For you" />
-          <Tab label="Following" />
+          <Tab label={t("feed.forYou")} />
+          <Tab label={t("feed.following")} />
         </Tabs>
       </Box>
       {tab === 0 && <TweetComposer onTweetPosted={(tweet) => setTweets([tweet, ...tweets])} />}
@@ -59,13 +61,13 @@ export default function FeedPage() {
         <Box textAlign="center" py={8}>
           <LoadingSpinner />
           <Typography color="text.secondary" mt={2}>
-            Loading tweets...
+            {t("feed.loadingTweets")}
           </Typography>
         </Box>
       ) : displayedTweets.length === 0 ? (
         <Box textAlign="center" py={8}>
           <Typography color="text.secondary" fontSize={18}>
-            {tab === 1 ? "No tweets from people you follow yet" : "No tweets yet"}
+            {tab === 1 ? t("feed.noFollowingTweets") : t("feed.noTweets")}
           </Typography>
         </Box>
       ) : (
@@ -73,6 +75,8 @@ export default function FeedPage() {
           <TweetCard
             key={tweet._id}
             tweet={tweet}
+            translation={translations[tweet._id]}
+            onVisible={markVisible}
             onDelete={(id) => setTweets((prev) => prev.filter((t) => t._id !== id))}
           />
         ))

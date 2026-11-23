@@ -7,8 +7,10 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function LogoutDialog({ open, onClose, onConfirm }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const confirmLogout = async () => {
@@ -36,11 +38,11 @@ export default function LogoutDialog({ open, onClose, onConfirm }) {
       }}
     >
       <DialogTitle sx={{ pb: 0, fontSize: 20, fontWeight: 700 }}>
-        Log out of Twiller?
+        {t("logout.title")}
       </DialogTitle>
       <DialogContent sx={{ pt: "12px !important" }}>
         <Typography color="text.secondary">
-          You can always log back in at any time.
+          {t("logout.description")}
         </Typography>
       </DialogContent>
       <DialogActions sx={{ p: 2, pt: 1, gap: 1, flexDirection: "column" }}>
@@ -50,7 +52,7 @@ export default function LogoutDialog({ open, onClose, onConfirm }) {
           onClick={confirmLogout}
           sx={{ bgcolor: "#1A8CD8", color: "#fff", borderRadius: 99, fontWeight: 700 }}
         >
-          Log out
+          {t("logout.confirm")}
         </Button>
         <Button
           fullWidth
@@ -58,7 +60,7 @@ export default function LogoutDialog({ open, onClose, onConfirm }) {
           onClick={onClose}
           sx={{ borderColor: "#536471", color: "#f7f9f9", borderRadius: 99, fontWeight: 700 }}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
       </DialogActions>
     </Dialog>

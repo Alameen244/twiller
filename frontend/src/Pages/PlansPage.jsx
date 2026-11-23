@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Box, Dialog, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import { getMySubscriptionApi, getPlansApi } from "../Apis/subscriptionApi";
 import {
   startPlanCheckout,
@@ -17,6 +18,7 @@ import PlanCard from "../Components/Plans/PlanCard";
 
 export default function PlansPage({ open = true, onClose }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [plans, setPlans] = useState([]);
   const [paymentWindow, setPaymentWindow] = useState(null);
   const [mySub, setMySub] = useState(null);
@@ -45,11 +47,11 @@ export default function PlansPage({ open = true, onClose }) {
       setMySub(subData);
     } catch (err) {
       console.error(err);
-      toast.error("Could not load plans. Please try again.");
+      toast.error(t("plans.couldNotLoad"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     loadAll();
@@ -78,15 +80,15 @@ export default function PlansPage({ open = true, onClose }) {
       if (result.status === "paid") {
         toast.success(
           result.data?.invoiceEmailSent
-            ? `${plan.name} plan activated. Your invoice was sent to your email.`
-            : `${plan.name} plan activated. We could not send the invoice email.`,
+            ? t("plans.activatedInvoiceSent", { plan: plan.name })
+            : t("plans.activatedInvoiceFailed", { plan: plan.name }),
         );
         await loadAll();
       } else if (result.status === "cancelled") {
-        toast.info("Payment cancelled. You were not charged.");
+        toast.info(t("plans.paymentCancelled"));
       } else if (result.status === "verify_failed") {
         toast.error(
-          `Your payment (${result.paymentId}) was received but we could not confirm it yet. Please do not pay again. Refresh this page in a minute.`,
+          t("plans.paymentPendingConfirm", { paymentId: result.paymentId }),
           { autoClose: false },
         );
         loadAll();
@@ -122,7 +124,7 @@ export default function PlansPage({ open = true, onClose }) {
         <Box textAlign="center" py={8}>
           <LoadingSpinner />
           <Typography color="text.secondary" mt={2}>
-            Loading plans...
+            {t("plans.loadingPlans")}
           </Typography>
         </Box>
       ) : (
@@ -168,8 +170,7 @@ export default function PlansPage({ open = true, onClose }) {
             textAlign="center"
             sx={{ mt: 3, lineHeight: 1.6 }}
           >
-            Prices shown in INR. Subscriptions are billed per 30-day period
-            during active payment windows ({paymentWindow?.label}).
+            {t("plans.footerNotice", { label: paymentWindow?.label })}
           </Typography>
         </>
       )}

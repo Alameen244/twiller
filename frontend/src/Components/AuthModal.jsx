@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Close, Visibility, VisibilityOff } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import { Button } from "./UI";
 import TwitterLogo from "./TwitterLogo";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +18,7 @@ import { useAuth } from "../Context/AuthContext";
 import { toast } from 'react-toastify';
 
 export default function AuthModal({ open, onClose, initialMode = "login" }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { login, signup, isLoading } = useAuth(),
     [mode, setMode] = useState(initialMode),
@@ -49,7 +51,7 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
                     <IconButton
                       onClick={() => setShowPassword((s) => !s)}
                       edge="end"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
                       sx={{ color: "#71767b" }}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -75,11 +77,11 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
       !form.password ||
       (mode === "signup" && (!form.username || !form.displayName))
     ) {
-      toast.warn("Please complete all required fields.");
+      toast.warn(t("auth.requiredFields"));
       return;
     }
     if (form.password.length < 6) {
-      toast.warn("Password must be at least 6 characters.");
+      toast.warn(t("auth.passwordMinLength"));
       return;
     }
     try {
@@ -120,17 +122,17 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
         <Stack alignItems="center" spacing={3}>
           <TwitterLogo size={50} />
           <Typography variant="h5" fontWeight={700}>
-            {mode === "login" ? "Sign in to X" : "Create your account"}
+            {mode === "login" ? t("auth.signInToX") : t("auth.createYourAccount")}
           </Typography>
           <Stack component="form" onSubmit={submit} spacing={2} width="100%">
             {mode === "signup" && (
               <>
-                {f("displayName", "Display name")}
-                {f("username", "Username")}
+                {f("displayName", t("auth.displayName"))}
+                {f("username", t("auth.username"))}
               </>
             )}
-            {f("email", "Email", "email")}
-            {f("password", "Password", "password")}
+            {f("email", t("auth.email"), "email")}
+            {f("password", t("auth.password"), "password")}
              {mode === "login" && (
               <Button
                 type="button"
@@ -140,7 +142,7 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
                 }}
                 sx={{ color: "#1d9bf0", alignSelf: "flex-end", fontWeight: 700 }}
               >
-                Forgot password?
+                {t("auth.forgotPassword")}
               </Button>
             )}
             <Button
@@ -161,26 +163,26 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
               {isLoading ? (
                 <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
                   <CircularProgress size={18} sx={{ color: "#fff" }} />
-                  <span>{mode === "login" ? "Signing in..." : "Creating account..."}</span>
+                  <span>{mode === "login" ? t("auth.signingIn") : t("auth.creatingAccount")}</span>
                 </Stack>
               ) : mode === "login" ? (
-                "Sign in"
+                t("auth.signIn")
               ) : (
-                "Create account"
+                t("auth.createAccount")
               )}
             </Button>
           </Stack>
           <Typography color="text.secondary">
             {mode === "login"
-              ? "Don't have an account?"
-              : "Already have an account?"}{" "}
+              ? t("auth.dontHaveAccount")
+              : t("auth.alreadyHaveAccount")}{" "}
             <Button
               onClick={() => {
                 setMode(mode === "login" ? "signup" : "login");
               }}
               sx={{ color: "#1d9bf0", fontWeight: 700 }}
             >
-              {mode === "login" ? "Sign up" : "Sign in"}
+              {mode === "login" ? t("auth.signUp") : t("auth.signIn")}
             </Button>
           </Typography>
         </Stack>

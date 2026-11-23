@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { CheckCircle } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import { Avatar } from "./UI";
 
 const SUGGESTED_ACCOUNTS = [
@@ -37,6 +38,7 @@ const SUGGESTED_ACCOUNTS = [
 ];
 
 export default function WhoToFollow() {
+  const { t } = useTranslation();
   const [followingMap, setFollowingMap] = useState({});
 
   const toggleFollow = (username) => {
@@ -60,7 +62,7 @@ export default function WhoToFollow() {
         fontWeight={800}
         sx={{ px: 2, pt: 1.5, pb: 1, fontSize: 18 }}
       >
-        You might like
+        {t("whoToFollow.title")}
       </Typography>
 
       <Stack>
@@ -141,7 +143,7 @@ export default function WhoToFollow() {
                   },
                 }}
               >
-                {isFollowing ? "Following" : "Follow"}
+                {isFollowing ? t("whoToFollow.following") : t("whoToFollow.follow")}
               </Button>
             </Box>
           );
@@ -165,7 +167,7 @@ export default function WhoToFollow() {
             fontWeight: 500,
           }}
         >
-          Show more
+          {t("whoToFollow.showMore")}
         </Typography>
       </Box>
     </Box>
