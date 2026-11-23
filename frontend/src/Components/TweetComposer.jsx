@@ -3,6 +3,7 @@ import {
   Box,
   CircularProgress,
   IconButton,
+  LinearProgress,
   Stack,
   TextField,
   Tooltip,
@@ -27,7 +28,7 @@ import AudioTweetDialog from "./Audio/AudioTweetDialog";
 
 const MAX_TWEET_LENGTH = 300;
 
-export default function TweetComposer({ onTweetPosted }) {
+export default function TweetComposer({ onTweetPosted, onPostingStart, onPostingEnd }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -62,27 +63,42 @@ export default function TweetComposer({ onTweetPosted }) {
 
   const post = async (e) => {
     e.preventDefault();
-    if (!content.trim() || isOverLimit) return;
+    if (!content.trim() || isOverLimit || busy) return;
+
+    const textToPost = content;
+    const imageToPost = image;
+    const imagePreviewToPost = imagePreview;
+
     setBusy(true);
+    if (onPostingStart) {
+      onPostingStart({ content: textToPost, image: imagePreviewToPost || imageToPost });
+    }
+
+    // Reset inputs immediately for an instantaneous, responsive experience
+    setContent("");
+    setImage("");
+    setImagePreview("");
+
     try {
       const tweetData = await createPostApi({
         author: user._id,
-        content,
-        image,
+        content: textToPost,
+        image: imageToPost,
       });
       onTweetPosted(tweetData);
       setUsageRefresh((n) => n + 1); // update the usage ring
 
       // Cleanup blob URL after successful post
-      if (imagePreview && imagePreview.startsWith("blob:")) {
-        URL.revokeObjectURL(imagePreview);
+      if (imagePreviewToPost && imagePreviewToPost.startsWith("blob:")) {
+        URL.revokeObjectURL(imagePreviewToPost);
       }
-
-      setContent("");
-      setImage("");
-      setImagePreview("");
     } catch (err) {
       console.error(err);
+      // Restore user's draft on failure so work is never lost
+      setContent(textToPost);
+      setImage(imageToPost);
+      setImagePreview(imagePreviewToPost);
+
       const data = err.response?.data;
       if (data?.code === "TWEET_LIMIT_REACHED") {
         // Clicking the toast opens the Premium modal.
@@ -99,8 +115,10 @@ export default function TweetComposer({ onTweetPosted }) {
       }
     } finally {
       setBusy(false);
+      if (onPostingEnd) onPostingEnd();
     }
   };
+
   const upload = async (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -132,8 +150,30 @@ export default function TweetComposer({ onTweetPosted }) {
       data-component="tweet-composer"
       component="form"
       onSubmit={post}
-      sx={{ borderWidth: "0 0 1px", p: 2 }}
+      sx={{ borderWidth: "0 0 1px", p: 2, position: "relative", overflow: "hidden" }}
     >
+      {busy && (
+        <LinearProgress
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            bgcolor: "rgba(29, 155, 240, 0.15)",
+            "& .MuiLinearProgress-bar": {
+              background: "linear-gradient(90deg, #1d9bf0, #7856ff, #1d9bf0)",
+              backgroundSize: "200% 100%",
+              animation: "composerShimmer 1.8s infinite linear",
+            },
+            "@keyframes composerShimmer": {
+              "0%": { backgroundPosition: "200% 0" },
+              "100%": { backgroundPosition: "-200% 0" },
+            },
+          }}
+        />
+      )}
+
       <Stack direction="row" spacing={2} data-component="composer-container">
         <Avatar
           data-component="avatar"
@@ -152,6 +192,7 @@ export default function TweetComposer({ onTweetPosted }) {
             multiline
             minRows={4}
             fullWidth
+            disabled={busy}
             variant="standard"
             slotProps={{
               input: {
@@ -159,6 +200,8 @@ export default function TweetComposer({ onTweetPosted }) {
                 sx: {
                   fontSize: 20,
                   color: "#fff",
+                  opacity: busy ? 0.7 : 1,
+                  transition: "opacity 0.2s ease",
                   "& textarea::placeholder": { color: "#71767b", opacity: 1 },
                 },
               },
@@ -170,7 +213,7 @@ export default function TweetComposer({ onTweetPosted }) {
               component="img"
               src={imagePreview}
               alt="Preview"
-              sx={{ maxHeight: 220, maxWidth: "100%", borderRadius: 2, my: 1 }}
+              sx={{ maxHeight: 220, maxWidth: "100%", borderRadius: 2, my: 1, opacity: busy ? 0.7 : 1 }}
             />
           )}
           {uploading && (
@@ -192,6 +235,7 @@ export default function TweetComposer({ onTweetPosted }) {
             <Stack direction="row">
               <IconButton
                 component="label"
+                disabled={busy}
                 sx={{ color: "#1d9bf0" }}
                 data-component="image-upload-button"
               >
@@ -199,18 +243,21 @@ export default function TweetComposer({ onTweetPosted }) {
                 <input hidden type="file" accept="image/*" onChange={upload} />
               </IconButton>
               <IconButton
+                disabled={busy}
                 sx={{ color: "#1d9bf0" }}
                 data-component="emoji-button"
               >
                 <InsertEmoticonOutlined />
               </IconButton>
               <IconButton
+                disabled={busy}
                 sx={{ color: "#1d9bf0" }}
                 data-component="location-button"
               >
                 <LocationOnOutlined />
               </IconButton>
               <IconButton
+                disabled={busy}
                 sx={{ color: "#1d9bf0" }}
                 onClick={() => setAudioOpen(true)}
                 aria-label={t("composer.audioTweet")}
@@ -328,14 +375,26 @@ export default function TweetComposer({ onTweetPosted }) {
                   color: "#fff",
                   fontWeight: 700,
                   px: 2.5,
+                  minWidth: 80,
                   borderRadius: 99,
+                  transition: "all 0.2s ease",
                   "&.Mui-disabled": {
-                    bgcolor: "rgba(29, 155, 240, 0.5)",
-                    color: "rgba(255, 255, 255, 0.5)",
+                    bgcolor: busy ? "#1d9bf0" : "rgba(29, 155, 240, 0.5)",
+                    color: busy ? "#ffffff" : "rgba(255, 255, 255, 0.5)",
+                    opacity: busy ? 0.9 : 1,
                   },
                 }}
               >
-                {uploading ? t("composer.uploading") : t("composer.post")}
+                {busy ? (
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    <CircularProgress size={13} thickness={5} sx={{ color: "#fff" }} />
+                    <span>{t("composer.posting")}</span>
+                  </Stack>
+                ) : uploading ? (
+                  t("composer.uploading")
+                ) : (
+                  t("composer.post")
+                )}
               </Button>
             </Stack>
           </Stack>

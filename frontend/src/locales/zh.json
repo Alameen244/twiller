@@ -110,7 +110,8 @@
     "uploading": "发布中...",
     "audioTweet": "语音推文",
     "postFailed": "无法发布推文，请重试。",
-    "limitReached": "已达推文上限，点击查看方案。"
+    "limitReached": "已达推文上限，点击查看方案。",
+    "posting": "正在发布..."
   },
   "tweet": {
     "showOriginal": "显示原文",

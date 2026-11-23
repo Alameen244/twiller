@@ -110,7 +110,8 @@
     "uploading": "Publication...",
     "audioTweet": "Tweet audio",
     "postFailed": "Impossible de publier votre tweet. Veuillez réessayer.",
-    "limitReached": "Limite de tweets atteinte. Cliquez ici pour voir les forfaits."
+    "limitReached": "Limite de tweets atteinte. Cliquez ici pour voir les forfaits.",
+    "posting": "Publication..."
   },
   "tweet": {
     "showOriginal": "Afficher l'original",

@@ -179,7 +179,15 @@ export default function AppLayout() {
       <Box
         data-component="sidebar-right"
         component="aside"
-        sx={{ display: { xs: "none", lg: "block" }, width: 350, p: 2 }}
+        sx={{
+          display: { xs: "none", lg: "block" },
+          width: 350,
+          p: 2,
+          position: "sticky",
+          top: 0,
+          height: "100vh",
+          overflowY: "auto",
+        }}
       >
         <RightSidebar />
       </Box>

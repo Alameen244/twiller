@@ -110,7 +110,8 @@
     "uploading": "Uploading...",
     "audioTweet": "Audio tweet",
     "postFailed": "Could not post your tweet. Please try again.",
-    "limitReached": "Tweet limit reached. Click here to see plans."
+    "limitReached": "Tweet limit reached. Click here to see plans.",
+    "posting": "Posting..."
   },
   "tweet": {
     "showOriginal": "Show original",
