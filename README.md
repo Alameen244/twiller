@@ -355,3 +355,62 @@ Add the following to `twiller/backend/.env` (and your cloud hosting provider, e.
 ### Main Files
 - **Backend:** `constants/languages.js`, `models/tweetTranslationModel.js`, `services/translationService.js`, `controllers/languageController.js`, `controllers/translationController.js`, `middlewares/translationRateLimiter.js`, `routes/userRoutes.js`, `routes/tweetRoutes.js`
 - **Frontend:** `src/i18n.js`, `src/locales/{en, es, hi, pt, zh, fr}.json`, `helper/useTweetTranslations.js`, `Components/Settings/LanguageDialog.jsx`, `Components/Settings/LanguageOtpStep.jsx`, `Components/TweetCard.jsx`, `Components/Settings/AccountInfo.jsx`, `Pages/SettingsPage.jsx`, `Pages/PlansPage.jsx`, `Pages/ForgotPasswordPage.jsx`, `Pages/ProfilePage.jsx`
+
+
+## Keyword Notifications (Browser Notification API)
+
+When someone posts a tweet that contains the word **cricket** or **science**, users who turned notifications on get a browser popup that shows the **full tweet text**. Users can turn this on or off from their **Profile page** (also available in Settings), and the preference is enforced on both the backend and the frontend.
+
+### What it does
+- A tweet (or an audio tweet caption) that contains **cricket** or **science** triggers a notification. Matching is case-insensitive and whole-word, so `CRICKET` matches but `sciences` does not.
+- Only users who enabled notifications receive them. The tweet's author never gets a notification for their own tweet.
+- The popup uses the browser's built-in **Notification API**. Its title is translated ("{name} posted about {keyword}") and its body is the full tweet text.
+- Users can enable or disable notifications with a switch on the **Profile page** or in **Settings**. Both switches use the same logic and show the same state. The default is **off**.
+- A **Notifications page** (`/notifications`) lists the history, newest first, with the author, the full text and the time. Unread items are highlighted. "Mark all as read" clears them.
+- The sidebar bell shows a badge with the unread count.
+- The UI is translated into all six supported languages. The tweet text itself is never altered.
+
+### How it works
+1. A user posts a tweet. After it is saved, the backend checks the text for a keyword (`constants/notificationKeywords.js`). Audio tweets use their caption.
+2. If a keyword matches, the backend finds every user with `notificationsEnabled: true` (except the author) and inserts one `Notification` document per user. If this step fails, the error is only logged and posting still succeeds.
+3. The frontend (`NotificationContext`) loads the list once after login, which also tells it the saved preference. While the user is logged in **and** the preference is on, it polls `GET /api/v1/notifications` every 20 seconds.
+4. For each new unread notification it shows a browser popup. If the browser permission is not granted (or `new Notification()` is not supported), it shows an in-app toast with the same text, so the user still sees it.
+5. When the user turns the switch **off**, the backend stops creating notifications for them and the frontend stops polling. The old history stays visible.
+6. Deleting a tweet also deletes its notifications.
+
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/api/v1/notifications?limit=50` | `GET` | Notification list (newest first, default 50, max 100), unread count and saved preference |
+| `/api/v1/notifications/unread-count` | `GET` | Unread count and saved preference |
+| `/api/v1/notifications/read-all` | `PATCH` | Mark all of the user's notifications as read |
+| `/api/v1/notifications/preference` | `PATCH` | Save the preference. Body: `{ "enabled": true \| false }` (must be a real boolean) |
+
+All four need the Firebase token. The user is always taken from the token, never from the request. Rate limits per IP: 60 requests/minute for reads, 20 requests/minute for writes.
+
+### Design decisions
+- **Preference on the server:** `User.notificationsEnabled` is stored in MongoDB, so the choice follows the user across devices. A user with it off never gets notification documents, so the setting is respected at all times and not only hidden in the UI.
+- **Permission on click:** the browser permission prompt is requested straight from the switch click. Browsers ignore prompts that are not tied to a user action.
+- **Toast fallback:** a denied permission, an unsupported browser, or a mobile browser that throws on `new Notification()` falls back to a toast. The switch still turns on.
+- **No duplicates:** the `Notification` model has a unique `{ user, tweet }` index, so a user can never get two notifications for one tweet.
+- **No repeated popups:** the time of the newest popup already shown is kept per user in `localStorage` (`twitter-last-notified:<email>`), shared by all tabs. A refresh or a second tab does not repeat a popup, and the OS popup also uses the tweet id as its `tag`.
+- **No old popups:** on first load in a browser, and when the switch is turned on, existing notifications are marked as seen. Only tweets posted afterwards pop up.
+- **Popup limit:** at most 5 popups per poll, oldest first. The rest stay in the history list.
+- **Auto cleanup:** a 30-day TTL index deletes old notifications. Extra indexes `{ user, createdAt }` and `{ tweet }` keep the list and the delete-cleanup fast.
+- **Opening the page does not mark items as read.** The user sees what is new and clears it with the button.
+- **Polling, not WebSockets:** the backend runs on a free-tier host that sleeps when idle, and polling needs no extra server setup. Poll errors are only logged, with no toast, so a cold start does not spam the user.
+- **Keywords in one place:** the keyword list, regex and TTL live in `constants/notificationKeywords.js`.
+
+### Known limitations
+- Notifications are **polled every 20 seconds**, not pushed, so a popup can arrive up to about 20 seconds late. Browsers slow timers in background tabs, so it can take up to about a minute there.
+- Popups appear only while Twiller is open in a browser tab. There is no service worker or push service, so nothing is shown after the tab is closed. Unread items pop the next time the app is opened.
+- Only the tweet text and audio captions are checked, not images or audio content.
+- The keywords are fixed in code (`cricket`, `science`) and are not user-configurable.
+- The full text is passed to the browser, but the operating system may clip very long text in its popup. The toast and the Notifications page always show everything.
+- Browser notifications need HTTPS (or localhost). The deployed frontend is served over HTTPS.
+
+### Environment variables
+None. This feature uses the existing database and Firebase authentication.
+
+### Main files
+- **Backend:** `constants/notificationKeywords.js`, `models/notificationModel.js`, `models/userModel.js` (`notificationsEnabled`), `services/notificationService.js`, `controllers/notificationController.js`, `middlewares/notificationRateLimiters.js`, `routes/notificationRoutes.js`, `controllers/tweetController.js`, `controllers/audioTweetController.js`, `app.js`
+- **Frontend:** `Apis/notificationApi.js`, `Apis/EndPoints/endpoints.js`, `Context/NotificationContext.jsx`, `helper/browserNotification.js`, `helper/useNotificationToggle.js`, `Pages/NotificationsPage.jsx`, `Pages/ProfilePage.jsx`, `Pages/SettingsPage.jsx`, `Components/Settings/SettingsToggleItem.jsx`, `Components/Layout/AppLayout.jsx`, `App.jsx`, `main.jsx`, `src/locales/{en, es, hi, pt, zh, fr}.json`<!--  -->

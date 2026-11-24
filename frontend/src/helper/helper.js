@@ -3,16 +3,26 @@ import { auth } from "../Context/firebase";
 
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
-  headers: { "Content-Type": "application/json" },
 });
 
-// Attach the Firebase ID token. getIdToken() is cached and auto-refreshed by Firebase.
+// Attach headers and Firebase ID token.
 axiosInstance.interceptors.request.use(async (config) => {
-  // don't override a header a call sets itself (verifyPhoneApi forces a fresh token)
+  // If the payload is FormData, remove Content-Type so browser sets multipart/form-data with boundary
+  if (config.data instanceof FormData) {
+    if (config.headers?.delete) {
+      config.headers.delete("Content-Type");
+    } else if (config.headers) {
+      delete config.headers["Content-Type"];
+    }
+  } else if (config.headers && !config.headers["Content-Type"]) {
+    config.headers["Content-Type"] = "application/json";
+  }
+
+  // Attach the Firebase ID token. getIdToken() is cached and auto-refreshed by Firebase.
   if (auth?.currentUser && !config.headers.Authorization) {
     config.headers.Authorization = `Bearer ${await auth.currentUser.getIdToken()}`;
   }
   return config;
 });
 
-export default axiosInstance; 
+export default axiosInstance;

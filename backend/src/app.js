@@ -4,6 +4,7 @@ import userRoutes from './routes/userRoutes.js';
 import tweetRoutes from './routes/tweetRoutes.js';
 import imageRoutes from './routes/imageRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 const app = express();
 
@@ -36,5 +37,6 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/tweets', tweetRoutes);
 app.use('/api/v1/image', imageRoutes);
 app.use('/api/v1/subscriptions', subscriptionRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 
 export default app;

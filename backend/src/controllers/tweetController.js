@@ -2,8 +2,10 @@ import Tweet from '../models/tweetModel.js';
 import User from '../models/userModel.js';
 import { reserveTweetSlot, releaseTweetSlot } from '../services/subscriptionService.js';
 import { deleteAudioFromCloudinary } from '../services/audioStorageService.js';
+import { notifyKeywordTweet, deleteNotificationsForTweet } from '../services/notificationService.js';
 
 const AUTHOR_FIELDS = '-firebaseUid -phoneNumber -isPhoneVerified';
+const EMAIL_COLLATION = { locale: 'en', strength: 2 };
 
 // Create new tweet
 // Create new tweet (limited by the user's subscription plan)
@@ -18,7 +20,7 @@ export const createTweet = async (req, res) => {
     // The author is the logged-in user (from the Firebase token), never a value
     // from the request body, so nobody can post as, or use up the quota of,
     // another user.
-    const requestingUser = await User.findOne({ email: req.firebaseUser.email });
+    const requestingUser = await User.findOne({ email: req.firebaseUser.email }).collation(EMAIL_COLLATION);
     if (!requestingUser) {
       return res.status(401).send({ error: 'User not found' });
     }
@@ -55,6 +57,9 @@ export const createTweet = async (req, res) => {
       await releaseTweetSlot(requestingUser._id);
       throw saveError;
     }
+
+    // Keyword notifications (never throws, never blocks the response on failure).
+    await notifyKeywordTweet(tweet, requestingUser);
 
     await tweet.populate('author', AUTHOR_FIELDS);
     return res.status(201).send(tweet);
@@ -134,7 +139,7 @@ export const deleteTweet = async (req, res) => {
     if (!tweet) return res.status(404).json({ error: 'Tweet not found' });
 
     // Resolve the requesting Firebase user to their DB record
-    const requestingUser = await User.findOne({ email: req.firebaseUser.email });
+    const requestingUser = await User.findOne({ email: req.firebaseUser.email }).collation(EMAIL_COLLATION);
     if (!requestingUser) return res.status(401).json({ error: 'User not found' });
 
     // Ownership check: tweet.author (ObjectId) must match the requesting user's _id
@@ -143,6 +148,7 @@ export const deleteTweet = async (req, res) => {
     }
 
     await Tweet.findByIdAndDelete(req.params.tweetid);
+    await deleteNotificationsForTweet(tweet._id);
     if (tweet.audio?.publicId) {
       await deleteAudioFromCloudinary(tweet.audio.publicId);
     }

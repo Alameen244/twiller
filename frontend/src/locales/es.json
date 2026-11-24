@@ -94,6 +94,21 @@
     "subscribeDescription": "Suscríbete para desbloquear nuevas funciones y recibir ingresos.",
     "subscribe": "Suscribirse"
   },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty": "Aún no hay notificaciones",
+    "emptyDesc": "Cuando alguien publique sobre «cricket» o «science», aparecerá aquí.",
+    "markAllRead": "Marcar todo como leído",
+    "marked": "Todas las notificaciones se marcaron como leídas.",
+    "markFailed": "No se pudieron marcar las notificaciones como leídas.",
+    "offBanner": "Las notificaciones están desactivadas. Actívalas en Ajustes para recibir nuevas alertas.",
+    "openSettings": "Abrir ajustes",
+    "postedAbout": "{{name}} publicó sobre {{keyword}}",
+    "enabledToast": "Notificaciones activadas.",
+    "disabledToast": "Notificaciones desactivadas.",
+    "updateFailed": "No se pudo actualizar tu configuración de notificaciones. Inténtalo de nuevo.",
+    "permissionBlocked": "Las ventanas emergentes del navegador están bloqueadas, así que las alertas aparecerán dentro de Twiller."
+  },
   "feed": {
     "home": "Inicio",
     "forYou": "Para ti",
@@ -119,7 +134,8 @@
     "audioTweet": "Tweet de audio",
     "delete": "Eliminar",
     "deleted": "Publicación eliminada.",
-    "deleteFailed": "Error al eliminar la publicación. Intenta de nuevo."
+    "deleteFailed": "Error al eliminar la publicación. Intenta de nuevo.",
+    "translationDelayed": "La traducción de las publicaciones está tardando un poco más de lo habitual. Por favor, espera un momento."
   },
   "audio": {
     "title": "Tweet de audio",
@@ -195,7 +211,9 @@
     "premiumDescUnlimited": "Plan {{plan}} · {{used}} tweets publicados (ilimitado)",
     "premiumDescLimited": "Plan {{plan}} · {{used}} de {{limit}} tweets usados",
     "logout": "Cerrar sesión",
-    "logoutDesc": "Cierra la sesión de tu cuenta."
+    "logoutDesc": "Cierra la sesión de tu cuenta.",
+    "notifications": "Notificaciones",
+    "notificationsDesc": "Recibe una ventana emergente cuando alguien publique sobre «cricket» o «science»."
   },
   "account": {
     "title": "Tu cuenta",

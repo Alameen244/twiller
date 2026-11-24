@@ -28,6 +28,7 @@ import { auth } from "./firebase";
 import { toast } from "react-toastify";
 import { getAuthErrorMessage } from "./authErrors";
 import i18n from "../i18n";
+import { clearTranslationDelayNotice } from "../helper/useTweetTranslations";
 
 const AuthContext = createContext(null);
 const fallbackAvatar =
@@ -146,6 +147,7 @@ export function AuthProvider({ children }) {
       }
       clearPending();
       setPendingLogin(null);
+      clearTranslationDelayNotice();
       save(profile);
     } catch (err) {
       const data = err?.response?.data;
@@ -280,6 +282,7 @@ export function AuthProvider({ children }) {
     setUser(null);
     setPendingLogin(null);
     clearPending();
+    clearTranslationDelayNotice();
     localStorage.removeItem("twitter-user");
     if (auth) await signOut(auth);
   };

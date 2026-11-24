@@ -94,6 +94,21 @@
     "subscribeDescription": "订阅以解锁新功能并获取分成收益。",
     "subscribe": "订阅"
   },
+  "notifications": {
+    "title": "通知",
+    "empty": "暂无通知",
+    "emptyDesc": "当有人发布与“cricket”或“science”相关的内容时，会显示在这里。",
+    "markAllRead": "全部标为已读",
+    "marked": "所有通知已标为已读。",
+    "markFailed": "无法将通知标为已读。",
+    "offBanner": "通知已关闭。请在设置中开启以接收新提醒。",
+    "openSettings": "打开设置",
+    "postedAbout": "{{name}} 发布了关于 {{keyword}} 的内容",
+    "enabledToast": "通知已开启。",
+    "disabledToast": "通知已关闭。",
+    "updateFailed": "无法更新通知设置，请重试。",
+    "permissionBlocked": "浏览器弹窗已被阻止，提醒将显示在 Twiller 内。"
+  },
   "feed": {
     "home": "主页",
     "forYou": "推荐",
@@ -119,7 +134,8 @@
     "audioTweet": "语音推文",
     "delete": "删除",
     "deleted": "推文已删除。",
-    "deleteFailed": "删除推文失败，请重试。"
+    "deleteFailed": "删除推文失败，请重试。",
+    "translationDelayed": "帖子翻译耗时比平时略长，请稍候片刻。"
   },
   "audio": {
     "title": "语音推文",
@@ -195,7 +211,9 @@
     "premiumDescUnlimited": "{{plan}} 方案 · 已发布 {{used}} 条推文 (无限制)",
     "premiumDescLimited": "{{plan}} 方案 · 已使用 {{limit}} 条中的 {{used}} 条推文",
     "logout": "退出登录",
-    "logoutDesc": "退出你的账号。"
+    "logoutDesc": "退出你的账号。",
+    "notifications": "通知",
+    "notificationsDesc": "有人发布与“cricket”或“science”相关内容时收到弹窗提醒。"
   },
   "account": {
     "title": "你的账号",

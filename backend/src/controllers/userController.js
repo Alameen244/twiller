@@ -1,6 +1,7 @@
 import User from '../models/userModel.js';
 
 const PRIVATE_FIELDS = ['phoneNumber', 'isPhoneVerified', 'firebaseUid'];
+const EMAIL_COLLATION = { locale: 'en', strength: 2 };
 
 // Owner sees everything; anyone else gets the profile without private fields.
 const serializeUser = (user, req) => {
@@ -14,7 +15,7 @@ const serializeUser = (user, req) => {
 
 export const registerUser = async (req, res) => {
   try {
-    const existinguser = await User.findOne({ email: req.body.email });
+    const existinguser = await User.findOne({ email: req.body.email }).collation(EMAIL_COLLATION);
     if (existinguser) {
       return res.status(200).send(serializeUser(existinguser, req));
     }
@@ -33,7 +34,7 @@ export const getLoggedInUser = async (req, res) => {
     if (!email) {
       return res.status(400).send({ error: 'Email required' });
     }
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).collation(EMAIL_COLLATION);
     if (!user) return res.status(404).send({ error: 'User not found' });
     return res.status(200).send(serializeUser(user, req));
   } catch (error) {
@@ -48,7 +49,7 @@ export const updateUser = async (req, res) => {
     if (req.firebaseUser.email?.toLowerCase() !== email.toLowerCase()) {
       return res.status(403).send({ error: 'You can only edit your own profile' });
     }
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).collation(EMAIL_COLLATION);
     if (!user) {
       return res.status(404).send({ error: 'User not found' });
     }
@@ -69,7 +70,7 @@ export const updateUser = async (req, res) => {
       { email },
       { $set: updateData },
       { new: true, upsert: false }
-    );
+    ).collation(EMAIL_COLLATION);
     return res.status(200).send(serializeUser(updated, req));
   } catch (error) {
     return res.status(400).send({ error: error.message });
@@ -85,7 +86,7 @@ export const sendPhoneOtp = async (req, res) => {
     if (!E164.test(phoneNumber || ''))
       return res.status(400).json({ message: 'Enter a valid phone number' });
 
-    const taken = await User.findOne({ phoneNumber, email: { $ne: req.firebaseUser.email } });
+    const taken = await User.findOne({ phoneNumber, email: { $ne: req.firebaseUser.email } }).collation(EMAIL_COLLATION);
     if (taken) return res.status(409).json({ message: 'Phone number already in use' });
 
     await verifyService.verifications.create({ to: phoneNumber, channel: 'sms' });
@@ -120,7 +121,7 @@ export const confirmPhoneOtp = async (req, res) => {
       { email },
       { firebaseUid: uid, phoneNumber, isPhoneVerified: true },
       { new: true },
-    );
+    ).collation(EMAIL_COLLATION);
     if (!user) return res.status(404).json({ message: 'User not found' });
     return res.status(200).json(user);
   } catch (err) {

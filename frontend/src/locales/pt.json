@@ -94,6 +94,21 @@
     "subscribeDescription": "Assine para desbloquear novos recursos e receber participação na receita.",
     "subscribe": "Assinar"
   },
+  "notifications": {
+    "title": "Notificações",
+    "empty": "Ainda não há notificações",
+    "emptyDesc": "Quando alguém publicar sobre “cricket” ou “science”, aparecerá aqui.",
+    "markAllRead": "Marcar tudo como lido",
+    "marked": "Todas as notificações foram marcadas como lidas.",
+    "markFailed": "Não foi possível marcar as notificações como lidas.",
+    "offBanner": "As notificações estão desativadas. Ative-as em Configurações para receber novos alertas.",
+    "openSettings": "Abrir configurações",
+    "postedAbout": "{{name}} publicou sobre {{keyword}}",
+    "enabledToast": "Notificações ativadas.",
+    "disabledToast": "Notificações desativadas.",
+    "updateFailed": "Não foi possível atualizar sua configuração de notificações. Tente novamente.",
+    "permissionBlocked": "Os pop-ups do navegador estão bloqueados, então os alertas aparecerão dentro do Twiller."
+  },
   "feed": {
     "home": "Página inicial",
     "forYou": "Para você",
@@ -119,7 +134,8 @@
     "audioTweet": "Tweet de áudio",
     "delete": "Excluir",
     "deleted": "Postagem excluída.",
-    "deleteFailed": "Falha ao excluir a postagem. Tente novamente."
+    "deleteFailed": "Falha ao excluir a postagem. Tente novamente.",
+    "translationDelayed": "A tradução das postagens está demorando um pouco mais do que o normal. Aguarde um momento."
   },
   "audio": {
     "title": "Tweet de áudio",
@@ -195,7 +211,9 @@
     "premiumDescUnlimited": "Plano {{plan}} · {{used}} tweets postados (ilimitado)",
     "premiumDescLimited": "Plano {{plan}} · {{used}} de {{limit}} tweets usados",
     "logout": "Sair",
-    "logoutDesc": "Saia da sua conta."
+    "logoutDesc": "Saia da sua conta.",
+    "notifications": "Notificações",
+    "notificationsDesc": "Receba um pop-up quando alguém publicar sobre “cricket” ou “science”."
   },
   "account": {
     "title": "Sua conta",

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Box,
   CircularProgress,
@@ -25,6 +25,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "../Context/AuthContext";
 import UsageIndicator from "./UsageIndicator";
 import AudioTweetDialog from "./Audio/AudioTweetDialog";
+import EmojiPickerPopover from "./EmojiPickerPopover";
 
 const MAX_TWEET_LENGTH = 300;
 
@@ -32,8 +33,10 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const inputRef = useRef(null);
   const [usageRefresh, setUsageRefresh] = useState(0);
   const [audioOpen, setAudioOpen] = useState(false);
+  const [emojiAnchor, setEmojiAnchor] = useState(null);
   const [content, setContent] = useState(""),
     [image, setImage] = useState(""),
     [imagePreview, setImagePreview] = useState(""),
@@ -53,6 +56,23 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
   const length = content.length;
   const isOverLimit = length > MAX_TWEET_LENGTH;
   const isNearLimit = length >= 280;
+
+  const handleEmojiSelect = (emoji) => {
+    const el = inputRef.current;
+    if (!el) {
+      setContent((prev) => prev + emoji);
+      return;
+    }
+    const start = el.selectionStart ?? content.length;
+    const end = el.selectionEnd ?? content.length;
+    const next = content.slice(0, start) + emoji + content.slice(end);
+    setContent(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = start + emoji.length;
+      el.setSelectionRange(pos, pos);
+    });
+  };
 
   let charColor = "#1d9bf0";
   if (isOverLimit) {
@@ -134,8 +154,10 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
       console.error("Image upload failed:", err);
       setImagePreview("");
       URL.revokeObjectURL(blobUrl); // Clean up blob URL
+      toast.error(err?.response?.data?.message || "Failed to upload image. Please try again.");
     } finally {
       setUploading(false);
+      e.target.value = "";
     }
   };
 
@@ -186,6 +208,7 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
         <Box sx={{ flex: 1 }} data-component="composer-content">
           <TextField
             data-component="tweet-input"
+            inputRef={inputRef}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder={t("composer.placeholder")}
@@ -244,11 +267,17 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
               </IconButton>
               <IconButton
                 disabled={busy}
+                onClick={(e) => setEmojiAnchor(e.currentTarget)}
                 sx={{ color: "#1d9bf0" }}
                 data-component="emoji-button"
               >
                 <InsertEmoticonOutlined />
               </IconButton>
+              <EmojiPickerPopover
+                anchorEl={emojiAnchor}
+                onClose={() => setEmojiAnchor(null)}
+                onEmojiSelect={handleEmojiSelect}
+              />
               <IconButton
                 disabled={busy}
                 sx={{ color: "#1d9bf0" }}

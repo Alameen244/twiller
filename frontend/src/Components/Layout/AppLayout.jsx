@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Badge, Box, Button, Stack, Typography } from "@mui/material";
 import {
   Bookmark,
   Home,
@@ -11,6 +11,7 @@ import {
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../Context/AuthContext";
+import { useNotifications } from "../../Context/NotificationContext";
 import TwitterLogo from "../TwitterLogo";
 import { Avatar } from "../UI";
 import WhoToFollow from "../WhoToFollow";
@@ -31,7 +32,13 @@ function RightSidebar() {
   return (
     <Stack spacing={2}>
       <Box
-        sx={{ bgcolor: "#202327", borderRadius: 99, p: 1.25, px: 2, color: "#71767b" }}
+        sx={{
+          bgcolor: "#202327",
+          borderRadius: 99,
+          p: 1.25,
+          px: 2,
+          color: "#71767b",
+        }}
       >
         {t("nav.search")}
       </Box>
@@ -58,13 +65,19 @@ function RightSidebar() {
 export default function AppLayout() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { unreadCount } = useNotifications();
   const navigate = useNavigate();
   const location = useLocation();
 
   return (
     <Box
       data-component="app-layout-container"
-      sx={{ minHeight: "100vh", bgcolor: "#000", display: "flex", justifyContent: "center" }}
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "#000",
+        display: "flex",
+        justifyContent: "center",
+      }}
     >
       <Box
         data-component="sidebar-left"
@@ -85,7 +98,10 @@ export default function AppLayout() {
         </Box>
 
         {links.map(([label, key, Icon, path]) => {
-          const isActive = path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
+          const isActive =
+            path === "/"
+              ? location.pathname === "/"
+              : location.pathname.startsWith(path);
           return (
             <Button
               data-component="nav-link"
@@ -105,7 +121,9 @@ export default function AppLayout() {
                 transition: "all 0.2s ease-in-out",
                 transform: "scale(1)",
                 "&:hover": {
-                  bgcolor: isActive ? "rgba(29, 155, 240, 0.25)" : "rgba(255, 255, 255, 0.1)",
+                  bgcolor: isActive
+                    ? "rgba(29, 155, 240, 0.25)"
+                    : "rgba(255, 255, 255, 0.1)",
                   transform: "scale(1.02)",
                   "& .MuiSvgIcon-root": {
                     transform: "scale(1.1)",
@@ -116,8 +134,33 @@ export default function AppLayout() {
                 },
               }}
             >
-              <Icon />
-              <Typography sx={{ ml: 2, fontSize: 20, display: { xs: "none", md: "block" } }}>
+              {key === "notifications" ? (
+                <Badge
+                  badgeContent={unreadCount}
+                  color="primary"
+                  max={99}
+                  invisible={unreadCount === 0}
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      fontSize: 11,
+                      height: 18,
+                      minWidth: 18,
+                      fontWeight: 700,
+                    },
+                  }}
+                >
+                  <Icon />
+                </Badge>
+              ) : (
+                <Icon />
+              )}
+              <Typography
+                sx={{
+                  ml: 2,
+                  fontSize: 20,
+                  display: { xs: "none", md: "block" },
+                }}
+              >
                 {t(`nav.${key}`)}
               </Typography>
             </Button>
@@ -160,10 +203,22 @@ export default function AppLayout() {
             </Avatar>
             <Box
               data-component="profile-info"
-              sx={{ display: { xs: "none", md: "block" }, textAlign: "left", ml: 1 }}
+              sx={{
+                display: { xs: "none", md: "block" },
+                textAlign: "left",
+                ml: 1,
+              }}
             >
-              <Typography fontWeight={700} data-component="profile-name">{user?.displayName}</Typography>
-              <Typography fontSize={13} color="text.secondary" data-component="profile-username">@{user?.username}</Typography>
+              <Typography fontWeight={700} data-component="profile-name">
+                {user?.displayName}
+              </Typography>
+              <Typography
+                fontSize={13}
+                color="text.secondary"
+                data-component="profile-username"
+              >
+                @{user?.username}
+              </Typography>
             </Box>
           </Button>
         </Box>

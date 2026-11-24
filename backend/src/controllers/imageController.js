@@ -1,13 +1,13 @@
 import { cloudFolders } from "../constants/cloudFolder.js";
 import { uploadOnCloudinary } from "../middlewares/cloudinary.middleware.js";
 
-const getCloudinaryFolder = (folderKey) => cloudFolders[folderKey];
+const getCloudinaryFolder = (folderKey) => (folderKey ? cloudFolders[folderKey] : null);
 
 export const uploadSingleImage = async (req, res) => {
   try {
     const folderKey = req.body.folder?.toUpperCase();
     const imageUrl = req.body.imageUrl?.trim();
-    const folder = getCloudinaryFolder(folderKey);
+    const folder = getCloudinaryFolder(folderKey) || cloudFolders.POST;
 
     if (!req.file && !imageUrl) {
       return res.status(400).json({
@@ -43,7 +43,7 @@ export const uploadSingleImage = async (req, res) => {
 export const uploadMultipleImages = async (req, res) => {
   try {
     const folderKey = req.body.folder?.toUpperCase();
-    const folder = getCloudinaryFolder(folderKey);
+    const folder = getCloudinaryFolder(folderKey) || cloudFolders.POST;
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
@@ -55,7 +55,7 @@ export const uploadMultipleImages = async (req, res) => {
     if (!folder) {
       return res.status(400).json({
         success: false,
-        message: "  Folder is required"
+        message: "Folder is required"
       });
     }
 

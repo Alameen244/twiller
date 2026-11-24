@@ -39,4 +39,10 @@ export const endpoints = {
   audioOtpRequest: '/api/v1/tweets/audio/otp/request',
   audioOtpVerify: '/api/v1/tweets/audio/otp/verify',
   audioTweet: '/api/v1/tweets/audio',
+
+  //notifications
+  notifications: '/api/v1/notifications',
+  notificationsUnreadCount: '/api/v1/notifications/unread-count',
+  notificationsReadAll: '/api/v1/notifications/read-all',
+  notificationsPreference: '/api/v1/notifications/preference',
 };

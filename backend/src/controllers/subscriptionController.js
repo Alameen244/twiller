@@ -11,7 +11,9 @@ import { getSubscriptionSummary } from '../services/subscriptionService.js';
 import { getRazorpay } from '../config/razorpay.js';
 import { sendInvoiceEmail } from '../services/emailService.js';
 
-const getRequestingUser = (req) => User.findOne({ email: req.firebaseUser.email });
+const EMAIL_COLLATION = { locale: 'en', strength: 2 };
+const getRequestingUser = (req) =>
+    User.findOne({ email: req.firebaseUser.email }).collation(EMAIL_COLLATION);
 
 const countUserTweets = (userId) => () => Tweet.countDocuments({ author: userId });
 

@@ -4,6 +4,7 @@ import { isWithinTimeWindow } from '../utils/timeWindow.js';
 import { TIME_WINDOWS } from '../constants/timeWindows.js';
 import { AUDIO_LIMITS } from '../constants/audioLimits.js';
 import { reserveTweetSlot, releaseTweetSlot } from '../services/subscriptionService.js';
+import { notifyKeywordTweet } from '../services/notificationService.js';
 import { hasUploadGrant, consumeUploadGrant } from '../services/audioGrantService.js';
 import {
   uploadAudioToCloudinary,
@@ -144,6 +145,7 @@ export const createAudioTweet = async (req, res) => {
     await tweet.save();
     uploaded = null; // saved, so it must NOT be deleted in the cleanup below
     slotReserved = false; // the slot is now really used
+    await notifyKeywordTweet(tweet, user);
 
     await tweet.populate('author', AUTHOR_FIELDS);
     return res.status(201).json(tweet);

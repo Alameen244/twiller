@@ -13,6 +13,7 @@ import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import LoginOtpVerify from "./Components/LoginOtp/LoginOtpVerify";
 import SettingsLoginHistoryPage from "./Pages/SettingsLoginHistoryPage";
 import PlansPage from "./Pages/PlansPage";
+import NotificationsPage from "./Pages/NotificationsPage";
 
 function Shell() {
   const { user, isAuthReady, pendingLogin } = useAuth();
@@ -36,10 +37,8 @@ function Shell() {
         <Route path="/" element={<FeedPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/explore" element={<PlaceholderPage title="Explore" />} />
-        <Route
-          path="/notifications"
-          element={<PlaceholderPage title="Notifications" />}
-        />
+        <Route path="/notifications"
+          element={<NotificationsPage />} />
         <Route
           path="/messages"
           element={<PlaceholderPage title="Messages" />}

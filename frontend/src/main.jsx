@@ -6,6 +6,7 @@ import "./i18n.js";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { theme } from "./theme.js";
 import { AuthProvider } from "./Context/AuthContext.jsx";
+import { NotificationProvider } from "./Context/NotificationContext.jsx";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -14,19 +15,21 @@ createRoot(document.getElementById("root")).render(
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <ToastContainer
-          position="bottom-center"
-          theme="dark"
-          autoClose={4000}
-          hideProgressBar
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss={true}
-          draggable={true}
-          pauseOnHover={true}
-          transition={Bounce}
-        />
-        <App />
+        <NotificationProvider>
+          <ToastContainer
+            position="bottom-center"
+            theme="dark"
+            autoClose={4000}
+            hideProgressBar
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss={true}
+            draggable={true}
+            pauseOnHover={true}
+            transition={Bounce}
+          />
+          <App />
+        </NotificationProvider>
       </AuthProvider>
     </ThemeProvider>
   </StrictMode>,

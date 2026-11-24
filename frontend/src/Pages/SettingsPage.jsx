@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { Box, List } from "@mui/material";
-import { History, Logout, PersonOutline, Translate, WorkspacePremium } from "@mui/icons-material";
+import {
+  History,
+  Logout,
+  Notifications,
+  PersonOutline,
+  Translate,
+  WorkspacePremium,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../Context/AuthContext";
@@ -9,7 +16,9 @@ import { SUPPORTED_LANGUAGES } from "../i18n";
 import LogoutDialog from "../Components/LogoutDialog";
 import SettingsHeader from "../Components/Settings/SettingsHeader";
 import SettingsMenuItem from "../Components/Settings/SettingsMenuItem";
+import SettingsToggleItem from "../Components/Settings/SettingsToggleItem";
 import LanguageDialog from "../Components/Settings/LanguageDialog";
+import useNotificationToggle from "../helper/useNotificationToggle";
 
 const premiumDescription = (sub, t) => {
   if (!sub) return t("settings.premiumDescDefault");
@@ -30,6 +39,12 @@ export default function SettingsPage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { logout } = useAuth();
+  const {
+    enabled: notificationsOn,
+    isLoaded: notificationsLoaded,
+    busy: notificationsBusy,
+    toggle: handleToggleNotifications,
+  } = useNotificationToggle();
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
   const [subscription, setSubscription] = useState(null);
@@ -63,6 +78,14 @@ export default function SettingsPage() {
           label={t("language.title")}
           description={currentLanguage?.nativeName}
           onClick={() => setLanguageOpen(true)}
+        />
+        <SettingsToggleItem
+          icon={Notifications}
+          label={t("settings.notifications")}
+          description={t("settings.notificationsDesc")}
+          checked={notificationsOn}
+          disabled={!notificationsLoaded || notificationsBusy}
+          onChange={handleToggleNotifications}
         />
         <SettingsMenuItem
           icon={WorkspacePremium}

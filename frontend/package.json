@@ -16,6 +16,7 @@
     "@mui/material": "^7.3.8",
     "axios": "^1.13.2",
     "dotenv": "^17.3.1",
+    "emoji-picker-react": "^5.1.4",
     "firebase": "^12.19.0",
     "i18next": "^27.2.5",
     "react": "^19.3.1",

@@ -94,6 +94,21 @@
     "subscribeDescription": "Subscribe to unlock new features and earn a share of revenue.",
     "subscribe": "Subscribe"
   },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "emptyDesc": "When someone posts about cricket or science, it will show up here.",
+    "markAllRead": "Mark all as read",
+    "marked": "All notifications marked as read.",
+    "markFailed": "Could not mark notifications as read.",
+    "offBanner": "Notifications are turned off. Turn them on in Settings to get new alerts.",
+    "openSettings": "Open settings",
+    "postedAbout": "{{name}} posted about {{keyword}}",
+    "enabledToast": "Notifications turned on.",
+    "disabledToast": "Notifications turned off.",
+    "updateFailed": "Could not update your notification setting. Please try again.",
+    "permissionBlocked": "Browser popups are blocked, so alerts will appear inside Twiller instead."
+  },
   "feed": {
     "home": "Home",
     "forYou": "For you",
@@ -119,7 +134,8 @@
     "audioTweet": "Audio tweet",
     "delete": "Delete",
     "deleted": "Post deleted.",
-    "deleteFailed": "Failed to delete post. Please try again."
+    "deleteFailed": "Failed to delete post. Please try again.",
+    "translationDelayed": "Translating posts is taking a bit longer than usual. Please wait a moment."
   },
   "audio": {
     "title": "Audio tweet",
@@ -195,7 +211,9 @@
     "premiumDescUnlimited": "{{plan}} plan · {{used}} tweets posted (unlimited)",
     "premiumDescLimited": "{{plan}} plan · {{used}} of {{limit}} tweets used",
     "logout": "Logout",
-    "logoutDesc": "Sign out of your account."
+    "logoutDesc": "Sign out of your account.",
+    "notifications": "Notifications",
+    "notificationsDesc": "Get a popup when someone posts about cricket or science."
   },
   "account": {
     "title": "Your account",

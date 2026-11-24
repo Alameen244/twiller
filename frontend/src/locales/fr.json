@@ -94,6 +94,21 @@
     "subscribeDescription": "Abonnez-vous pour débloquer de nouvelles fonctionnalités et recevoir des revenus.",
     "subscribe": "S'abonner"
   },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "Aucune notification pour le moment",
+    "emptyDesc": "Quand quelqu'un publiera sur « cricket » ou « science », cela apparaîtra ici.",
+    "markAllRead": "Tout marquer comme lu",
+    "marked": "Toutes les notifications ont été marquées comme lues.",
+    "markFailed": "Impossible de marquer les notifications comme lues.",
+    "offBanner": "Les notifications sont désactivées. Activez-les dans les paramètres pour recevoir de nouvelles alertes.",
+    "openSettings": "Ouvrir les paramètres",
+    "postedAbout": "{{name}} a publié à propos de {{keyword}}",
+    "enabledToast": "Notifications activées.",
+    "disabledToast": "Notifications désactivées.",
+    "updateFailed": "Impossible de mettre à jour vos notifications. Veuillez réessayer.",
+    "permissionBlocked": "Les fenêtres contextuelles du navigateur sont bloquées, les alertes s'afficheront donc dans Twiller."
+  },
   "feed": {
     "home": "Accueil",
     "forYou": "Pour vous",
@@ -119,7 +134,8 @@
     "audioTweet": "Tweet audio",
     "delete": "Supprimer",
     "deleted": "Publication supprimée.",
-    "deleteFailed": "Échec de la suppression du tweet. Veuillez réessayer."
+    "deleteFailed": "Échec de la suppression du tweet. Veuillez réessayer.",
+    "translationDelayed": "La traduction des publications prend un peu plus de temps que prévu. Veuillez patienter un instant."
   },
   "audio": {
     "title": "Tweet audio",
@@ -195,7 +211,9 @@
     "premiumDescUnlimited": "Offre {{plan}} · {{used}} tweets publiés (illimité)",
     "premiumDescLimited": "Offre {{plan}} · {{used}} sur {{limit}} tweets utilisés",
     "logout": "Se déconnecter",
-    "logoutDesc": "Déconnectez-vous de votre compte."
+    "logoutDesc": "Déconnectez-vous de votre compte.",
+    "notifications": "Notifications",
+    "notificationsDesc": "Recevez une alerte quand quelqu'un publie sur « cricket » ou « science »."
   },
   "account": {
     "title": "Votre compte",

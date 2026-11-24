@@ -12,6 +12,7 @@ const UserSchema = mongoose.Schema({
   firebaseUid: { type: String, unique: true, sparse: true },
   phoneNumber: { type: String, unique: true, sparse: true, match: /^\+[1-9]\d{7,14}$/ },
   isPhoneVerified: { type: Boolean, default: false },
+  notificationsEnabled: { type: Boolean, default: false },
   language: { type: String, enum: SUPPORTED_LANGUAGE_CODES, default: DEFAULT_LANGUAGE },
   joinedDate: { type: Date, default: Date.now },
 });

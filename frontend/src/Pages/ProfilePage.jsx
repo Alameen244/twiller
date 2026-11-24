@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
-import { Box, IconButton, Stack, Tab, Tabs, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Stack,
+  Tab,
+  Switch,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import {
   ArrowBack,
   CalendarMonth,
   Link,
   LocationOn,
-  MoreHoriz,
+  Notifications,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -14,8 +22,10 @@ import { endpoints } from "../Apis/EndPoints/endpoints";
 import { Avatar, Button } from "../Components/UI";
 import TweetCard from "../Components/TweetCard";
 import EditProfileDialog from "../Components/EditProfileDialog";
+import LoginHistoryTable from "../Components/LoginHistory/LoginHistoryTable";
 import { useAuth } from "../Context/AuthContext";
 import useTweetTranslations from "../helper/useTweetTranslations";
+import useNotificationToggle from "../helper/useNotificationToggle";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -25,6 +35,13 @@ export default function ProfilePage() {
   const [tweets, setTweets] = useState([]);
   const [tab, setTab] = useState(0);
   const [edit, setEdit] = useState(false);
+
+  const {
+    enabled: notificationsOn,
+    isLoaded: notificationsLoaded,
+    busy: notificationsBusy,
+    toggle: toggleNotifications,
+  } = useNotificationToggle();
 
   useEffect(() => {
     axiosInstance
@@ -42,6 +59,7 @@ export default function ProfilePage() {
     { key: "highlights", label: t("profile.tabs.highlights") },
     { key: "articles", label: t("profile.tabs.articles") },
     { key: "media", label: t("profile.tabs.media") },
+    { key: "loginHistory", label: t("loginHistory.title") },
   ];
 
   const joinedFormatted = user.joinedDate
@@ -95,63 +113,127 @@ export default function ProfilePage() {
         >
           {user.displayName?.[0]}
         </Avatar>
-        <Box textAlign="right" pt={1}>
+        <Box textAlign="right" pt={1.5}>
           <Button
             variant="outlined"
             onClick={() => setEdit(true)}
-            sx={{ borderColor: "#536471", color: "#fff", fontWeight: 700 }}
+            sx={{
+              borderColor: "#536471",
+              color: "#e7e9ea",
+              fontWeight: 700,
+              fontSize: 15,
+              textTransform: "none",
+              borderRadius: 99,
+              px: 2.25,
+              py: 0.6,
+              "&:hover": {
+                borderColor: "#71767b",
+                bgcolor: "rgba(231, 233, 234, 0.1)",
+              },
+            }}
           >
             {t("profile.editProfile")}
           </Button>
         </Box>
-        <Box mt={5}>
-          <Stack direction="row" justifyContent="space-between">
-            <Box>
-              <Typography variant="h5" fontWeight={800}>
-                {user.displayName}
-              </Typography>
-              <Typography color="text.secondary">@{user.username}</Typography>
-            </Box>
-            <MoreHoriz color="disabled" />
-          </Stack>
-          {user.bio && <Typography my={1}>{user.bio}</Typography>}
+        <Box mt={4}>
+          <Box>
+            <Typography fontSize={20} fontWeight={800} lineHeight={1.25} color="#e7e9ea">
+              {user.displayName}
+            </Typography>
+            <Typography fontSize={15} color="#9ba1a6">
+              @{user.username}
+            </Typography>
+          </Box>
+
+          {user.bio && (
+            <Typography fontSize={15} lineHeight={1.4} color="#e7e9ea" sx={{ mt: 1.5 }}>
+              {user.bio}
+            </Typography>
+          )}
+
           <Stack
             direction="row"
             flexWrap="wrap"
-            gap={2}
-            color="text.secondary"
-            mt={1}
+            columnGap={2}
+            rowGap={0.75}
+            color="#9ba1a6"
+            mt={1.5}
+            alignItems="center"
           >
-            <Stack direction="row">
-              <LocationOn fontSize="small" />
-              <Typography fontSize={14}>{user.location || t("account.notSet")}</Typography>
+            <Stack direction="row" alignItems="center" spacing={0.5} sx={{ ml: "-2px" }}>
+              <LocationOn sx={{ fontSize: 18 }} />
+              <Typography fontSize={14}>
+                {user.location || t("account.notSet")}
+              </Typography>
             </Stack>
-            <Stack direction="row">
-              <Link fontSize="small" />
-              <Typography fontSize={14} color="primary.main">
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <Link sx={{ fontSize: 18 }} />
+              <Typography fontSize={14} color="#1d9bf0">
                 {user.website || "example.com"}
               </Typography>
             </Stack>
-            <Stack direction="row">
-              <CalendarMonth fontSize="small" />
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <CalendarMonth sx={{ fontSize: 18 }} />
               <Typography fontSize={14}>
                 {t("profile.joined", { date: joinedFormatted })}
               </Typography>
             </Stack>
+          </Stack>
+
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{
+              mt: 2,
+              pt: 1.5,
+              pb: 0.5,
+              borderTop: "1px solid #2f3336",
+            }}
+          >
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ ml: "-2px" }}>
+              <Notifications
+                sx={{
+                  color: notificationsOn ? "#1d9bf0" : "#9ba1a6",
+                  fontSize: 20,
+                  transition: "color 0.2s",
+                }}
+              />
+              <Box>
+                <Typography fontWeight={700} fontSize={14} color="#e7e9ea" lineHeight={1.3}>
+                  {t("settings.notifications")}
+                </Typography>
+                <Typography fontSize={12.5} color="#9ba1a6" lineHeight={1.35}>
+                  {t("settings.notificationsDesc")}
+                </Typography>
+              </Box>
+            </Stack>
+            <Switch
+              size="small"
+              checked={notificationsOn}
+              disabled={!notificationsLoaded || notificationsBusy}
+              onChange={toggleNotifications}
+              inputProps={{ "aria-label": t("settings.notifications") }}
+            />
           </Stack>
         </Box>
       </Box>
       <Tabs
         value={tab}
         onChange={(_, v) => setTab(v)}
-        variant="fullWidth"
+        variant="scrollable"
+        scrollButtons="auto"
         sx={{
-          mt: 2,
+          mt: 1,
           borderBottom: "1px solid #2f3336",
           "& .MuiTab-root": {
             textTransform: "none",
-            color: "#71767b",
+            color: "#9ba1a6",
             fontWeight: 700,
+            minWidth: "auto",
+            flex: { sm: "1 0 auto" },
+            whiteSpace: "nowrap",
+            px: 1,
           },
           "& .Mui-selected": { color: "#fff" },
         }}
@@ -167,9 +249,13 @@ export default function ProfilePage() {
             tweet={t}
             translation={translations[t._id]}
             onVisible={markVisible}
-            onDelete={(id) => setTweets((prev) => prev.filter((tw) => tw._id !== id))}
+            onDelete={(id) =>
+              setTweets((prev) => prev.filter((tw) => tw._id !== id))
+            }
           />
         ))
+      ) : tabs[tab]?.key === "loginHistory" ? (
+        <LoginHistoryTable />
       ) : (
         <Box textAlign="center" py={8} color="text.secondary">
           <Typography variant="h6" fontWeight={700}>
