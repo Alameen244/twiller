@@ -13,16 +13,21 @@ app.set('trust proxy', 1); // Render sits behind a proxy; needed so the rate lim
 
 app.use(cors({
     origin: (origin, callback) => {
-        const allowedOrigins = process.env.ALLOWED_ORIGIN?.split(',') || [];
+        const allowedOrigins = (process.env.ALLOWED_ORIGIN || '')
+            .split(',')
+            .map((o) => o.trim().replace(/\/+$/, ''))
+            .filter(Boolean);
 
-        if (!origin || allowedOrigins.includes(origin)) {
+        const normalizedOrigin = origin?.replace(/\/+$/, '');
+        if (!normalizedOrigin || allowedOrigins.includes(normalizedOrigin)) {
             callback(null, true);
         } else {
             callback(new Error(`CORS blocked: ${origin} is not allowed`));
         }
     },
-    methods: ["GET", "PUT", "POST", "DELETE", "PATCH"],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ["GET", "PUT", "POST", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 204,
 }));
 
 app.use(express.json());
