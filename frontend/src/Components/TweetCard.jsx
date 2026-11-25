@@ -145,11 +145,16 @@ export default function TweetCard({ tweet, onDelete, translation, onVisible }) {
               <Typography color="text.secondary" sx={{ flexShrink: 0 }}>
                 ·
               </Typography>
-              <Typography color="text.secondary" sx={{ flexShrink: 0, whiteSpace: "nowrap" }}>
+              <Typography
+                color="text.secondary"
+                sx={{ flexShrink: 0, whiteSpace: "nowrap", fontSize: { xs: 13, sm: 15 } }}
+              >
                 {item.timestamp &&
-                  new Date(item.timestamp).toLocaleDateString(i18n.language || "en", {
+                  new Date(item.timestamp).toLocaleString(i18n.language || "en", {
                     month: "short",
                     day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
                   })}
               </Typography>
 
