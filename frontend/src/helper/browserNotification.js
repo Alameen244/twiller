@@ -1,5 +1,7 @@
+import { createElement } from "react";
 import { toast } from "react-toastify";
 import i18n from "../i18n";
+import NotificationToast from "../Components/NotificationToast";
 
 export const isBrowserNotificationSupported = () =>
   typeof window !== "undefined" && "Notification" in window;
@@ -57,7 +59,12 @@ export const showNotificationPopup = (notification) => {
   }
 
   try {
-    toast.info(`${title}: ${body}`, { onClick: openNotificationsPage });
+    toast(createElement(NotificationToast, { title, body }), {
+      icon: false,
+      className: "twiller-notification-toast",
+      onClick: openNotificationsPage,
+      autoClose: 6000,
+    });
   } catch (error) {
     console.error("Notification toast failed", error);
   }
