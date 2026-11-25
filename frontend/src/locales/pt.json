@@ -386,5 +386,19 @@
     "auth/captcha-check-failed": "Falha na verificação de captcha. Tente novamente.",
     "PHONE_NOT_VERIFIED": "Registre e verifique seu número de celular em Configurações > Sua conta antes de mudar para este idioma.",
     "default": "Algo deu errado."
+  },
+  "notFound": {
+    "documentTitle": "404 · Página não encontrada | Twiller",
+    "navHome": "Voltar ao início",
+    "badge": "Sinal fora da rede",
+    "titleBefore": "Perdido na",
+    "titleEmphasis": "linha do tempo,",
+    "titleSecondLine": "vamos voltar.",
+    "subtitle": "A rota que você acessou não existe ou foi movida do feed.",
+    "backHome": "Voltar para o início",
+    "goBack": "Voltar",
+    "statStatus": "HTTP 404 · Rota inexistente",
+    "statRedirect": "Twiller Edge · Redirecionado",
+    "statShortcut": "Pressione H para o início"
   }
 }

@@ -386,5 +386,19 @@
     "auth/captcha-check-failed": "कैप्चा सत्यापन विफल रहा। कृपया पुन: प्रयास करें।",
     "PHONE_NOT_VERIFIED": "इस भाषा में बदलने से पहले कृपया सेटिंग्स > आपका खाता में अपना मोबाइल नंबर पंजीकृत और सत्यापित करें।",
     "default": "कुछ गड़बड़ हो गई।"
+  },
+  "notFound": {
+    "documentTitle": "404 · पेज नहीं मिला | Twiller",
+    "navHome": "होम पर लौटें",
+    "badge": "सिग्नल ऑफ़-ग्रिड",
+    "titleBefore": "टाइमलाइन में",
+    "titleEmphasis": "भटक गए,",
+    "titleSecondLine": "चलिए वापस चलते हैं।",
+    "subtitle": "आप जिस मार्ग पर आए हैं वह मौजूद नहीं है या फ़ीड से हट चुका है।",
+    "backHome": "होम पर वापस जाएं",
+    "goBack": "पीछे जाएं",
+    "statStatus": "HTTP 404 · अज्ञात मार्ग",
+    "statRedirect": "Twiller Edge · ऑटो-रीरूट",
+    "statShortcut": "होम के लिए H दबाएं"
   }
 }

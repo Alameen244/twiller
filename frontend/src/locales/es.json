@@ -386,5 +386,19 @@
     "auth/captcha-check-failed": "Falló la verificación captcha. Por favor intenta de nuevo.",
     "PHONE_NOT_VERIFIED": "Por favor, registra y verifica tu número de teléfono en Ajustes > Tu cuenta antes de cambiar a este idioma.",
     "default": "Algo salió mal."
+  },
+  "notFound": {
+    "documentTitle": "404 · Página no encontrada | Twiller",
+    "navHome": "Volver al inicio",
+    "badge": "Señal fuera de ruta",
+    "titleBefore": "Perdido en la",
+    "titleEmphasis": "cronología,",
+    "titleSecondLine": "volvamos al inicio.",
+    "subtitle": "La ruta que seguiste no existe o fue movida del feed.",
+    "backHome": "Volver al inicio",
+    "goBack": "Regresar",
+    "statStatus": "HTTP 404 · Ruta no encontrada",
+    "statRedirect": "Twiller Edge · Redirección automática",
+    "statShortcut": "Pulsa H para ir al inicio"
   }
 }

@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
 import { useAuth } from "./Context/AuthContext";
 import AppLayout from "./Components/Layout/AppLayout";
@@ -14,6 +14,18 @@ import LoginOtpVerify from "./Components/LoginOtp/LoginOtpVerify";
 import SettingsLoginHistoryPage from "./Pages/SettingsLoginHistoryPage";
 import PlansPage from "./Pages/PlansPage";
 import NotificationsPage from "./Pages/NotificationsPage";
+import NotFoundPage from "./Pages/NotFoundPage";
+
+function UnknownRouteRedirect() {
+  const location = useLocation();
+  return (
+    <Navigate
+      to="/404"
+      replace
+      state={{ from: `${location.pathname}${location.search}` }}
+    />
+  );
+}
 
 function Shell() {
   const { user, isAuthReady, pendingLogin } = useAuth();
@@ -27,8 +39,10 @@ function Shell() {
     if (!user)
     return (
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="*" element={<LandingPage />} />
+        <Route path="/404" element={<NotFoundPage />} />
+        <Route path="*" element={<UnknownRouteRedirect />} />
       </Routes>
     );
   return (
@@ -52,7 +66,8 @@ function Shell() {
         <Route path="/settings/login-history" element={<SettingsLoginHistoryPage />} />
         <Route path="/settings/account" element={<SettingsAccountPage />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="/404" element={<NotFoundPage />} />
+      <Route path="*" element={<UnknownRouteRedirect />} />
     </Routes>
   );
 }

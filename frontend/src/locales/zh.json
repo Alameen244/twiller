@@ -386,5 +386,19 @@
     "auth/captcha-check-failed": "验证码检查失败，请重试。",
     "PHONE_NOT_VERIFIED": "切换到此语言前，请先在“设置 > 您的账号”中注册并验证您的手机号码。",
     "default": "出现错误，请稍后再试。"
+  },
+  "notFound": {
+    "documentTitle": "404 · 未找到页面 | Twiller",
+    "navHome": "返回首页",
+    "badge": "信号离线",
+    "titleBefore": "在时间线中",
+    "titleEmphasis": "迷路了，",
+    "titleSecondLine": "让我们带您回去。",
+    "subtitle": "您访问的路径不存在或已从信息流中移除。",
+    "backHome": "返回首页",
+    "goBack": "返回上一页",
+    "statStatus": "HTTP 404 · 未知路由",
+    "statRedirect": "Twiller Edge · 自动重定向",
+    "statShortcut": "按 H 返回首页"
   }
 }

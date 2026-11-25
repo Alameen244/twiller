@@ -386,5 +386,19 @@
     "auth/captcha-check-failed": "Échec de la vérification captcha. Veuillez réessayer.",
     "PHONE_NOT_VERIFIED": "Veuillez enregistrer et vérifier votre numéro de téléphone dans Paramètres > Votre compte avant de passer à cette langue.",
     "default": "Une erreur est survenue."
+  },
+  "notFound": {
+    "documentTitle": "404 · Page introuvable | Twiller",
+    "navHome": "Retour à l'accueil",
+    "badge": "Signal hors réseau",
+    "titleBefore": "Perdu dans le",
+    "titleEmphasis": "fil,",
+    "titleSecondLine": "revenons à l'accueil.",
+    "subtitle": "La route que vous avez suivie n'existe pas ou a été déplacée.",
+    "backHome": "Retour à l'accueil",
+    "goBack": "Revenir",
+    "statStatus": "HTTP 404 · Route introuvable",
+    "statRedirect": "Twiller Edge · Redirection auto",
+    "statShortcut": "Appuyez sur H pour l'accueil"
   }
 }
