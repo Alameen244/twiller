@@ -69,8 +69,12 @@ export default function LandingPage() {
         data-component="content-section"
         sx={{
           flex: 1,
+          minWidth: 0,
           maxWidth: 640,
-          px: { xs: 4, lg: 8 },
+          width: "100%",
+          mx: { xs: "auto", lg: 0 },
+          px: { xs: 2.5, sm: 4, lg: 8 },
+          py: { xs: 4, lg: 0 },
           display: "flex",
           justifyContent: "center",
           flexDirection: "column",
@@ -80,7 +84,7 @@ export default function LandingPage() {
         <Box
           sx={{
             display: { xs: "block", lg: "none" },
-            mb: 6,
+            mb: { xs: 4, sm: 6 },
             "&:hover svg": {
               transform: "scale(1.1) rotate(5deg)",
               filter: "drop-shadow(0 0 15px rgba(29, 155, 240, 0.5))",
@@ -96,8 +100,10 @@ export default function LandingPage() {
           data-component="main-heading"
           sx={{
             fontWeight: 800,
-            fontSize: { xs: 48, lg: 64 },
-            letterSpacing: -2,
+            fontSize: "clamp(2.25rem, 6.5vw, 4rem)",
+            lineHeight: 1.12,
+            letterSpacing: { xs: -1, sm: -2 },
+            overflowWrap: "break-word",
             background: "linear-gradient(135deg, #fff 0%, #1d9bf0 100%)",
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
@@ -119,9 +125,9 @@ export default function LandingPage() {
         <Typography
           data-component="sub-heading"
           sx={{
-            fontSize: 31,
+            fontSize: "clamp(1.375rem, 3.8vw, 1.9375rem)",
             fontWeight: 800,
-            my: 5,
+            my: { xs: 3, sm: 4, lg: 5 },
             transition: "all 0.3s ease",
             "&:hover": {
               color: "#1d9bf0",
@@ -131,7 +137,7 @@ export default function LandingPage() {
         >
           {t("landing.joinToday")}
         </Typography>
-        <Stack spacing={1.5} sx={{ maxWidth: 300 }} data-component="action-buttons">
+        <Stack spacing={1.5} sx={{ width: "100%", maxWidth: 300 }} data-component="action-buttons">
           <Button
             data-component="google-signup-button"
             variant="outlined"

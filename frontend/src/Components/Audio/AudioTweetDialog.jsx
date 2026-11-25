@@ -173,7 +173,7 @@ export default function AudioTweetDialog({ open, onClose, onPosted }) {
         </IconButton>
       </Box>
 
-      <Box sx={{ px: 4, pb: 4 }}>
+      <Box sx={{ px: { xs: 2.5, sm: 4 }, pb: { xs: 3, sm: 4 } }}>
         {step === "otp" && (
           <AudioOtpStep
             maskedEmail={maskedEmail}

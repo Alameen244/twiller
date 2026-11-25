@@ -37,7 +37,7 @@ const hasVerifiedPhone = (user) => Boolean(user.isPhoneVerified && user.phoneNum
 
 const PHONE_REQUIRED = {
   code: 'PHONE_NOT_VERIFIED',
-  message: 'Verify your mobile number in Settings > Your account before changing the language.',
+  message: 'Please register and verify your mobile number in Settings > Your account before switching to this language.',
 };
 
 // Step 1: send the OTP. French -> email OTP, every other language -> SMS to the verified phone.
@@ -54,6 +54,17 @@ export const requestLanguageOtp = async (req, res) => {
     // Picking the current language does nothing and sends no OTP.
     if ((user.language || DEFAULT_LANGUAGE) === language) {
       return res.status(200).json({ changed: false, language });
+    }
+
+    // Switching back to the default language (English) requires no OTP verification.
+    if (language === DEFAULT_LANGUAGE) {
+      await User.updateOne({ _id: user._id }, { $set: { language } });
+      return res.status(200).json({
+        message: 'Language updated',
+        changed: true,
+        requiresOtp: false,
+        language,
+      });
     }
 
     if (getOtpChannelForLanguage(language) === OTP_CHANNELS.EMAIL) {

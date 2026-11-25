@@ -384,6 +384,7 @@
     "auth/provider-already-linked": "该账号已绑定手机号码。",
     "auth/requires-recent-login": "请重新登录后再试。",
     "auth/captcha-check-failed": "验证码检查失败，请重试。",
+    "PHONE_NOT_VERIFIED": "切换到此语言前，请先在“设置 > 您的账号”中注册并验证您的手机号码。",
     "default": "出现错误，请稍后再试。"
   }
 }

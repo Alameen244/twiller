@@ -217,9 +217,9 @@ export default function UsageIndicator({ refreshKey = 0 }) {
                 ? "1px solid rgba(255, 215, 0, 0.35)"
                 : "1px solid #2f3336",
               borderRadius: "16px",
-              p: 2.5,
+              p: { xs: 2, sm: 2.5 },
               mt: 1,
-              width: 250,
+              width: "min(250px, calc(100vw - 32px))",
               textAlign: "center",
               boxShadow: isGold
                 ? "0 12px 36px rgba(0,0,0,0.85), 0 0 24px rgba(255, 215, 0, 0.12)"

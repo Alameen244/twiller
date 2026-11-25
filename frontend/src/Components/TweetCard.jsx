@@ -115,25 +115,37 @@ export default function TweetCard({ tweet, onDelete, translation, onVisible }) {
       <Card
         data-component="tweet-card"
         data-tweet-id={item._id}
-        sx={{ borderWidth: "0 0 1px", p: 2, "&:hover": { bgcolor: "#080808" } }}
+        sx={{ borderWidth: "0 0 1px", p: { xs: 1.5, sm: 2 }, "&:hover": { bgcolor: "#080808" } }}
       >
-        <Stack direction="row" spacing={1.5} data-component="tweet-content">
+        <Stack direction="row" spacing={{ xs: 1.25, sm: 1.5 }} data-component="tweet-content">
           <Avatar
             data-component="avatar"
             data-location="tweet-card"
             data-author={author.username}
             src={author.avatar}
             alt={author.displayName}
-            sx={{ width: 48, height: 48 }}
+            sx={{ width: { xs: 40, sm: 48 }, height: { xs: 40, sm: 48 }, flexShrink: 0 }}
           >
             {author.displayName?.[0]}
           </Avatar>
           <Box ref={bodyRef} sx={{ minWidth: 0, flex: 1 }} data-component="tweet-body">
-            <Stack direction="row" spacing={0.75} alignItems="center" data-component="tweet-header">
-              <Typography fontWeight={700}>{author.displayName}</Typography>
-              <Typography color="text.secondary">@{author.username}</Typography>
-              <Typography color="text.secondary">·</Typography>
-              <Typography color="text.secondary">
+            <Stack
+              direction="row"
+              spacing={0.75}
+              alignItems="center"
+              sx={{ minWidth: 0 }}
+              data-component="tweet-header"
+            >
+              <Typography fontWeight={700} noWrap sx={{ minWidth: 0, flexShrink: 1 }}>
+                {author.displayName}
+              </Typography>
+              <Typography color="text.secondary" noWrap sx={{ minWidth: 0, flexShrink: 2 }}>
+                @{author.username}
+              </Typography>
+              <Typography color="text.secondary" sx={{ flexShrink: 0 }}>
+                ·
+              </Typography>
+              <Typography color="text.secondary" sx={{ flexShrink: 0, whiteSpace: "nowrap" }}>
                 {item.timestamp &&
                   new Date(item.timestamp).toLocaleDateString(i18n.language || "en", {
                     month: "short",
@@ -145,14 +157,14 @@ export default function TweetCard({ tweet, onDelete, translation, onVisible }) {
               {isOwn && (
                 <IconButton
                   data-component="more-button"
-                  sx={{ ml: "auto", color: "#71767b" }}
+                  sx={{ ml: "auto", color: "#71767b", flexShrink: 0 }}
                   onClick={openMenu}
                 >
                   <MoreHoriz />
                 </IconButton>
               )}
               {!isOwn && (
-                <IconButton sx={{ ml: "auto", color: "#71767b" }}>
+                <IconButton sx={{ ml: "auto", color: "#71767b", flexShrink: 0 }}>
                   <MoreHoriz />
                 </IconButton>
               )}
@@ -161,7 +173,7 @@ export default function TweetCard({ tweet, onDelete, translation, onVisible }) {
             {/* Caption (optional on audio tweets) */}
             {item.content && (
               <>
-                <Typography sx={{ whiteSpace: "pre-wrap", my: 1 }}>
+                <Typography sx={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", my: 1 }}>
                   {shownText}
                 </Typography>
                 {isTranslated && (

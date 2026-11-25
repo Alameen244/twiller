@@ -38,14 +38,14 @@ export default function FeedPage() {
       <Box
         sx={{
           position: "sticky",
-          top: 0,
+          top: { xs: 53, sm: 0 },
           zIndex: 2,
           bgcolor: "rgba(0,0,0,.9)",
           backdropFilter: "blur(10px)",
           borderBottom: "1px solid #2f3336",
         }}
       >
-        <Typography fontSize={20} fontWeight={700} sx={{ p: 2 }}>
+        <Typography fontSize={{ xs: 18, sm: 20 }} fontWeight={700} sx={{ p: { xs: 1.5, sm: 2 } }}>
           {t("feed.home")}
         </Typography>
         <Tabs

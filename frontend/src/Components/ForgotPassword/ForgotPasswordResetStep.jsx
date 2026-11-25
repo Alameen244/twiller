@@ -125,7 +125,7 @@ export default function ForgotPasswordResetStep({ target, onReset, onResend, onB
         />
       </Stack>
 
-      <Stack direction="row" spacing={1} mb={3}>
+      <Stack direction="row" spacing={1} mb={3} flexWrap="wrap" useFlexGap>
         <Button
           onClick={handleGenerate}
           disabled={busy}

@@ -384,6 +384,7 @@
     "auth/provider-already-linked": "Já existe um número de telefone vinculado a esta conta.",
     "auth/requires-recent-login": "Faça logout e login novamente, depois tente de novo.",
     "auth/captcha-check-failed": "Falha na verificação de captcha. Tente novamente.",
+    "PHONE_NOT_VERIFIED": "Registre e verifique seu número de celular em Configurações > Sua conta antes de mudar para este idioma.",
     "default": "Algo deu errado."
   }
 }

@@ -3,10 +3,10 @@ import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 
 const OtpBox = styled("input")({
-  width: "46px",
-  height: "54px",
+  width: "clamp(34px, 11vw, 46px)",
+  height: "clamp(44px, 13vw, 54px)",
   textAlign: "center",
-  fontSize: "22px",
+  fontSize: "clamp(18px, 5vw, 22px)",
   fontWeight: 700,
   background: "transparent",
   color: "#e7e9ea",
@@ -104,7 +104,7 @@ const OtpInput = ({ length = 4, onOtpSubmit, disabled = false }) => {
   };
 
   return (
-    <Box sx={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+    <Box sx={{ display: "flex", gap: { xs: "6px", sm: "10px" }, justifyContent: "center", width: "100%" }}>
       {otp.map((value, index) => (
         <OtpBox
           key={index}

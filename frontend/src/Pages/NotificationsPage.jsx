@@ -43,15 +43,16 @@ export default function NotificationsPage() {
       <Box
         sx={{
           position: "sticky",
-          top: 0,
+          top: { xs: 53, sm: 0 },
           zIndex: 2,
           bgcolor: "rgba(0,0,0,.9)",
+          backdropFilter: "blur(10px)",
           borderBottom: "1px solid #2f3336",
           p: 1.5,
           px: 2,
         }}
       >
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={1}>
           <Typography variant="h6" fontWeight={800}>
             {t("notifications.title")}
           </Typography>

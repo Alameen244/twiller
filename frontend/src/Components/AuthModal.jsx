@@ -112,7 +112,7 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
         },
       }}
     >
-      <DialogContent sx={{ p: 4, position: "relative" }}>
+      <DialogContent sx={{ p: { xs: 2.5, sm: 4 }, position: "relative" }}>
         <IconButton
           onClick={onClose}
           sx={{ position: "absolute", right: 12, top: 12, color: "#fff" }}
@@ -172,7 +172,7 @@ export default function AuthModal({ open, onClose, initialMode = "login" }) {
               )}
             </Button>
           </Stack>
-          <Typography color="text.secondary">
+          <Typography color="text.secondary" textAlign="center">
             {mode === "login"
               ? t("auth.dontHaveAccount")
               : t("auth.alreadyHaveAccount")}{" "}

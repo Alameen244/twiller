@@ -10,7 +10,7 @@ const MESSAGES = {
 };
 
 export const getPhoneErrorMessage = (e, t) => {
-  const code = e?.code;
+  const code = e?.code || e?.response?.data?.code;
   if (t && code) {
     const key = `phoneErrors.${code}`;
     const translated = t(key);

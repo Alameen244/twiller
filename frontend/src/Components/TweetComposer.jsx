@@ -172,7 +172,7 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
       data-component="tweet-composer"
       component="form"
       onSubmit={post}
-      sx={{ borderWidth: "0 0 1px", p: 2, position: "relative", overflow: "hidden" }}
+      sx={{ borderWidth: "0 0 1px", p: { xs: 1.5, sm: 2 }, position: "relative", overflow: "hidden" }}
     >
       {busy && (
         <LinearProgress
@@ -196,16 +196,16 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
         />
       )}
 
-      <Stack direction="row" spacing={2} data-component="composer-container">
+      <Stack direction="row" spacing={{ xs: 1.25, sm: 2 }} data-component="composer-container">
         <Avatar
           data-component="avatar"
           data-location="tweet-composer"
           src={user.avatar}
-          sx={{ width: 48, height: 48 }}
+          sx={{ width: { xs: 40, sm: 48 }, height: { xs: 40, sm: 48 }, flexShrink: 0 }}
         >
           {user.displayName?.[0]}
         </Avatar>
-        <Box sx={{ flex: 1 }} data-component="composer-content">
+        <Box sx={{ flex: 1, minWidth: 0 }} data-component="composer-content">
           <TextField
             data-component="tweet-input"
             inputRef={inputRef}
@@ -221,7 +221,7 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
               input: {
                 disableUnderline: true,
                 sx: {
-                  fontSize: 20,
+                  fontSize: { xs: 17, sm: 20 },
                   color: "#fff",
                   opacity: busy ? 0.7 : 1,
                   transition: "opacity 0.2s ease",
@@ -253,13 +253,15 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
             direction="row"
             alignItems="center"
             justifyContent="space-between"
+            flexWrap="wrap"
+            gap={0.75}
             sx={{ mt: 1 }}
           >
-            <Stack direction="row">
+            <Stack direction="row" sx={{ ml: { xs: -0.75, sm: 0 } }}>
               <IconButton
                 component="label"
                 disabled={busy}
-                sx={{ color: "#1d9bf0" }}
+                sx={{ color: "#1d9bf0", p: { xs: 0.75, sm: 1 } }}
                 data-component="image-upload-button"
               >
                 <ImageOutlined />
@@ -268,7 +270,7 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
               <IconButton
                 disabled={busy}
                 onClick={(e) => setEmojiAnchor(e.currentTarget)}
-                sx={{ color: "#1d9bf0" }}
+                sx={{ color: "#1d9bf0", p: { xs: 0.75, sm: 1 } }}
                 data-component="emoji-button"
               >
                 <InsertEmoticonOutlined />
@@ -280,14 +282,14 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
               />
               <IconButton
                 disabled={busy}
-                sx={{ color: "#1d9bf0" }}
+                sx={{ color: "#1d9bf0", p: { xs: 0.75, sm: 1 } }}
                 data-component="location-button"
               >
                 <LocationOnOutlined />
               </IconButton>
               <IconButton
                 disabled={busy}
-                sx={{ color: "#1d9bf0" }}
+                sx={{ color: "#1d9bf0", p: { xs: 0.75, sm: 1 } }}
                 onClick={() => setAudioOpen(true)}
                 aria-label={t("composer.audioTweet")}
                 data-component="audio-tweet-button"
@@ -295,7 +297,7 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
                 <MicNone />
               </IconButton>
             </Stack>
-            <Stack direction="row" alignItems="center" spacing={1.25}>
+            <Stack direction="row" alignItems="center" spacing={{ xs: 0.75, sm: 1.25 }} sx={{ ml: "auto" }}>
               <Tooltip title={t("composer.everyoneCanReply")}>
                 <Stack
                   data-component="reply-settings"
@@ -403,8 +405,8 @@ export default function TweetComposer({ onTweetPosted, onPostingStart, onPosting
                   bgcolor: "#1d9bf0",
                   color: "#fff",
                   fontWeight: 700,
-                  px: 2.5,
-                  minWidth: 80,
+                  px: { xs: 2, sm: 2.5 },
+                  minWidth: { xs: 68, sm: 80 },
                   borderRadius: 99,
                   transition: "all 0.2s ease",
                   "&.Mui-disabled": {

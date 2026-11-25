@@ -18,6 +18,8 @@ export default function EmojiPickerPopover({ anchorEl, onClose, onEmojiSelect })
         paper: {
           sx: {
             mt: 1,
+            width: "min(320px, calc(100vw - 16px))",
+            maxWidth: "calc(100vw - 16px)",
             bgcolor: "#000",
             border: "1px solid #2f3336",
             borderRadius: 3,
@@ -32,8 +34,8 @@ export default function EmojiPickerPopover({ anchorEl, onClose, onEmojiSelect })
           theme="dark"
           emojiStyle="twitter"
           lazyLoadEmojis
-          width={320}
-          height={380}
+          width="100%"
+          height={350}
           skinTonesDisabled={false}
           previewConfig={{ showPreview: false }}
           onEmojiClick={(emojiData) => {

@@ -6,7 +6,7 @@ import { translateTweets } from '../controllers/translationController.js';
 import { uploadAudioSingle } from '../middlewares/audioUpload.middleware.js';
 import { verifyFirebaseToken } from '../middlewares/firebaseAuth.middleware.js';
 import {
-  otpRateLimiter,
+  emailOtpRateLimiter,
   translationRateLimiter,
   tweetReadLimiter,
   tweetCreateLimiter,
@@ -25,7 +25,7 @@ router.get('/post', tweetReadLimiter, getAllTweets);
 router.post('/translate', verifyFirebaseToken, translationRateLimiter, translateTweets);
 
 // Audio tweet: email OTP before any upload
-router.post('/audio/otp/request', verifyFirebaseToken, otpRateLimiter, requestAudioOtp);
+router.post('/audio/otp/request', verifyFirebaseToken, emailOtpRateLimiter, requestAudioOtp);
 router.post('/audio/otp/verify', verifyFirebaseToken, otpVerifyLimiter, verifyAudioOtp);
 
 // Audio tweet: window + grant check, then receive the file, then create the tweet

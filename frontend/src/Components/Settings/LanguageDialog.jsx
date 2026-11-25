@@ -33,11 +33,18 @@ export default function LanguageDialog({ open, onClose }) {
     setBusy(true);
     try {
       const res = await requestLanguageOtpApi(code);
-      if (res.changed === false) {
-        // Backend already has this language saved: just sync the screen.
-        await i18n.changeLanguage(code);
+      if (res.changed === false || res.requiresOtp === false || code === "en") {
+        // Already saved or switched directly without OTP (e.g. default English).
+        await i18n.changeLanguage(res.language || code);
+        if (res.changed || code === "en") {
+          toast.success(t("language.changed"));
+        }
         reset();
         onClose();
+        return false;
+      }
+      if (!res.channel || !res.maskedTarget) {
+        toast.error(t("phoneErrors.default"), { toastId: "language-error" });
         return false;
       }
       setTarget(code);
@@ -46,7 +53,7 @@ export default function LanguageDialog({ open, onClose }) {
       toast.success(t("language.otpSentToast"));
       return true;
     } catch (e) {
-      toast.error(getPhoneErrorMessage(e), { toastId: "language-error" });
+      toast.error(getPhoneErrorMessage(e, t), { toastId: "language-error" });
       return false;
     } finally {
       setBusy(false);
@@ -74,7 +81,7 @@ export default function LanguageDialog({ open, onClose }) {
       reset();
       onClose();
     } catch (e) {
-      toast.error(getPhoneErrorMessage(e), { toastId: "language-error" });
+      toast.error(getPhoneErrorMessage(e, t), { toastId: "language-error" });
       setOtpKey((k) => k + 1); // clear and refocus the boxes
     } finally {
       setBusy(false);
@@ -102,7 +109,7 @@ export default function LanguageDialog({ open, onClose }) {
           <Close />
         </IconButton>
       </Box>
-      <Box sx={{ px: 4, pb: 4 }}>
+      <Box sx={{ px: { xs: 2.5, sm: 4 }, pb: { xs: 3, sm: 4 } }}>
         {step === "pick" ? (
           <Box>
             <Typography variant="h5" fontWeight={800} mb={1}>

@@ -69,41 +69,126 @@ export default function LoginHistoryTable() {
       )}
 
       {rows?.length > 0 && (
-        <TableContainer sx={{ overflowX: "auto" }}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell sx={headSx}>{t("loginHistory.dateTimeIst")}</TableCell>
-                <TableCell sx={headSx}>{t("loginHistory.browser")}</TableCell>
-                <TableCell sx={headSx}>{t("loginHistory.os")}</TableCell>
-                <TableCell sx={headSx}>{t("loginHistory.device")}</TableCell>
-                <TableCell sx={headSx}>{t("loginHistory.ip")}</TableCell>
-                <TableCell sx={headSx}>{t("loginHistory.status")}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((row) => {
-                const status = STATUS_STYLES[row.status] || STATUS_STYLES.success;
-                return (
-                  <TableRow key={row._id}>
-                    <TableCell sx={cellSx}>{formatTime(row.createdAt, i18n.language)}</TableCell>
-                    <TableCell sx={cellSx}>{row.browser}</TableCell>
-                    <TableCell sx={cellSx}>{row.os}</TableCell>
-                    <TableCell sx={cellSx}>{getDeviceLabel(row.deviceType)}</TableCell>
-                    <TableCell sx={cellSx}>{row.ip}</TableCell>
-                    <TableCell sx={cellSx}>
-                      <Chip
-                        label={status.label}
-                        size="small"
-                        sx={{ color: status.color, border: `1px solid ${status.color}`, bgcolor: "transparent" }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <>
+          {/* Mobile & narrow tablet: stacked cards (no horizontal scroll) */}
+          <Box sx={{ display: { xs: "flex", md: "none" }, flexDirection: "column", gap: 1.5 }}>
+            {rows.map((row) => {
+              const status = STATUS_STYLES[row.status] || STATUS_STYLES.success;
+              return (
+                <Box
+                  key={row._id}
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2,
+                    border: "1px solid #2f3336",
+                    bgcolor: "#0a0a0c",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 1,
+                      mb: 1.25,
+                    }}
+                  >
+                    <Typography fontSize={13} fontWeight={700} color="#e7e9ea">
+                      {formatTime(row.createdAt, i18n.language)}
+                    </Typography>
+                    <Chip
+                      label={status.label}
+                      size="small"
+                      sx={{
+                        color: status.color,
+                        border: `1px solid ${status.color}`,
+                        bgcolor: "transparent",
+                        flexShrink: 0,
+                      }}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+                      gap: 1,
+                    }}
+                  >
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography fontSize={11} color="#71767b">
+                        {t("loginHistory.browser")}
+                      </Typography>
+                      <Typography fontSize={13} color="#e7e9ea" noWrap>
+                        {row.browser}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography fontSize={11} color="#71767b">
+                        {t("loginHistory.os")}
+                      </Typography>
+                      <Typography fontSize={13} color="#e7e9ea" noWrap>
+                        {row.os}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography fontSize={11} color="#71767b">
+                        {t("loginHistory.device")}
+                      </Typography>
+                      <Typography fontSize={13} color="#e7e9ea" noWrap>
+                        {getDeviceLabel(row.deviceType)}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography fontSize={11} color="#71767b">
+                        {t("loginHistory.ip")}
+                      </Typography>
+                      <Typography fontSize={13} color="#e7e9ea" noWrap>
+                        {row.ip}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
+
+          {/* Desktop & landscape tablet: original full table */}
+          <TableContainer sx={{ display: { xs: "none", md: "block" }, overflowX: "auto" }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={headSx}>{t("loginHistory.dateTimeIst")}</TableCell>
+                  <TableCell sx={headSx}>{t("loginHistory.browser")}</TableCell>
+                  <TableCell sx={headSx}>{t("loginHistory.os")}</TableCell>
+                  <TableCell sx={headSx}>{t("loginHistory.device")}</TableCell>
+                  <TableCell sx={headSx}>{t("loginHistory.ip")}</TableCell>
+                  <TableCell sx={headSx}>{t("loginHistory.status")}</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => {
+                  const status = STATUS_STYLES[row.status] || STATUS_STYLES.success;
+                  return (
+                    <TableRow key={row._id}>
+                      <TableCell sx={cellSx}>{formatTime(row.createdAt, i18n.language)}</TableCell>
+                      <TableCell sx={cellSx}>{row.browser}</TableCell>
+                      <TableCell sx={cellSx}>{row.os}</TableCell>
+                      <TableCell sx={cellSx}>{getDeviceLabel(row.deviceType)}</TableCell>
+                      <TableCell sx={cellSx}>{row.ip}</TableCell>
+                      <TableCell sx={cellSx}>
+                        <Chip
+                          label={status.label}
+                          size="small"
+                          sx={{ color: status.color, border: `1px solid ${status.color}`, bgcolor: "transparent" }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
       )}
     </Box>
   );

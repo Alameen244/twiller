@@ -26,7 +26,7 @@ export default function AccountInfoRow({
         {label}
       </Typography>
       <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-        <Typography fontSize={16} color="#e7e9ea">
+        <Typography fontSize={16} color="#e7e9ea" sx={{ overflowWrap: "anywhere" }}>
           {value}
         </Typography>
         {verified && <CheckCircle sx={{ fontSize: 18 }} />}

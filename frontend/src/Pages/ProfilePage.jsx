@@ -74,19 +74,20 @@ export default function ProfilePage() {
       <Box
         sx={{
           position: "sticky",
-          top: 0,
+          top: { xs: 53, sm: 0 },
           zIndex: 2,
           bgcolor: "rgba(0,0,0,.9)",
+          backdropFilter: "blur(10px)",
           borderBottom: "1px solid #2f3336",
-          p: 1.5,
+          p: { xs: 1, sm: 1.5 },
         }}
       >
         <Stack direction="row" spacing={2} alignItems="center">
           <IconButton onClick={() => navigate(-1)} sx={{ color: "#fff" }}>
             <ArrowBack />
           </IconButton>
-          <Box>
-            <Typography fontWeight={700}>{user.displayName}</Typography>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography fontWeight={700} noWrap>{user.displayName}</Typography>
             <Typography fontSize={13} color="text.secondary">
               {t("profile.postsCount", { count: mine.length })}
             </Typography>
@@ -95,7 +96,7 @@ export default function ProfilePage() {
       </Box>
       <Box
         sx={{
-          height: 200,
+          height: { xs: 140, sm: 200 },
           background: "linear-gradient(90deg,#1d9bf0,#7856ff)",
           position: "relative",
         }}
@@ -105,9 +106,9 @@ export default function ProfilePage() {
           src={user.avatar}
           sx={{
             position: "absolute",
-            top: -68,
-            width: 136,
-            height: 136,
+            top: { xs: -44, sm: -68 },
+            width: { xs: 88, sm: 136 },
+            height: { xs: 88, sm: 136 },
             border: "4px solid #000",
           }}
         >
@@ -121,10 +122,10 @@ export default function ProfilePage() {
               borderColor: "#536471",
               color: "#e7e9ea",
               fontWeight: 700,
-              fontSize: 15,
+              fontSize: { xs: 14, sm: 15 },
               textTransform: "none",
               borderRadius: 99,
-              px: 2.25,
+              px: { xs: 1.75, sm: 2.25 },
               py: 0.6,
               "&:hover": {
                 borderColor: "#71767b",
@@ -135,7 +136,7 @@ export default function ProfilePage() {
             {t("profile.editProfile")}
           </Button>
         </Box>
-        <Box mt={4}>
+        <Box mt={{ xs: 2, sm: 4 }}>
           <Box>
             <Typography fontSize={20} fontWeight={800} lineHeight={1.25} color="#e7e9ea">
               {user.displayName}
@@ -191,15 +192,16 @@ export default function ProfilePage() {
               borderTop: "1px solid #2f3336",
             }}
           >
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ ml: "-2px" }}>
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ ml: "-2px", minWidth: 0, flex: 1, pr: 1 }}>
               <Notifications
                 sx={{
                   color: notificationsOn ? "#1d9bf0" : "#9ba1a6",
                   fontSize: 20,
+                  flexShrink: 0,
                   transition: "color 0.2s",
                 }}
               />
-              <Box>
+              <Box sx={{ minWidth: 0 }}>
                 <Typography fontWeight={700} fontSize={14} color="#e7e9ea" lineHeight={1.3}>
                   {t("settings.notifications")}
                 </Typography>

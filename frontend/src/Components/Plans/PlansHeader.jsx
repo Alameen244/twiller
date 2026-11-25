@@ -29,7 +29,7 @@ export default function PlansHeader({ onClose }) {
         alignItems="center"
         textAlign="center"
         spacing={1}
-        sx={{ pt: 1, mb: 3 }}
+        sx={{ pt: 1, px: { xs: 4, sm: 2 }, mb: 3 }}
       >
         <TwitterLogo size={36} />
         <Typography
