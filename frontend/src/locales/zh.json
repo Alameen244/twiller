@@ -400,5 +400,14 @@
     "statStatus": "HTTP 404 · 未知路由",
     "statRedirect": "Twiller Edge · 自动重定向",
     "statShortcut": "按 H 返回首页"
+  },
+  "comments": {
+    "placeholder": "发布你的回复",
+    "reply": "回复",
+    "empty": "暂无回复，来发起对话吧。",
+    "delete": "删除回复",
+    "loadFailed": "无法加载回复。",
+    "createFailed": "无法发布回复。",
+    "deleteFailed": "无法删除回复。"
   }
 }

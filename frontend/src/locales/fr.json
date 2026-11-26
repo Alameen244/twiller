@@ -400,5 +400,14 @@
     "statStatus": "HTTP 404 · Route introuvable",
     "statRedirect": "Twiller Edge · Redirection auto",
     "statShortcut": "Appuyez sur H pour l'accueil"
+  },
+  "comments": {
+    "placeholder": "Publiez votre réponse",
+    "reply": "Répondre",
+    "empty": "Aucune réponse pour le moment. Lancez la conversation.",
+    "delete": "Supprimer la réponse",
+    "loadFailed": "Impossible de charger les réponses.",
+    "createFailed": "Impossible de publier votre réponse.",
+    "deleteFailed": "Impossible de supprimer la réponse."
   }
 }

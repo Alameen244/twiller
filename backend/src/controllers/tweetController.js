@@ -1,4 +1,5 @@
 import Tweet from '../models/tweetModel.js';
+import Comment from '../models/commentModel.js';
 import User from '../models/userModel.js';
 import { reserveTweetSlot, releaseTweetSlot } from '../services/subscriptionService.js';
 import { deleteAudioFromCloudinary } from '../services/audioStorageService.js';
@@ -148,7 +149,10 @@ export const deleteTweet = async (req, res) => {
     }
 
     await Tweet.findByIdAndDelete(req.params.tweetid);
-    await deleteNotificationsForTweet(tweet._id);
+    await Promise.all([
+      Comment.deleteMany({ tweet: tweet._id }),
+      deleteNotificationsForTweet(tweet._id),
+    ]);
     if (tweet.audio?.publicId) {
       await deleteAudioFromCloudinary(tweet.audio.publicId);
     }

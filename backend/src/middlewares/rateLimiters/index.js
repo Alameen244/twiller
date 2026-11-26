@@ -1,5 +1,6 @@
 export * from './userLimiters.js';
 export * from './tweetLimiters.js';
+export * from './commentLimiters.js';
 export * from './mediaLimiters.js';
 export * from './subscriptionLimiters.js';
 export * from './loginRateLimiters.js';

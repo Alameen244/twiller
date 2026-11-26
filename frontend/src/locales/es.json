@@ -400,5 +400,14 @@
     "statStatus": "HTTP 404 · Ruta no encontrada",
     "statRedirect": "Twiller Edge · Redirección automática",
     "statShortcut": "Pulsa H para ir al inicio"
+  },
+  "comments": {
+    "placeholder": "Publica tu respuesta",
+    "reply": "Responder",
+    "empty": "Aún no hay respuestas. Inicia la conversación.",
+    "delete": "Eliminar respuesta",
+    "loadFailed": "No se pudieron cargar las respuestas.",
+    "createFailed": "No se pudo publicar tu respuesta.",
+    "deleteFailed": "No se pudo eliminar la respuesta."
   }
 }

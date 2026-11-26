@@ -400,5 +400,14 @@
     "statStatus": "HTTP 404 · Rota inexistente",
     "statRedirect": "Twiller Edge · Redirecionado",
     "statShortcut": "Pressione H para o início"
+  },
+  "comments": {
+    "placeholder": "Poste sua resposta",
+    "reply": "Responder",
+    "empty": "Nenhuma resposta ainda. Comece a conversa.",
+    "delete": "Excluir resposta",
+    "loadFailed": "Não foi possível carregar as respostas.",
+    "createFailed": "Não foi possível publicar sua resposta.",
+    "deleteFailed": "Não foi possível excluir a resposta."
   }
 }

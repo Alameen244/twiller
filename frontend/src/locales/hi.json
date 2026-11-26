@@ -400,5 +400,14 @@
     "statStatus": "HTTP 404 · अज्ञात मार्ग",
     "statRedirect": "Twiller Edge · ऑटो-रीरूट",
     "statShortcut": "होम के लिए H दबाएं"
+  },
+  "comments": {
+    "placeholder": "अपना जवाब पोस्ट करें",
+    "reply": "जवाब दें",
+    "empty": "अभी तक कोई जवाब नहीं है। बातचीत शुरू करें।",
+    "delete": "जवाब हटाएं",
+    "loadFailed": "जवाब लोड नहीं हो सके।",
+    "createFailed": "आपका जवाब पोस्ट नहीं हो सका।",
+    "deleteFailed": "जवाब हटाया नहीं जा सका।"
   }
 }

@@ -400,5 +400,14 @@
     "statStatus": "HTTP 404 · Unrouted path",
     "statRedirect": "Twiller Edge · Auto-rerouted",
     "statShortcut": "Press H for Home"
+  },
+  "comments": {
+    "placeholder": "Post your reply",
+    "reply": "Reply",
+    "empty": "No replies yet. Start the conversation.",
+    "delete": "Delete reply",
+    "loadFailed": "Could not load replies.",
+    "createFailed": "Could not post your reply.",
+    "deleteFailed": "Could not delete reply."
   }
 }

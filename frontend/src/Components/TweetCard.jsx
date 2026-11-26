@@ -26,6 +26,7 @@ import { formatDuration } from "../helper/audioConstants";
 import { Avatar, Card } from "./UI";
 import { useAuth } from "../Context/AuthContext";
 import DeletePostDialog from "./DeletePostDialog";
+import CommentSection from "./CommentSection";
 
 const n = (x = 0) => (x >= 1000 ? `${(x / 1000).toFixed(1)}K` : x);
 
@@ -35,6 +36,7 @@ export default function TweetCard({ tweet, onDelete, translation, onVisible }) {
   const { t, i18n } = useTranslation();
   const [item, setItem] = useState(tweet);
   const [showOriginal, setShowOriginal] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
   const bodyRef = useRef(null);
 
   // ── More menu ──
@@ -99,6 +101,10 @@ export default function TweetCard({ tweet, onDelete, translation, onVisible }) {
     } finally {
       setDeleting(false);
     }
+  };
+
+  const handleCommentsCountChange = (count) => {
+    setItem((prev) => ({ ...prev, comments: count }));
   };
 
   const liked = item.likedBy?.includes(user?._id);
@@ -256,7 +262,12 @@ export default function TweetCard({ tweet, onDelete, translation, onVisible }) {
               justifyContent="space-between"
               sx={{ maxWidth: 440, color: "#71767b" }}
             >
-              <IconButton sx={{ color: "inherit" }} data-component="comment-button">
+              <IconButton
+                sx={{ color: commentsOpen ? "#1d9bf0" : "inherit" }}
+                data-component="comment-button"
+                aria-expanded={commentsOpen}
+                onClick={() => setCommentsOpen((v) => !v)}
+              >
                 <ChatBubbleOutline />
                 <Typography variant="caption" sx={{ ml: 0.75 }}>
                   {n(item.comments)}
@@ -286,6 +297,11 @@ export default function TweetCard({ tweet, onDelete, translation, onVisible }) {
                 <Share />
               </IconButton>
             </Stack>
+            <CommentSection
+              tweetId={item._id}
+              open={commentsOpen}
+              onCountChange={handleCommentsCountChange}
+            />
           </Box>
         </Stack>
       </Card>

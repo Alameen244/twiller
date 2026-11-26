@@ -25,6 +25,10 @@ export const endpoints = {
   deletePost: (id) => `/api/v1/tweets/${id}`,
   translateTweets: '/api/v1/tweets/translate',
 
+  //comment
+  comments: (tweetId) => `/api/v1/comments/${tweetId}`,
+  deleteComment: (commentId) => `/api/v1/comments/${commentId}`,
+
   //image
   uploadSingleImage: '/api/v1/image/uploadSingle',
   uploadMultipleImages: '/api/v1/image/uploadMultiple',
