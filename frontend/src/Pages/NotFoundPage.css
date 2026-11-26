@@ -402,10 +402,10 @@
 /* Entrance choreography (rest state always visible) */
 .tw-nf-appear {
   opacity: 1;
-  animation-duration: 0.95s;
+  animation-duration: 0.65s;
   animation-fill-mode: both;
   animation-timing-function: var(--nf-ease);
-  animation-delay: var(--d, 0.06s);
+  animation-delay: var(--d, 0.04s);
 }
 
 .tw-nf-appear.is-in {
@@ -421,7 +421,7 @@
 
 .tw-nf-appear--numeral {
   animation-name: nfInNumeral;
-  animation-duration: 1.1s;
+  animation-duration: 0.78s;
 }
 
 .tw-nf-appear--pop {
@@ -434,7 +434,7 @@
 
 .tw-nf-appear--soft {
   animation-name: nfInSoft;
-  animation-duration: 1.1s;
+  animation-duration: 0.7s;
 }
 
 .tw-nf-appear--stat {
@@ -540,8 +540,8 @@
 
   .tw-nf-hero {
     justify-content: center;
-    padding-top: 28px;
-    padding-bottom: 36px;
+    padding-top: 18px;
+    padding-bottom: 24px;
   }
 
   .tw-nf-stats {

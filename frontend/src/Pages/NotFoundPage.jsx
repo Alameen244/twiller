@@ -172,7 +172,7 @@ export default function NotFoundPage() {
 
         <div
           className="tw-nf-path-pill tw-nf-appear tw-nf-appear--scale"
-          style={{ "--d": "0.14s" }}
+          style={{ "--d": "0.1s" }}
           title={attemptedPath}
         >
           <span className="tw-nf-path-dot" aria-hidden="true" />
@@ -182,7 +182,7 @@ export default function NotFoundPage() {
         <button
           type="button"
           className="tw-nf-btn tw-nf-btn--ghost tw-nf-btn--compact tw-nf-header-cta tw-nf-appear tw-nf-appear--scale"
-          style={{ "--d": "0.2s" }}
+          style={{ "--d": "0.14s" }}
           onClick={goHome}
         >
           {t("notFound.navHome")}
@@ -193,7 +193,7 @@ export default function NotFoundPage() {
         <div className="tw-nf-copy">
           <p
             className="tw-nf-numeral tw-nf-appear tw-nf-appear--numeral"
-            style={{ "--d": "0.12s" }}
+            style={{ "--d": "0.08s" }}
             aria-label="404"
           >
             404
@@ -201,7 +201,7 @@ export default function NotFoundPage() {
 
           <div
             className="tw-nf-badge tw-nf-appear tw-nf-appear--pop"
-            style={{ "--d": "0.24s" }}
+            style={{ "--d": "0.16s" }}
           >
             <svg
               className="tw-nf-spark"
@@ -217,14 +217,14 @@ export default function NotFoundPage() {
           <h1 className="tw-nf-h1">
             <span
               className="tw-nf-line tw-nf-appear tw-nf-appear--mask"
-              style={{ "--d": "0.34s" }}
+              style={{ "--d": "0.22s" }}
             >
               {t("notFound.titleBefore")}{" "}
               <em className="tw-nf-em">{t("notFound.titleEmphasis")}</em>
             </span>
             <span
               className="tw-nf-line tw-nf-appear tw-nf-appear--mask"
-              style={{ "--d": "0.48s" }}
+              style={{ "--d": "0.3s" }}
             >
               {t("notFound.titleSecondLine")}
             </span>
@@ -232,7 +232,7 @@ export default function NotFoundPage() {
 
           <p
             className="tw-nf-lede tw-nf-appear tw-nf-appear--soft"
-            style={{ "--d": "0.62s" }}
+            style={{ "--d": "0.38s" }}
           >
             {t("notFound.subtitle")}
           </p>
@@ -241,7 +241,7 @@ export default function NotFoundPage() {
             <span
               ref={magneticRef}
               className="tw-nf-mag tw-nf-appear tw-nf-appear--scale"
-              style={{ "--d": "0.74s" }}
+              style={{ "--d": "0.44s" }}
             >
               <button
                 type="button"
@@ -270,7 +270,7 @@ export default function NotFoundPage() {
             <button
               type="button"
               className="tw-nf-btn tw-nf-btn--ghost tw-nf-appear tw-nf-appear--soft"
-              style={{ "--d": "0.84s" }}
+              style={{ "--d": "0.5s" }}
               onClick={goBack}
             >
               {t("notFound.goBack")}
@@ -282,7 +282,7 @@ export default function NotFoundPage() {
       <footer className="tw-nf-stats">
         <div
           className="tw-nf-stat tw-nf-appear tw-nf-appear--stat"
-          style={{ "--d": "0.92s" }}
+          style={{ "--d": "0.54s" }}
         >
           <svg
             className="tw-nf-stat-icon"
@@ -303,7 +303,7 @@ export default function NotFoundPage() {
 
         <div
           className="tw-nf-stat tw-nf-appear tw-nf-appear--stat"
-          style={{ "--d": "1.02s" }}
+          style={{ "--d": "0.58s" }}
         >
           <svg
             className="tw-nf-stat-icon"
@@ -322,7 +322,7 @@ export default function NotFoundPage() {
 
         <div
           className="tw-nf-stat tw-nf-appear tw-nf-appear--stat"
-          style={{ "--d": "1.12s" }}
+          style={{ "--d": "0.62s" }}
         >
           <span className="tw-nf-kbd" aria-hidden="true">
             H

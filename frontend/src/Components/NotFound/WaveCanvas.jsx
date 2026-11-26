@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 
 const RIBBONS = [
-  { amp: 42, freq: 0.0024, speed: 0.00075, phase: 0.2, yRatio: 0.41, color: "rgba(255, 255, 255, 0.09)", width: 1.0 },
-  { amp: 56, freq: 0.0019, speed: -0.00058, phase: 1.6, yRatio: 0.45, color: "rgba(255, 255, 255, 0.16)", width: 1.1 },
-  { amp: 48, freq: 0.0028, speed: 0.00095, phase: 3.1, yRatio: 0.48, color: "rgba(29, 155, 240, 0.48)", width: 1.5, primary: true },
-  { amp: 34, freq: 0.0033, speed: -0.00082, phase: 4.5, yRatio: 0.52, color: "rgba(255, 255, 255, 0.11)", width: 0.9 },
-  { amp: 28, freq: 0.0022, speed: 0.00048, phase: 5.7, yRatio: 0.56, color: "rgba(255, 255, 255, 0.055)", width: 0.8 },
+  { amp: 42, freq: 0.0024, speed: 0.00075, phase: 0.2, yRatio: 0.41, color: "rgba(255, 255, 255, 0.1)", width: 1.0 },
+  { amp: 56, freq: 0.0019, speed: -0.00058, phase: 1.6, yRatio: 0.45, color: "rgba(255, 255, 255, 0.18)", width: 1.1 },
+  { amp: 48, freq: 0.0028, speed: 0.00095, phase: 3.1, yRatio: 0.48, color: "rgba(29, 155, 240, 0.6)", width: 1.6, primary: true },
+  { amp: 34, freq: 0.0033, speed: -0.00082, phase: 4.5, yRatio: 0.52, color: "rgba(255, 255, 255, 0.12)", width: 0.9 },
+  { amp: 28, freq: 0.0022, speed: 0.00048, phase: 5.7, yRatio: 0.56, color: "rgba(255, 255, 255, 0.06)", width: 0.8 },
 ];
 
 const SPARK_INDICES = Array.from({ length: 24 }, (_, idx) => (idx + 0.5) / 24);

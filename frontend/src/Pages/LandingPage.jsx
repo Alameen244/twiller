@@ -19,7 +19,7 @@ export default function LandingPage() {
     <Box
       data-component="landing-page"
       sx={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         display: "flex",
         bgcolor: "#000",
         color: "#fff",
@@ -28,11 +28,11 @@ export default function LandingPage() {
         "&::before": {
           content: '""',
           position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: "radial-gradient(circle at 20% 50%, rgba(29, 155, 240, 0.1) 0%, transparent 50%)",
+          inset: 0,
+          background: {
+            xs: "radial-gradient(circle at 50% 18%, rgba(29, 155, 240, 0.14) 0%, transparent 56%)",
+            lg: "radial-gradient(circle at 20% 50%, rgba(29, 155, 240, 0.1) 0%, transparent 50%)",
+          },
           pointerEvents: "none",
         },
       }}
@@ -70,21 +70,24 @@ export default function LandingPage() {
         sx={{
           flex: 1,
           minWidth: 0,
-          maxWidth: 640,
+          maxWidth: { xs: 440, lg: 640 },
           width: "100%",
           mx: { xs: "auto", lg: 0 },
-          px: { xs: 2.5, sm: 4, lg: 8 },
-          py: { xs: 4, lg: 0 },
+          px: { xs: 3, sm: 4, lg: 8 },
+          py: { xs: 5, lg: 0 },
           display: "flex",
           justifyContent: "center",
+          alignItems: { xs: "center", lg: "flex-start" },
+          textAlign: { xs: "center", lg: "left" },
           flexDirection: "column",
           zIndex: 1,
         }}
       >
         <Box
           sx={{
-            display: { xs: "block", lg: "none" },
-            mb: { xs: 4, sm: 6 },
+            display: { xs: "flex", lg: "none" },
+            justifyContent: "center",
+            mb: { xs: 3.5, sm: 5 },
             "&:hover svg": {
               transform: "scale(1.1) rotate(5deg)",
               filter: "drop-shadow(0 0 15px rgba(29, 155, 240, 0.5))",
@@ -94,7 +97,7 @@ export default function LandingPage() {
             },
           }}
         >
-          <TwitterLogo size={52} />
+          <TwitterLogo size={50} />
         </Box>
         <Typography
           data-component="main-heading"
@@ -137,7 +140,11 @@ export default function LandingPage() {
         >
           {t("landing.joinToday")}
         </Typography>
-        <Stack spacing={1.5} sx={{ width: "100%", maxWidth: 300 }} data-component="action-buttons">
+        <Stack
+          spacing={1.5}
+          sx={{ width: "100%", maxWidth: { xs: 340, lg: 300 }, mx: { xs: "auto", lg: 0 } }}
+          data-component="action-buttons"
+        >
           <Button
             data-component="google-signup-button"
             variant="outlined"
@@ -266,6 +273,8 @@ export default function LandingPage() {
             color="text.secondary"
             data-component="terms-text"
             sx={{
+              textAlign: { xs: "center", lg: "left" },
+              lineHeight: 1.45,
               transition: "color 0.3s ease",
               "&:hover": {
                 color: "#1d9bf0",
@@ -277,11 +286,12 @@ export default function LandingPage() {
           <Typography
             sx={{
               fontWeight: 700,
-              mt: 4,
+              mt: { xs: 3, lg: 4 },
+              textAlign: { xs: "center", lg: "left" },
               transition: "all 0.3s ease",
               "&:hover": {
                 color: "#1d9bf0",
-                transform: "translateX(5px)",
+                transform: { lg: "translateX(5px)" },
               },
             }}
             data-component="login-heading"
