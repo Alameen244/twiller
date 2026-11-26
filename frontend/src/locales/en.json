@@ -238,7 +238,17 @@
     "enterCodeToVerify": "Enter it below to verify {{phone}}.",
     "resendIn": "Resend code in {{secs}}s",
     "resend": "Resend code",
-    "verifying": "Verifying..."
+    "verifying": "Verifying...",
+    "resetPassword": "Change your password",
+    "resetPasswordDesc": "Change your password at any time.",
+    "hubDescription": "See information about your account, like your phone number and email address, or change your password at any time.",
+    "accountInfo": "Account information",
+    "accountInfoDesc": "See your account information like your phone number and email address.",
+    "resetPasswordFlowTitle": "Verify your account",
+    "resetPasswordFlowDesc": "Choose where to receive your 6-digit code to set a new password.",
+    "resetSuccessTitle": "Password updated",
+    "resetSuccessDesc": "Your account password has been changed successfully.",
+    "backToAccount": "Back to Your account"
   },
   "loginHistory": {
     "title": "Login history",
@@ -384,7 +394,7 @@
     "auth/provider-already-linked": "A phone number is already linked to this account.",
     "auth/requires-recent-login": "Please log out and log in again, then retry.",
     "auth/captcha-check-failed": "Captcha check failed. Please try again.",
-    "PHONE_NOT_VERIFIED": "Please register and verify your mobile number in Settings > Your account before switching to this language.",
+    "PHONE_NOT_VERIFIED": "Please register and verify your mobile number in Settings > Your account > Account information before switching to this language.",
     "default": "Something went wrong."
   },
   "notFound": {

@@ -5,18 +5,24 @@ export default function SettingsMenuItem({ icon: Icon, label, description, onCli
   return (
     <ListItemButton
       onClick={onClick}
-      sx={{ px: 2, py: 1.75, "&:hover": { bgcolor: "rgba(255,255,255,0.03)" } }}
+      sx={{
+        mx: 1,
+        px: 2,
+        py: 1.5,
+        borderRadius: 2.5,
+        "&:hover": { bgcolor: "rgba(255,255,255,0.06)" },
+      }}
     >
-      <ListItemIcon sx={{ minWidth: 40, color: "#e7e9ea" }}>
-        <Icon />
+      <ListItemIcon sx={{ minWidth: 42, color: "#e7e9ea" }}>
+        <Icon sx={{ fontSize: 21 }} />
       </ListItemIcon>
       <ListItemText
         primary={label}
         secondary={description}
-        primaryTypographyProps={{ fontSize: 16, color: "#e7e9ea" }}
-        secondaryTypographyProps={{ fontSize: 13, color: "#71767b" }}
+        primaryTypographyProps={{ fontSize: 15, fontWeight: 700, color: "#e7e9ea" }}
+        secondaryTypographyProps={{ fontSize: 13, color: "#71767b", mt: 0.25 }}
       />
-      <ChevronRight sx={{ color: "#71767b" }} />
+      <ChevronRight sx={{ color: "#71767b", ml: 1 }} />
     </ListItemButton>
   );
 }

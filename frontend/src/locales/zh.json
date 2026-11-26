@@ -238,7 +238,17 @@
     "enterCodeToVerify": "在下方输入验证码以验证 {{phone}}。",
     "resendIn": "{{secs}}秒后重新发送",
     "resend": "重新发送验证码",
-    "verifying": "正在验证..."
+    "verifying": "正在验证...",
+    "resetPassword": "更改您的密码",
+    "resetPasswordDesc": "随时更改您的密码。",
+    "hubDescription": "查看您账号的相关信息（例如手机号和电子邮箱），或随时更改密码。",
+    "accountInfo": "账号信息",
+    "accountInfoDesc": "查看您账号的手机号码和电子邮箱地址等信息。",
+    "resetPasswordFlowTitle": "验证您的账号",
+    "resetPasswordFlowDesc": "选择接收 6 位验证码的方式以设置新密码。",
+    "resetSuccessTitle": "密码已更新",
+    "resetSuccessDesc": "您的账号密码已成功更改。",
+    "backToAccount": "返回您的账号"
   },
   "loginHistory": {
     "title": "登录历史",
@@ -384,7 +394,7 @@
     "auth/provider-already-linked": "该账号已绑定手机号码。",
     "auth/requires-recent-login": "请重新登录后再试。",
     "auth/captcha-check-failed": "验证码检查失败，请重试。",
-    "PHONE_NOT_VERIFIED": "切换到此语言前，请先在“设置 > 您的账号”中注册并验证您的手机号码。",
+    "PHONE_NOT_VERIFIED": "切换到此语言前，请先在“设置 > 您的账号 > 账号信息”中注册并验证您的手机号码。",
     "default": "出现错误，请稍后再试。"
   },
   "notFound": {

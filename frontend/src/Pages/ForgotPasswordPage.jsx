@@ -1,79 +1,13 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Stack, Typography } from "@mui/material";
-import { CheckCircleOutline } from "@mui/icons-material";
-import { toast } from "react-toastify";
+import { Box, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TwitterLogo from "../Components/TwitterLogo";
 import { Button } from "../Components/UI";
-import ForgotPasswordRequestStep from "../Components/ForgotPassword/ForgotPasswordRequestStep";
-import ForgotPasswordResetStep from "../Components/ForgotPassword/ForgotPasswordResetStep";
-import { forgotPasswordRequestApi, forgotPasswordResetApi } from "../Apis/authApi";
-import { getPhoneErrorMessage } from "../Components/Settings/phoneErrors";
-
-const COUNTRY_CODE = "+91";
+import PasswordResetFlow from "../Components/ForgotPassword/PasswordResetFlow";
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [step, setStep] = useState("request"); // request -> reset -> done
-  const [method, setMethod] = useState("email");
-  const [email, setEmail] = useState("");
-  const [digits, setDigits] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  const buildPayload = () =>
-    method === "email"
-      ? { method, email: email.trim() }
-      : { method, phoneNumber: `${COUNTRY_CODE}${digits}` };
-
-  const target = method === "email" ? email.trim() : `${COUNTRY_CODE} ${digits}`;
-
-  const showError = (e) => {
-    const message = getPhoneErrorMessage(e, t);
-    // 429 covers both the "one time per day" rule and the rate limit
-    if (e?.response?.status === 429) toast.warning(message, { toastId: "forgot-error" });
-    else toast.error(message, { toastId: "forgot-error" });
-  };
-
-  const handleSendOtp = async () => {
-    setBusy(true);
-    try {
-      await forgotPasswordRequestApi(buildPayload());
-      toast.success(method === "email" ? t("forgot.otpSentEmail") : t("forgot.otpSentPhone"));
-      setStep("reset");
-    } catch (e) {
-      showError(e);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleResend = async () => {
-    setBusy(true);
-    try {
-      await forgotPasswordRequestApi(buildPayload());
-      toast.success(t("forgot.newOtpSent"));
-      return true;
-    } catch (e) {
-      showError(e);
-      return false;
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleReset = async (code, newPassword) => {
-    setBusy(true);
-    try {
-      await forgotPasswordResetApi({ ...buildPayload(), code, newPassword });
-      setStep("done");
-    } catch (e) {
-      showError(e);
-    } finally {
-      setBusy(false);
-    }
-  };
 
   return (
     <Box
@@ -91,61 +25,12 @@ export default function ForgotPasswordPage() {
           <TwitterLogo size={40} />
 
           <Box sx={{ width: "100%" }}>
-            {step === "request" && (
-              <ForgotPasswordRequestStep
-                method={method}
-                onMethodChange={setMethod}
-                email={email}
-                onEmailChange={setEmail}
-                digits={digits}
-                onDigitsChange={setDigits}
-                countryCode={COUNTRY_CODE}
-                onSubmit={handleSendOtp}
-                busy={busy}
-              />
-            )}
-
-            {step === "reset" && (
-              <ForgotPasswordResetStep
-                target={target}
-                onReset={handleReset}
-                onResend={handleResend}
-                onBack={() => setStep("request")}
-                busy={busy}
-              />
-            )}
-
-            {step === "done" && (
-              <Stack spacing={2} alignItems="center" textAlign="center">
-                <CheckCircleOutline sx={{ fontSize: 56, color: "#00ba7c" }} />
-                <Typography variant="h5" fontWeight={800}>
-                  {t("forgot.resetSuccessTitle")}
-                </Typography>
-                <Typography color="#71767b">
-                  {t("forgot.resetSuccessDesc")}
-                </Typography>
-                <Button
-                  fullWidth
-                  onClick={() => navigate("/")}
-                  sx={{
-                    bgcolor: "#1d9bf0",
-                    color: "#fff",
-                    fontWeight: 700,
-                    py: 1.5,
-                    "&:hover": { bgcolor: "#1a8cd8" },
-                  }}
-                >
-                  {t("forgot.goToSignIn")}
-                </Button>
-              </Stack>
-            )}
+            <PasswordResetFlow onDoneAction={() => navigate("/")} />
           </Box>
 
-          {step !== "done" && (
-            <Button onClick={() => navigate("/")} sx={{ color: "#1d9bf0", fontWeight: 700 }}>
-              {t("forgot.backToSignIn")}
-            </Button>
-          )}
+          <Button onClick={() => navigate("/")} sx={{ color: "#1d9bf0", fontWeight: 700 }}>
+            {t("forgot.backToSignIn")}
+          </Button>
         </Stack>
       </Box>
     </Box>

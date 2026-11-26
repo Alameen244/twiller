@@ -21,6 +21,10 @@ export default function ForgotPasswordRequestStep({
   countryCode,
   onSubmit,
   busy,
+  titleText,
+  subtitleText,
+  emailDisabled = false,
+  phoneDisabled = false,
 }) {
   const { t } = useTranslation();
   const valid = method === "email" ? EMAIL_FORMAT.test(email.trim()) : digits.length === 10;
@@ -34,10 +38,10 @@ export default function ForgotPasswordRequestStep({
       }}
     >
       <Typography variant="h5" fontWeight={800} mb={1}>
-        {t("forgot.title")}
+        {titleText || t("forgot.title")}
       </Typography>
       <Typography color="#71767b" mb={3}>
-        {t("forgot.chooseWhere")}
+        {subtitleText || t("forgot.chooseWhere")}
       </Typography>
 
       <Tabs
@@ -57,7 +61,8 @@ export default function ForgotPasswordRequestStep({
 
       {method === "email" ? (
         <Input
-          autoFocus
+          autoFocus={!emailDisabled}
+          disabled={emailDisabled}
           type="email"
           placeholder={t("forgot.emailPlaceholder")}
           value={email}
@@ -66,7 +71,8 @@ export default function ForgotPasswordRequestStep({
       ) : (
         <TextField
           fullWidth
-          autoFocus
+          autoFocus={!phoneDisabled}
+          disabled={phoneDisabled}
           placeholder={t("forgot.phonePlaceholder")}
           value={digits}
           onChange={(e) => onDigitsChange(e.target.value.replace(/\D/g, "").slice(0, 10))}
@@ -80,6 +86,7 @@ export default function ForgotPasswordRequestStep({
               "& fieldset": { borderColor: "#333639" },
               "&:hover fieldset": { borderColor: "#536471" },
               "&.Mui-focused fieldset": { borderColor: "#1d9bf0" },
+              "&.Mui-disabled input": { WebkitTextFillColor: "#9a9a9a" },
             },
             "& .MuiInputAdornment-root": { color: "#71767b" },
           }}

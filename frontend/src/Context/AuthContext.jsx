@@ -34,6 +34,19 @@ const AuthContext = createContext(null);
 const fallbackAvatar =
   "https://images.pexels.com/photos/1139743/pexels-photo-1139743.jpeg?auto=compress&cs=tinysrgb&w=400";
 
+const USER_KEY = "twitter-user";
+const readCachedUser = () => {
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed?.email ? parsed : null;
+  } catch {
+    localStorage.removeItem(USER_KEY);
+    return null;
+  }
+};
+
 // A Chrome login waits here for the email OTP. sessionStorage keeps it across a page refresh.
 const PENDING_KEY = "twitter-pending-login";
 const readPending = () => {
@@ -47,10 +60,23 @@ const readPending = () => {
 const clearPending = () => sessionStorage.removeItem(PENDING_KEY);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null),
-    [isLoading, setIsLoading] = useState(true),
-    [isAuthReady, setIsAuthReady] = useState(false),
-    [pendingLogin, setPendingLogin] = useState(null); // { sessionId, maskedEmail } while the OTP is pending
+  // Stale-while-revalidate hydration: show cached session immediately while Firebase verifies in background.
+  const [{ initialUser, initialPending, initialReady }] = useState(() => {
+    const pending = readPending();
+    if (pending) {
+      return { initialUser: null, initialPending: pending, initialReady: true };
+    }
+    const cached = readCachedUser();
+    if (cached) {
+      return { initialUser: cached, initialPending: null, initialReady: true };
+    }
+    return { initialUser: null, initialPending: null, initialReady: !auth };
+  });
+
+  const [user, setUser] = useState(initialUser),
+    [isLoading, setIsLoading] = useState(!initialReady),
+    [isAuthReady, setIsAuthReady] = useState(initialReady),
+    [pendingLogin, setPendingLogin] = useState(initialPending); // { sessionId, maskedEmail } while the OTP is pending
 
   // True while login()/signup()/googlesignin() run, so onAuthStateChanged doesn't log the user in early.
    const loginInProgress = useRef(false);
@@ -58,7 +84,7 @@ export function AuthProvider({ children }) {
 
   const save = (data) => {
     setUser(data);
-    localStorage.setItem("twitter-user", JSON.stringify(data));
+    localStorage.setItem(USER_KEY, JSON.stringify(data));
     // The language saved on the backend wins after login.
     if (data?.language && data.language !== i18n.language) {
       i18n.changeLanguage(data.language);
@@ -66,16 +92,7 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    if (!auth) {
-      try {
-        setUser(JSON.parse(localStorage.getItem("twitter-user")));
-      } catch {
-        localStorage.removeItem("twitter-user");
-      }
-      setIsLoading(false);
-      setIsAuthReady(true);
-      return undefined;
-    }
+    if (!auth) return undefined;
     return onAuthStateChanged(auth, async (firebaseUser) => {
       if (loginInProgress.current) return; // the login flow below decides what happens next
       try {
@@ -92,7 +109,7 @@ export function AuthProvider({ children }) {
           setUser(null);
           setPendingLogin(null);
           clearPending();
-          localStorage.removeItem("twitter-user");
+          localStorage.removeItem(USER_KEY);
         }
       } catch (error) {
         console.error("Failed to fetch user", error);

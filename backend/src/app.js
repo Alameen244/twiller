@@ -38,6 +38,14 @@ app.get('/', (req, res) => {
   res.send('Twiller backend is running successfully');
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: Math.round(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Routes
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/tweets', tweetRoutes);

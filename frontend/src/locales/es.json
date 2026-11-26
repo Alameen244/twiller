@@ -238,7 +238,17 @@
     "enterCodeToVerify": "Ingrésalo a continuación para verificar {{phone}}.",
     "resendIn": "Reenviar código en {{secs}}s",
     "resend": "Reenviar código",
-    "verifying": "Verificando..."
+    "verifying": "Verificando...",
+    "resetPassword": "Cambia tu contraseña",
+    "resetPasswordDesc": "Cambia tu contraseña en cualquier momento.",
+    "hubDescription": "Consulta la información de tu cuenta, como tu número de teléfono y correo, o cambia tu contraseña cuando quieras.",
+    "accountInfo": "Información de la cuenta",
+    "accountInfoDesc": "Ve la información de tu cuenta, como tu número de teléfono y correo electrónico.",
+    "resetPasswordFlowTitle": "Verifica tu cuenta",
+    "resetPasswordFlowDesc": "Elige dónde recibir tu código de 6 dígitos para definir una nueva contraseña.",
+    "resetSuccessTitle": "Contraseña actualizada",
+    "resetSuccessDesc": "La contraseña de tu cuenta se cambió correctamente.",
+    "backToAccount": "Volver a Tu cuenta"
   },
   "loginHistory": {
     "title": "Historial de inicio de sesión",
@@ -384,7 +394,7 @@
     "auth/provider-already-linked": "Ya hay un número de teléfono vinculado a esta cuenta.",
     "auth/requires-recent-login": "Por favor cierra sesión y vuelve a iniciar sesión, luego intenta nuevamente.",
     "auth/captcha-check-failed": "Falló la verificación captcha. Por favor intenta de nuevo.",
-    "PHONE_NOT_VERIFIED": "Por favor, registra y verifica tu número de teléfono en Ajustes > Tu cuenta antes de cambiar a este idioma.",
+    "PHONE_NOT_VERIFIED": "Por favor, registra y verifica tu número de teléfono en Ajustes > Tu cuenta > Información de la cuenta antes de cambiar a este idioma.",
     "default": "Algo salió mal."
   },
   "notFound": {

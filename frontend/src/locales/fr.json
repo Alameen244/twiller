@@ -238,7 +238,17 @@
     "enterCodeToVerify": "Saisissez-le ci-dessous pour vérifier {{phone}}.",
     "resendIn": "Renvoyer le code dans {{secs}}s",
     "resend": "Renvoyer le code",
-    "verifying": "Vérification en cours..."
+    "verifying": "Vérification en cours...",
+    "resetPassword": "Changer votre mot de passe",
+    "resetPasswordDesc": "Changez votre mot de passe à tout moment.",
+    "hubDescription": "Consultez les informations de votre compte, comme votre numéro de téléphone et votre e-mail, ou modifiez votre mot de passe à tout moment.",
+    "accountInfo": "Informations du compte",
+    "accountInfoDesc": "Consultez les informations de votre compte comme votre numéro de téléphone et votre e-mail.",
+    "resetPasswordFlowTitle": "Vérifiez votre compte",
+    "resetPasswordFlowDesc": "Choisissez où recevoir votre code à 6 chiffres pour définir un nouveau mot de passe.",
+    "resetSuccessTitle": "Mot de passe mis à jour",
+    "resetSuccessDesc": "Le mot de passe de votre compte a bien été modifié.",
+    "backToAccount": "Retour à Votre compte"
   },
   "loginHistory": {
     "title": "Historique des connexions",
@@ -384,7 +394,7 @@
     "auth/provider-already-linked": "Un numéro de téléphone est déjà lié à ce compte.",
     "auth/requires-recent-login": "Veuillez vous déconnecter et vous reconnecter, puis réessayer.",
     "auth/captcha-check-failed": "Échec de la vérification captcha. Veuillez réessayer.",
-    "PHONE_NOT_VERIFIED": "Veuillez enregistrer et vérifier votre numéro de téléphone dans Paramètres > Votre compte avant de passer à cette langue.",
+    "PHONE_NOT_VERIFIED": "Veuillez enregistrer et vérifier votre numéro de téléphone dans Paramètres > Votre compte > Informations du compte avant de passer à cette langue.",
     "default": "Une erreur est survenue."
   },
   "notFound": {

@@ -37,7 +37,7 @@ const hasVerifiedPhone = (user) => Boolean(user.isPhoneVerified && user.phoneNum
 
 const PHONE_REQUIRED = {
   code: 'PHONE_NOT_VERIFIED',
-  message: 'Please register and verify your mobile number in Settings > Your account before switching to this language.',
+  message: 'Please register and verify your mobile number in Settings > Your account > Account information before switching to this language.',
 };
 
 // Step 1: send the OTP. French -> email OTP, every other language -> SMS to the verified phone.
