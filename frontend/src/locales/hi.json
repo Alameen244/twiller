@@ -419,5 +419,24 @@
     "loadFailed": "जवाब लोड नहीं हो सके।",
     "createFailed": "आपका जवाब पोस्ट नहीं हो सका।",
     "deleteFailed": "जवाब हटाया नहीं जा सका।"
+  },
+  "explore": {
+    "searchPlaceholder": "खोजें",
+    "tabExplore": "एक्सप्लोर",
+    "tabTrending": "ट्रेंडिंग",
+    "tabNews": "समाचार",
+    "tabSports": "खेल",
+    "tabEntertainment": "मनोरंजन",
+    "todaysNews": "आज की खबरें",
+    "catSportsTrending": "खेल · ट्रेंडिंग",
+    "catEntTrending": "मनोरंजन · ट्रेंडिंग",
+    "catTechTrending": "टेक्नोलॉजी · ट्रेंडिंग",
+    "catRegionTrending": "विश्व स्तर पर ट्रेंडिंग",
+    "noResults": "कोई मेल खाने वाली खबर या ट्रेंड नहीं मिला।"
+  },
+  "placeholder": {
+    "heading": "{{title}} जल्द आ रहा है",
+    "description": "यह सुविधा वर्तमान में सक्रिय विकास के अधीन है और आगामी अपडेट में उपलब्ध कराई जाएगी।",
+    "backHome": "होम पर वापस जाएं"
   }
 }

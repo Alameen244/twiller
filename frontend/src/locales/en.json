@@ -419,5 +419,24 @@
     "loadFailed": "Could not load replies.",
     "createFailed": "Could not post your reply.",
     "deleteFailed": "Could not delete reply."
+  },
+  "explore": {
+    "searchPlaceholder": "Search",
+    "tabExplore": "Explore",
+    "tabTrending": "Trending",
+    "tabNews": "News",
+    "tabSports": "Sports",
+    "tabEntertainment": "Entertainment",
+    "todaysNews": "Today's News",
+    "catSportsTrending": "Sports · Trending",
+    "catEntTrending": "Entertainment · Trending",
+    "catTechTrending": "Technology · Trending",
+    "catRegionTrending": "Trending globally",
+    "noResults": "No matching news or trends found."
+  },
+  "placeholder": {
+    "heading": "{{title}} is on the way",
+    "description": "This experience is currently in active development and will roll out in an upcoming release.",
+    "backHome": "Back to Home"
   }
 }

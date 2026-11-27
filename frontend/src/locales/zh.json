@@ -419,5 +419,24 @@
     "loadFailed": "无法加载回复。",
     "createFailed": "无法发布回复。",
     "deleteFailed": "无法删除回复。"
+  },
+  "explore": {
+    "searchPlaceholder": "搜索",
+    "tabExplore": "探索",
+    "tabTrending": "热门趋势",
+    "tabNews": "新闻",
+    "tabSports": "体育",
+    "tabEntertainment": "娱乐",
+    "todaysNews": "今日新闻",
+    "catSportsTrending": "体育 · 热门",
+    "catEntTrending": "娱乐 · 热门",
+    "catTechTrending": "科技 · 热门",
+    "catRegionTrending": "全球热门",
+    "noResults": "未找到匹配的新闻或热门趋势。"
+  },
+  "placeholder": {
+    "heading": "{{title}} 即将推出",
+    "description": "该功能目前正在积极开发中，将在后续版本中正式上线。",
+    "backHome": "返回首页"
   }
 }

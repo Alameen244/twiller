@@ -7,6 +7,7 @@ import LoadingSpinner from "./Components/LoadingSpinner";
 
 const LandingPage = lazy(() => import("./Pages/LandingPage"));
 const FeedPage = lazy(() => import("./Pages/FeedPage"));
+const ExplorePage = lazy(() => import("./Pages/ExplorePage"));
 const ProfilePage = lazy(() => import("./Pages/ProfilePage"));
 const PlaceholderPage = lazy(() => import("./Pages/PlaceholderPage"));
 const SettingsPage = lazy(() => import("./Pages/SettingsPage"));
@@ -76,10 +77,10 @@ function Shell() {
           <Route element={<LazyOutlet />}>
             <Route path="/" element={<FeedPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/explore" element={<PlaceholderPage title="Explore" />} />
+            <Route path="/explore" element={<ExplorePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
-            <Route path="/bookmarks" element={<PlaceholderPage title="Bookmarks" />} />
+            <Route path="/messages" element={<PlaceholderPage titleKey="nav.messages" />} />
+            <Route path="/bookmarks" element={<PlaceholderPage titleKey="nav.bookmarks" />} />
             <Route path="/plans" element={<PlansPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/settings/login-history" element={<SettingsLoginHistoryPage />} />

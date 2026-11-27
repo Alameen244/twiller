@@ -419,5 +419,24 @@
     "loadFailed": "Não foi possível carregar as respostas.",
     "createFailed": "Não foi possível publicar sua resposta.",
     "deleteFailed": "Não foi possível excluir a resposta."
+  },
+  "explore": {
+    "searchPlaceholder": "Buscar",
+    "tabExplore": "Explorar",
+    "tabTrending": "Assuntos do momento",
+    "tabNews": "Notícias",
+    "tabSports": "Esportes",
+    "tabEntertainment": "Entretenimento",
+    "todaysNews": "Notícias de hoje",
+    "catSportsTrending": "Esportes · Em alta",
+    "catEntTrending": "Entretenimento · Em alta",
+    "catTechTrending": "Tecnologia · Em alta",
+    "catRegionTrending": "Em alta no mundo",
+    "noResults": "Nenhuma notícia ou tendência correspondente encontrada."
+  },
+  "placeholder": {
+    "heading": "{{title}} estará disponível em breve",
+    "description": "Este recurso está em desenvolvimento ativo e será liberado em uma próxima atualização.",
+    "backHome": "Voltar para o início"
   }
 }

@@ -25,13 +25,10 @@ export default function FeedPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const isFollowingOrSelf = (t) => {
-    const authorId = t.author?._id || t.author;
-    if (authorId && user?._id && String(authorId) === String(user._id)) return true;
-    return Boolean(t.author?.followers?.includes(user?._id));
-  };
+  const isFollowing = (tweetItem) =>
+    Boolean(tweetItem.author?.followers?.includes(user?._id));
 
-  const displayedTweets = tab === 0 ? tweets : tweets.filter(isFollowingOrSelf);
+  const displayedTweets = tab === 0 ? tweets : tweets.filter(isFollowing);
 
   return (
     <>

@@ -419,5 +419,24 @@
     "loadFailed": "No se pudieron cargar las respuestas.",
     "createFailed": "No se pudo publicar tu respuesta.",
     "deleteFailed": "No se pudo eliminar la respuesta."
+  },
+  "explore": {
+    "searchPlaceholder": "Buscar",
+    "tabExplore": "Explorar",
+    "tabTrending": "Tendencias",
+    "tabNews": "Noticias",
+    "tabSports": "Deportes",
+    "tabEntertainment": "Entretenimiento",
+    "todaysNews": "Noticias de hoy",
+    "catSportsTrending": "Deportes · Tendencia",
+    "catEntTrending": "Entretenimiento · Tendencia",
+    "catTechTrending": "Tecnología · Tendencia",
+    "catRegionTrending": "Tendencia global",
+    "noResults": "No se encontraron noticias o tendencias coincidentes."
+  },
+  "placeholder": {
+    "heading": "{{title}} llegará pronto",
+    "description": "Esta función se encuentra en desarrollo activo y estará disponible en una próxima actualización.",
+    "backHome": "Volver al inicio"
   }
 }

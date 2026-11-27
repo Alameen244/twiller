@@ -49,7 +49,7 @@ const ensureSubscription = async (userId, getInitialCount) => {
 
 // Tries to use one tweet from the user's quota. This is ATOMIC: the counter
 // only goes up if it is still below the limit, so two quick requests cannot
-// both slip through. Call it BEFORE saving the tweet.
+//  slip through. Call it BEFORE saving the tweet.
 // Returns { allowed, plan, tweetsUsed }.
 export const reserveTweetSlot = async (userId, getInitialCount) => {
   const sub = await ensureSubscription(userId, getInitialCount);
