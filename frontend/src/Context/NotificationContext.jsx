@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { auth } from "./firebase";
 import { useAuth } from "./AuthContext";
 import {
   getNotificationsApi,
@@ -104,9 +105,19 @@ export function NotificationProvider({ children }) {
       setUnreadCount(0);
       setEnabled(false);
       setIsLoaded(false);
-      return;
+      return undefined;
     }
-    fetchNotifications().catch((err) => console.error("Failed to load notifications", err));
+    let cancelled = false;
+    (async () => {
+      if (auth && !auth.currentUser && typeof auth.authStateReady === "function") {
+        await auth.authStateReady();
+      }
+      if (cancelled || (auth && !auth.currentUser)) return;
+      await fetchNotifications();
+    })().catch((err) => console.error("Failed to load notifications", err));
+    return () => {
+      cancelled = true;
+    };
   }, [email, fetchNotifications]);
 
   // Polling runs only while logged in AND the preference is on.
