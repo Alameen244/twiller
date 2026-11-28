@@ -9,3 +9,6 @@ export const createCommentApi = (tweetId, content) =>
 
 export const deleteCommentApi = (commentId) =>
   axiosInstance.delete(endpoints.deleteComment(commentId)).then((r) => r.data);
+
+export const translateCommentsApi = (commentIds) =>
+  axiosInstance.post(endpoints.translateComments, { commentIds }).then((r) => r.data);

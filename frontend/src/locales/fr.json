@@ -418,7 +418,8 @@
     "delete": "Supprimer la réponse",
     "loadFailed": "Impossible de charger les réponses.",
     "createFailed": "Impossible de publier votre réponse.",
-    "deleteFailed": "Impossible de supprimer la réponse."
+    "deleteFailed": "Impossible de supprimer la réponse.",
+    "translating": "Traduction des réponses en cours, veuillez patienter..."
   },
   "explore": {
     "searchPlaceholder": "Rechercher",

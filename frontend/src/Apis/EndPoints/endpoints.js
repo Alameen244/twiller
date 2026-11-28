@@ -28,6 +28,7 @@ export const endpoints = {
   //comment
   comments: (tweetId) => `/api/v1/comments/${tweetId}`,
   deleteComment: (commentId) => `/api/v1/comments/${commentId}`,
+  translateComments: '/api/v1/comments/translate',
 
   //image
   uploadSingleImage: '/api/v1/image/uploadSingle',

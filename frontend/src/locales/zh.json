@@ -418,7 +418,8 @@
     "delete": "删除回复",
     "loadFailed": "无法加载回复。",
     "createFailed": "无法发布回复。",
-    "deleteFailed": "无法删除回复。"
+    "deleteFailed": "无法删除回复。",
+    "translating": "正在翻译回复，请稍候..."
   },
   "explore": {
     "searchPlaceholder": "搜索",

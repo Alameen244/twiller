@@ -418,7 +418,8 @@
     "delete": "Delete reply",
     "loadFailed": "Could not load replies.",
     "createFailed": "Could not post your reply.",
-    "deleteFailed": "Could not delete reply."
+    "deleteFailed": "Could not delete reply.",
+    "translating": "Translating replies, please wait..."
   },
   "explore": {
     "searchPlaceholder": "Search",

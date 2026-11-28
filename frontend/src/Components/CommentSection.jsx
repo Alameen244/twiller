@@ -16,15 +16,18 @@ import {
   createCommentApi,
   deleteCommentApi,
   getCommentsApi,
+  translateCommentsApi,
 } from "../Apis/commentApi";
 import { useAuth } from "../Context/AuthContext";
 import { Avatar } from "./UI";
 
 const MAX_COMMENT_LENGTH = 280;
+const TRANSLATE_CHUNK = 25;
 
 export default function CommentSection({ tweetId, open, onCountChange }) {
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
+  const language = i18n.language;
 
   const [comments, setComments] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -32,7 +35,16 @@ export default function CommentSection({ tweetId, open, onCountChange }) {
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [translationStore, setTranslationStore] = useState({ language, map: {} });
+  const [showOriginalIds, setShowOriginalIds] = useState({});
+
   const onCountChangeRef = useRef(onCountChange);
+  const translatedKeysRef = useRef(new Set());
+  const langRef = useRef(language);
+
+  useEffect(() => {
+    langRef.current = language;
+  }, [language]);
 
   useEffect(() => {
     onCountChangeRef.current = onCountChange;
@@ -67,6 +79,51 @@ export default function CommentSection({ tweetId, open, onCountChange }) {
     };
   }, [open, loaded, tweetId, t]);
 
+  // Translate replies lazily ONLY when this comment drawer is open.
+  useEffect(() => {
+    if (!open || !loaded || comments.length === 0) return undefined;
+
+    const pendingIds = comments
+      .filter((c) => c.content?.trim() && !translatedKeysRef.current.has(`${language}:${c._id}`))
+      .map((c) => c._id);
+
+    if (pendingIds.length === 0) return undefined;
+    pendingIds.forEach((id) => translatedKeysRef.current.add(`${language}:${id}`));
+
+    let active = true;
+    const toastId = `translating-comments-${tweetId}`;
+
+    const runTranslation = async () => {
+      toast.info(t("comments.translating"), {
+        toastId,
+        autoClose: 4000,
+      });
+
+      try {
+        for (let i = 0; i < pendingIds.length; i += TRANSLATE_CHUNK) {
+          const res = await translateCommentsApi(pendingIds.slice(i, i + TRANSLATE_CHUNK));
+          if (!active || langRef.current !== language || res.language !== language) return;
+
+          setTranslationStore((prev) => ({
+            language,
+            map: { ...(prev.language === language ? prev.map : {}), ...res.translations },
+          }));
+        }
+      } catch {
+        // Keep original replies quietly if translation service is unavailable
+      } finally {
+        toast.dismiss(toastId);
+      }
+    };
+
+    runTranslation();
+    return () => {
+      active = false;
+      toast.dismiss(toastId);
+    };
+  }, [open, loaded, comments, language, tweetId, t]);
+
+  const translations = translationStore.language === language ? translationStore.map : {};
   const trimmed = text.trim();
   const remaining = MAX_COMMENT_LENGTH - text.length;
 
@@ -78,6 +135,7 @@ export default function CommentSection({ tweetId, open, onCountChange }) {
     try {
       const res = await createCommentApi(tweetId, trimmed);
       if (res?.comment) {
+        translatedKeysRef.current.add(`${language}:${res.comment._id}`);
         setComments((prev) => [res.comment, ...prev]);
         setLoaded(true);
       }
@@ -227,6 +285,11 @@ export default function CommentSection({ tweetId, open, onCountChange }) {
             {comments.map((comment) => {
               const cAuthor = comment.author || {};
               const isMine = user?._id && cAuthor._id === user._id;
+              const entry = translations[comment._id];
+              const isTranslated = Boolean(entry?.translated);
+              const showOriginal = Boolean(showOriginalIds[comment._id]);
+              const displayContent = isTranslated && !showOriginal ? entry.text : comment.content;
+
               return (
                 <Stack
                   key={comment._id}
@@ -294,8 +357,32 @@ export default function CommentSection({ tweetId, open, onCountChange }) {
                         color: "#e7e9ea",
                       }}
                     >
-                      {comment.content}
+                      {displayContent}
                     </Typography>
+                    {isTranslated && (
+                      <Typography
+                        component="button"
+                        type="button"
+                        onClick={() =>
+                          setShowOriginalIds((prev) => ({
+                            ...prev,
+                            [comment._id]: !prev[comment._id],
+                          }))
+                        }
+                        sx={{
+                          background: "none",
+                          border: 0,
+                          p: 0,
+                          mt: 0.4,
+                          cursor: "pointer",
+                          fontSize: 12,
+                          color: "#1d9bf0",
+                          "&:hover": { textDecoration: "underline" },
+                        }}
+                      >
+                        {showOriginal ? t("tweet.showTranslated") : t("tweet.showOriginal")}
+                      </Typography>
+                    )}
                   </Box>
                 </Stack>
               );

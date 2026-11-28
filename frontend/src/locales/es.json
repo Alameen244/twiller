@@ -418,7 +418,8 @@
     "delete": "Eliminar respuesta",
     "loadFailed": "No se pudieron cargar las respuestas.",
     "createFailed": "No se pudo publicar tu respuesta.",
-    "deleteFailed": "No se pudo eliminar la respuesta."
+    "deleteFailed": "No se pudo eliminar la respuesta.",
+    "translating": "Traduciendo respuestas, espera un momento..."
   },
   "explore": {
     "searchPlaceholder": "Buscar",

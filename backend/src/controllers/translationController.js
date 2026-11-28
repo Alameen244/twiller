@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 import Tweet from '../models/tweetModel.js';
+import Comment from '../models/commentModel.js';
 import User from '../models/userModel.js';
 import TweetTranslation from '../models/tweetTranslationModel.js';
+import CommentTranslation from '../models/commentTranslationModel.js';
 import { LANGUAGES, DEFAULT_LANGUAGE } from '../constants/languages.js';
 import { translateBatch } from '../services/translationService.js';
 
@@ -16,77 +18,108 @@ const findUserFromToken = async (req) => {
   return User.findOne({ email }).collation({ locale: 'en', strength: 2 });
 };
 
-// Body: { tweetIds: [...] }. The target language is the one saved on the user (set only after OTP),
-// never a value from the request. Returns { language, translations: { [id]: { text, translated } }, partial }.
-// If Gemini is down or out of quota, `partial` is true and the page just shows the original text.
-export const translateTweets = async (req, res) => {
+// Shared cached batch-translation helper for both tweets and comments.
+const translateEntityBatch = async ({
+  req,
+  res,
+  rawIds,
+  entityLabel,
+  Model,
+  CacheModel,
+  cacheField,
+}) => {
   try {
-    const { tweetIds } = req.body || {};
-    if (!Array.isArray(tweetIds) || tweetIds.length === 0 || tweetIds.length > MAX_IDS_PER_REQUEST) {
-      return res.status(400).json({ message: `Send between 1 and ${MAX_IDS_PER_REQUEST} tweet ids.` });
+    if (!Array.isArray(rawIds) || rawIds.length === 0 || rawIds.length > MAX_IDS_PER_REQUEST) {
+      return res
+        .status(400)
+        .json({ message: `Send between 1 and ${MAX_IDS_PER_REQUEST} ${entityLabel} ids.` });
     }
-    const ids = [...new Set(tweetIds)].filter(
+    const ids = [...new Set(rawIds)].filter(
       (id) => typeof id === 'string' && mongoose.isValidObjectId(id)
     );
-    if (ids.length === 0) return res.status(400).json({ message: 'No valid tweet ids.' });
+    if (ids.length === 0) return res.status(400).json({ message: `No valid ${entityLabel} ids.` });
 
     const user = await findUserFromToken(req);
     if (!user) return res.status(404).json({ message: 'User not found' });
     const language = user.language || DEFAULT_LANGUAGE;
 
-    // Tweet text, or the caption of an audio tweet (both live in `content`).
-    const tweets = await Tweet.find({ _id: { $in: ids } }).select('content');
-    const withText = tweets.filter((t) => t.content && t.content.trim());
+    const docs = await Model.find({ _id: { $in: ids } }).select('content');
+    const withText = docs.filter((d) => d.content && d.content.trim());
 
     const translations = {};
-    const cached = await TweetTranslation.find({
-      tweet: { $in: withText.map((t) => t._id) },
+    const cached = await CacheModel.find({
+      [cacheField]: { $in: withText.map((d) => d._id) },
       language,
-    }).select('tweet text changed');
+    }).select(`${cacheField} text changed`);
     for (const row of cached) {
-      translations[row.tweet.toString()] = { text: row.text, translated: row.changed };
+      translations[row[cacheField].toString()] = { text: row.text, translated: row.changed };
     }
 
-    // One Gemini call for everything that is not cached yet.
-    const missing = withText.filter((t) => !translations[t._id.toString()]);
+    const missing = withText.filter((d) => !translations[d._id.toString()]);
     let partial = false;
     if (missing.length > 0) {
       try {
         const result = await translateBatch(
-          missing.map((t) => ({ id: t._id.toString(), text: t.content })),
+          missing.map((d) => ({ id: d._id.toString(), text: d.content })),
           LANGUAGES[language].name
         );
         const rows = [];
-        for (const t of missing) {
-          const id = t._id.toString();
+        for (const doc of missing) {
+          const id = doc._id.toString();
           const text = result.get(id);
           if (!text) {
-            partial = true; // Gemini skipped this one: it shows in the original language
+            partial = true;
             continue;
           }
-          const changed = !same(text, t.content);
-          translations[id] = { text: changed ? text : t.content, translated: changed };
+          const changed = !same(text, doc.content);
+          translations[id] = { text: changed ? text : doc.content, translated: changed };
           rows.push({
             updateOne: {
-              filter: { tweet: t._id, language },
-              update: { $setOnInsert: { text: translations[id].text, changed, createdAt: new Date() } },
+              filter: { [cacheField]: doc._id, language },
+              update: {
+                $setOnInsert: { text: translations[id].text, changed, createdAt: new Date() },
+              },
               upsert: true,
             },
           });
         }
         if (rows.length > 0) {
-          await TweetTranslation.bulkWrite(rows, { ordered: false }).catch((e) =>
+          await CacheModel.bulkWrite(rows, { ordered: false }).catch((e) =>
             console.error('Saving translation cache failed:', e.message)
           );
         }
       } catch {
-        partial = true; // Gemini down, rate limited, or out of quota: fail safe
+        partial = true;
       }
     }
 
     return res.status(200).json({ language, translations, partial });
   } catch (err) {
-    console.error('translateTweets failed:', err);
+    console.error(`translate ${entityLabel}s failed:`, err);
     return res.status(200).json({ language: DEFAULT_LANGUAGE, translations: {}, partial: true });
   }
 };
+
+// POST /api/v1/tweets/translate  body: { tweetIds: [...] }
+export const translateTweets = (req, res) =>
+  translateEntityBatch({
+    req,
+    res,
+    rawIds: req.body?.tweetIds,
+    entityLabel: 'tweet',
+    Model: Tweet,
+    CacheModel: TweetTranslation,
+    cacheField: 'tweet',
+  });
+
+// POST /api/v1/comments/translate  body: { commentIds: [...] }
+export const translateComments = (req, res) =>
+  translateEntityBatch({
+    req,
+    res,
+    rawIds: req.body?.commentIds,
+    entityLabel: 'comment',
+    Model: Comment,
+    CacheModel: CommentTranslation,
+    cacheField: 'comment',
+  });
